@@ -1,0 +1,68 @@
+
+import 'package:efs_misr/Features/Home/presentation/pages/ticket_page.dart';
+import 'package:efs_misr/Features/Home/presentation/widgets/QRView.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/widgets/custom_navigation_bar.dart';
+import '../widgets/home_page_body.dart';
+import 'assets_page.dart';
+import 'menu_page.dart';
+
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key, });
+
+
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  int selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final iconPaths = [
+      "assets/images/home.svg",
+      "assets/images/assets.svg",
+      "assets/images/ticket.svg",
+      "assets/images/menu.svg",
+    ];
+
+    final pages = [HomePageBody(),AssetsPage(), TicketPage(), MenuPage()];
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+
+        elevation: 5,
+        backgroundColor: AppColors.green,
+        foregroundColor: Colors.white,
+        shape: const CircleBorder(),
+        onPressed: () {
+          Get.to(QRScanPage());
+        },
+        child: SvgPicture.asset('assets/images/Qr code scanner.svg',width: screenWidth*0.07 ,),
+      ),
+      backgroundColor: AppColors.AppBackground,
+      body: pages[selectedIndex],
+      bottomNavigationBar: CustomBottomNav(
+        icons: iconPaths,
+        selectedIndex: selectedIndex,
+        onPressed: _onItemTapped,
+      ),
+    );
+  }
+}
