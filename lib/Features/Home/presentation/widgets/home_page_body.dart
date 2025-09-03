@@ -7,7 +7,48 @@ import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_profile_wedget.dart';
 import '../../../../core/utils/widgets/custome_back_shape_wedget.dart';
 import '../../../../core/utils/widgets/custome_overview_widget.dart';
+import '../../../../core/utils/widgets/ticket_overview_widget.dart';
 
+final List<Map<String, dynamic>> TicketData = [
+  {
+    'id' : '1',
+    'TicketNo': '202156',
+    'BranchId': 'BR-101',
+    'BranchName': 'Cairo Branch',
+    'Area': 'New Cairo',
+    'Status': 'Awaiting',
+    'RequestDate': '20 August 2025',
+    'ResponseDate': '21 August 2025',
+    'Priority': 'A',
+    'RepairDate': '22 August 2025',
+    'ClosedBy': '----',
+    'Engineer': '----',
+  },
+  {
+    'id': '2',
+    'TicketNo': '202157',
+    'BranchId': 'BR-102',
+    'BranchName': 'Giza Branch',
+    'Area': '6th October',
+    'Status': 'Completed',
+    'RequestDate': '18 August 2025',
+    'ResponseDate': '19 August 2025',
+    'Priority': 'B',
+    'RepairDate': '',
+  },
+  {
+    'id': '3',
+    'TicketNo': '202157',
+    'BranchId': 'BR-102',
+    'BranchName': 'Giza Branch',
+    'Area': '6th October',
+    'Status': 'Rejected',
+    'RequestDate': '18 August 2025',
+    'ResponseDate': '19 August 2025',
+    'Priority': 'B',
+    'RepairDate': '',
+  },
+];
 class HomePageBody extends StatefulWidget {
   const HomePageBody({super.key});
 
@@ -104,209 +145,11 @@ class _HomePageBodyState extends State<HomePageBody> {
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 1,
+                    itemCount: TicketData.length,
                     itemBuilder: (context, index) {
                       return Container(
-                        margin: EdgeInsets.only(bottom: 30),
-                        padding: EdgeInsets.only(bottom: 10),
-                        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.lightgray,width: 3))),
-                        child: Column(
-                          spacing: 10,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Row(
-                              spacing: 10,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  spacing: 15,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.all(screenWidth * 0.03),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.lightgreen.withOpacity(
-                                          0.25,
-                                        ),
-                                        borderRadius: BorderRadius.circular(60),
-                                      ),
-                                      child: ClipRRect(
-                                        child: SvgPicture.asset(
-                                          'assets/images/ticket.svg',
-                                          color: AppColors.green,
-                                          width: screenWidth * 0.1,
-                                          height: screenWidth * 0.1,
-                                        ),
-                                      ),
-                                    ),
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Ticket No. 20156",
-                                          style: AppTextStyle.latoBold20(context),
-                                        ),
-                                        Row(
-                                          spacing: 2,
-                                          children: [
-                                            Text(
-                                              "Branch id",
-                                              style: AppTextStyle.latoBold16(
-                                                context,
-                                              ).copyWith(color: AppColors.green),
-                                            ),
-                                            Container(
-                                              width: screenWidth * 0.012,
-                                              height: screenHeight * 0.006,
-                                              decoration: BoxDecoration(
-                                                color: AppColors.green,
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
-                                              ),
-                                            ),
-                                            Text(
-                                              "Branch Name",
-                                              style: AppTextStyle.latoBold16(
-                                                context,
-                                              ).copyWith(color: AppColors.green),
-                                            ),
-                                          ],
-                                        ),
-                                        Text(
-                                          "Area",
-                                          style: AppTextStyle.latoRegular19(
-                                            context,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Text(
-                                      "Status",
-                                      style: AppTextStyle.latoRegular16(context),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: screenHeight * 0.01,
-                                        horizontal: screenWidth * 0.04,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Color(0xffDFE699),
-                                        borderRadius: BorderRadius.circular(50),
-                                      ),
-                                      child: Text(
-                                        "Awaiting",
-                                        style: AppTextStyle.latoBold16(
-                                          context,
-                                        ).copyWith(color: AppColors.white),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Text("Comment"),
-                            Container(
-                              padding: EdgeInsets.all(15),
-                              decoration: BoxDecoration(
-                                color: AppColors.lightgray,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      spacing: 10,
-
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Requset Date'),
-                                            Text("20 August 2025"),
-                                          ],
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Response Date:'),
-                                            Text("20 August 2025"),
-                                          ],
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Priority: '),
-                                            Text("A"),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    height: screenHeight * 0.12,
-                                    width: 1.5,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                      color: AppColors.gray,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                                      child: Column(
-                                        spacing: 10,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text('Repair Date: '),
-                                              Text("20 August 2025"),
-                                            ],
-                                          ),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text('Closed By:'),
-                                              Text("----"),
-                                            ],
-                                          ), Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            children: [
-                                              Text('Engineer:'),
-                                              Text("----"),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
+                          margin: EdgeInsets.only(bottom: screenHeight*0.05),
+                          child: TicketOverViewWidget(screenWidth:screenWidth, screenHeight: screenHeight, TicketData: TicketData[index]));
                     },
                   ),
                 ],
