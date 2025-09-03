@@ -1,4 +1,5 @@
 
+import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,7 +9,7 @@ import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
 import '../../../../core/utils/widgets/custom_signin_button.dart';
 import '../../../Home/presentation/pages/home_page.dart';
-import '../viewmodel/auth_cubit.dart';
+
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -26,7 +27,7 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthCubit, AuthCubitState>(
       builder: (context, state) {
-        if (state is Authoading) {
+        if (state is AuthLoading) {
           return Center(
             child: CircularProgressIndicator(color: AppColors.green),
           );

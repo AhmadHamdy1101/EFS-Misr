@@ -3,7 +3,7 @@ part of 'auth_cubit.dart';
 sealed class AuthCubitState {}
 
 final class AuthInitial extends AuthCubitState {}
-final class Authoading extends AuthCubitState {}
+final class AuthLoading extends AuthCubitState {}
 
 final class LoginSuccess extends AuthCubitState {
   final String userId;

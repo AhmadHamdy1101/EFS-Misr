@@ -1,11 +1,10 @@
 
+import 'package:efs_misr/Features/Auth/domain/auth_repo.dart';
+import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import 'Features/Auth/domain/auth_repo.dart';
-import 'Features/Auth/presentation/viewmodel/auth_cubit.dart';
 import 'constants/constants.dart';
 import 'core/utils/singelton.dart';
 import 'main_app.dart';

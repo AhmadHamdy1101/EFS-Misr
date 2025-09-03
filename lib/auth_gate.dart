@@ -26,7 +26,7 @@ class _AuthGateState extends State<AuthGate> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit,AuthCubitState>(builder: (context, state) {
-      if (state is Authoading) {
+      if (state is AuthLoading) {
         return Center(child: CircularProgressIndicator(backgroundColor: AppColors.green,),);
       }
       if (state is SessionExist) {
