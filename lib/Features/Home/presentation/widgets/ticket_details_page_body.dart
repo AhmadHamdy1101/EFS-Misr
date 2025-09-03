@@ -246,6 +246,106 @@ class TicketDetailsPageBody extends StatelessWidget {
 
                     ),
                   ),
+                  Card(
+                    color: AppColors.white,
+
+                    child: Container(
+                      padding: EdgeInsets.all(20.0),
+                      child:
+                      Row(
+                        spacing: 15,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+
+                          Expanded(
+                            child: Column(
+                              spacing: 10,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Priority:',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                                    Text("A")
+                                  ],),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Closed By:',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                                    Text("----")
+                                  ],),
+
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: screenHeight * 0.13,
+                            width: 1,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                              color: AppColors.gray,
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              spacing: 10,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Engineer:',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                                    Text("----")
+                                  ],),
+
+                              ],
+                            ),
+                          ),
+
+                        ],
+                      ),
+
+                    ),
+                  ),
+                  Card(
+                    color: AppColors.white,
+
+                    child: Container(
+                      padding: EdgeInsets.all(20.0),
+                      width: screenWidth,
+                      child:
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Damage Description:',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                          Text("Damage Description")
+                        ],),
+
+
+                    ),
+                  ),
+                  Card(
+                    color: AppColors.white,
+
+                    child: Container(
+                      padding: EdgeInsets.all(20.0),
+                      width: screenWidth,
+                      child:
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Attachment :',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                          Text("No Attachment")
+                        ],),
+
+
+                    ),
+                  ),
 
                 ],
               ),

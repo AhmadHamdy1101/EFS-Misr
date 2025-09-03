@@ -19,6 +19,6 @@ class _AssetsPageState extends State<AssetsPage> {
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(backgroundColor: AppColors.AppBackground,body: AssetsPageBody()) ;
+    return AssetsPageBody();
   }
 }
