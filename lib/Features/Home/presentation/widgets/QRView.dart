@@ -1,4 +1,7 @@
+import 'package:efs_misr/Features/Home/presentation/pages/assets_details_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class QRScanPage extends StatefulWidget {
@@ -24,10 +27,12 @@ class _QRScanPageState extends State<QRScanPage> {
               onDetect: (BarcodeCapture capture) {
                 final List<Barcode> barcodes = capture.barcodes;
                 for (final barcode in barcodes) {
-                  debugPrint('Barcode found! ${barcode.rawValue}');
+                                    // debugPrint('Barcode found! ${barcode.rawValue}');
                   setState(() {
                     this.barcode = barcode.rawValue;
                   });
+                  Get.to(AssetsDetailsPage(Assetsid:barcode.rawValue ,));
+
                 }
               },
             ),
