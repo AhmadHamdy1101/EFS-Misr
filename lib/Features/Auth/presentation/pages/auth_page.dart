@@ -1,5 +1,4 @@
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,6 +8,7 @@ import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
 import '../../../../core/utils/widgets/custom_signin_button.dart';
 import '../../../Home/presentation/pages/home_page.dart';
+import '../viewmodel/auth_cubit.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -24,7 +24,13 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   Widget build(BuildContext context) {
-
+    return BlocConsumer<AuthCubit, AuthCubitState>(
+      builder: (context, state) {
+        if (state is Authoading) {
+          return Center(
+            child: CircularProgressIndicator(color: AppColors.green),
+          );
+        }
         return Scaffold(
           backgroundColor: AppColors.AppBackground,
           resizeToAvoidBottomInset: false,
@@ -107,7 +113,9 @@ class _AuthPageState extends State<AuthPage> {
                             //     sign In Button
                             CustomLoginBtn(
                               onPressed: () {
-                               Get.to(HomePage());
+                                context.read<AuthCubit>().login(
+                                  email: email.text,
+                                  password: password.text,);
                               },
                             ),
                           ],
@@ -120,24 +128,24 @@ class _AuthPageState extends State<AuthPage> {
             ),
           ),
         );
-      }
-      // listener: (BuildContext context, AuthCubitState state) {
-      //   if (state is LoginSuccess) {
-      //     Get.to(() =>
-      //         HomePage());
-      //         } else
-      //         if (state is LoginFailure)
-      //     {
-      //       Get.snackbar(
-      //         "Error",
-      //         state.errorMsg,
-      //         backgroundColor: Colors.red,
-      //         colorText: AppColors.white,
-      //       );
-      //     }
-      //   },
-    // );
-  // }
+      },
+      listener: (BuildContext context, AuthCubitState state) {
+        if (state is LoginSuccess) {
+          Get.to(() =>
+              HomePage());
+        } else
+        if (state is LoginFailure)
+        {
+          Get.snackbar(
+            "Error",
+            state.errorMsg,
+            backgroundColor: Colors.red,
+            colorText: AppColors.white,
+          );
+        }
+      },
+    );
+  }
 }
 
 
