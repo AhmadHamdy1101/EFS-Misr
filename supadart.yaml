@@ -1,0 +1,11 @@
+SUPABASE_URL: https://cxjgprvhjrjbmrazvrsa.supabase.co
+SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4amdwcnZoanJqYm1yYXp2cnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NjgzOTcsImV4cCI6MjA3MjI0NDM5N30.ff-yCrYmNw0c5Z45fKA-8LEO7DFBGD3TpvXtLAQvyos
+output: lib/Features/Home/data/models
+separated: true
+mappings:
+  assets: Assets
+  users: User
+  branch: Branch
+  tickets: Tickets
+  positions: Positions
+

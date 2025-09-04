@@ -12,13 +12,14 @@ class CustomInputWidget extends StatelessWidget {
     required this.inbutHintText,
     required this.changeToPass,
     required this.textEditingController,
-    this.textInputType,
+    this.textInputType, this.validator,
   });
   final String inbutIcon;
   final String inbutHintText;
   final bool changeToPass;
   final TextEditingController textEditingController;
   final TextInputType? textInputType;
+  final String? Function(String?)? validator;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,7 +35,8 @@ class CustomInputWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: TextField(
+      child: TextFormField(
+        validator: validator,
         cursorColor: AppColors.black,
         keyboardType: textInputType,
         controller: textEditingController,

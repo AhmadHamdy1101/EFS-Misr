@@ -4,10 +4,14 @@ abstract class Failure {
   final String message;
   Failure(this.message);
 
-  /// Convert Supabase exceptions into corresponding Failure
   factory Failure.fromException(dynamic exception) {
+    if (exception is Failure) {
+      return exception;
+    }
+
     if (exception is AuthException) {
-      return AuthFailure(exception.message);
+      // استعمل الكود من Supabase لو موجود
+      return AuthFailure.fromSupabaseError(exception.code ?? 'unknown');
     } else if (exception is PostgrestException) {
       return PostgrestFailure(exception.message);
     } else if (exception is StorageException) {
@@ -23,7 +27,7 @@ abstract class Failure {
 class AuthFailure extends Failure {
   AuthFailure(super.message);
 
-  /// Map known Supabase auth error codes to user-friendly messages
+
   factory AuthFailure.fromSupabaseError(String errorCode) {
     switch (errorCode) {
       case 'invalid_credentials':
@@ -46,7 +50,7 @@ class PostgrestFailure extends Failure {
   PostgrestFailure(super.message);
 }
 
-/// ---------- Storage Failures ----------
+
 class StorageFailure extends Failure {
   StorageFailure(super.message);
 }

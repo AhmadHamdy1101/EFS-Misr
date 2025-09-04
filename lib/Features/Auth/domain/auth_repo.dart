@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../core/Errors/failure.dart';
-import '../data/models/users.dart';
+import '../../Home/data/models/user.dart';
 
 
 abstract class AuthRepo {
@@ -21,6 +21,5 @@ abstract class AuthRepo {
 
   Future<Either<Failure, String>> addAccount(String email, String password);
 
-  Future<Either<Failure, Users>> getUserData({required String userId});
-
+  Future<Either<Failure, User>> getUserData({required String userId});
 }

@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../../../constants/constants.dart';
 import '../../domain/auth_repo.dart';
 part 'auth_state.dart';
+
 
 class AuthCubit extends Cubit<AuthCubitState> {
   final auth = supabaseClient.auth;
@@ -15,13 +15,15 @@ class AuthCubit extends Cubit<AuthCubitState> {
   AuthCubit(this.authRepo) : super(AuthInitial());
 
   Future<void> login({required String email, required String password}) async {
+    print('loadinnnnnnnnnnggggggggggggggggggg');
     emit(AuthLoading());
     final response = await authRepo.login(email, password);
     response.fold(
       (l) {
-        emit(LoginFailure(errorMsg: l.message));
+        emit(LoginFailure(errorMsg:l.message));
       },
       (userId) async {
+        print(userId+'user iddddddddddddddddddddddddddddd');
         emit(LoginSuccess(userId: userId));
         emit(SessionExist(userId: userId));
       },
@@ -59,7 +61,8 @@ class AuthCubit extends Cubit<AuthCubitState> {
     required int position,
     required double salary,
     required int status,
-  }) async {
+  }) async
+  {
     emit(RegisterLoading());
     final result = await authRepo.addAccount(email, password);
     result.fold(
@@ -101,5 +104,4 @@ class AuthCubit extends Cubit<AuthCubitState> {
     _sub?.cancel();
     return super.close();
   }
-
 }

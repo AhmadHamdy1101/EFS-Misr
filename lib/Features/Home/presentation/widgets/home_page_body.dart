@@ -1,7 +1,7 @@
-
+import 'package:efs_misr/Features/Home/presentation/viewmodel/home_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/app_colors.dart';
-import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_profile_wedget.dart';
 import '../../../../core/utils/widgets/custome_back_shape_wedget.dart';
 import '../../../../core/utils/widgets/custome_overview_widget.dart';
@@ -9,7 +9,7 @@ import '../../../../core/utils/widgets/ticket_overview_widget.dart';
 
 final List<Map<String, dynamic>> TicketData = [
   {
-    'id' : '1',
+    'id': '1',
     'TicketNo': '202156',
     'BranchId': 'BR-101',
     'BranchName': 'Cairo Branch',
@@ -47,6 +47,7 @@ final List<Map<String, dynamic>> TicketData = [
     'RepairDate': '',
   },
 ];
+
 class HomePageBody extends StatefulWidget {
   const HomePageBody({super.key});
 
@@ -59,13 +60,18 @@ class _HomePageBodyState extends State<HomePageBody> {
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -139,15 +145,33 @@ class _HomePageBodyState extends State<HomePageBody> {
 
                     ],
                   ),
-                  ListView.builder(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: TicketData.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                          margin: EdgeInsets.only(bottom: screenHeight*0.05),
-                          child: TicketOverViewWidget(screenWidth:screenWidth, screenHeight: screenHeight, TicketData: TicketData[index]));
+                  BlocBuilder<HomeCubit, HomeState>(
+                    builder: (context, state) {
+                      if (state is GetTicketsLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (state is GetTicketsFailure) {
+                        return Center(child: Text(state.errMsg));
+                      }
+                      if (state is GetTicketsSuccess) {
+                        return ListView.builder(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: state.tickets.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                                margin: EdgeInsets.only(
+                                    bottom: screenHeight * 0.05),
+                                child: TicketOverViewWidget(
+                                    screenWidth: screenWidth,
+                                    screenHeight: screenHeight,
+                                    ticketData:state.tickets[index]
+                                    ));
+                          },
+                        );
+                      }
+                      return const Center(child: Text("No Tickets Found"));
                     },
                   ),
                 ],
@@ -159,6 +183,5 @@ class _HomePageBodyState extends State<HomePageBody> {
       ],
 
     );
-
   }
 }

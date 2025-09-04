@@ -1,15 +1,11 @@
-
 import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
+import 'package:efs_misr/core/utils/app_colors.dart';
+import 'package:efs_misr/core/utils/app_text_styles.dart';
+import 'package:efs_misr/core/utils/widgets/custom_inbut_wedget.dart';
+import 'package:efs_misr/core/utils/widgets/custom_signin_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
-import '../../../../core/utils/app_colors.dart';
-import '../../../../core/utils/app_text_styles.dart';
-import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
-import '../../../../core/utils/widgets/custom_signin_button.dart';
-import '../../../Home/presentation/pages/home_page.dart';
-
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -23,103 +19,119 @@ class _AuthPageState extends State<AuthPage> {
 
   final TextEditingController password = TextEditingController();
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthCubit, AuthCubitState>(
-      builder: (context, state) {
-        if (state is AuthLoading) {
-          return Center(
-            child: CircularProgressIndicator(color: AppColors.green),
-          );
-        }
-        return Scaffold(
-          backgroundColor: AppColors.AppBackground,
-          resizeToAvoidBottomInset: false,
-          body: SingleChildScrollView(
+    return Scaffold(
+      backgroundColor: AppColors.AppBackground,
+      resizeToAvoidBottomInset: false,
+      body: BlocBuilder<AuthCubit, AuthCubitState>(
+        builder: (context, state) {
+          print('state is $state ');
+          if (state is AuthLoading) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: AppColors.green,
+                padding: EdgeInsets.all(10),
+              ),
+            );
+          }
+          return SingleChildScrollView(
             child: Container(
-              width: MediaQuery
-                  .sizeOf(context)
-                  .width,
-              height: MediaQuery
-                  .sizeOf(context)
-                  .height,
+              width: MediaQuery.sizeOf(context).width,
+              height: MediaQuery.sizeOf(context).height,
               decoration: BoxDecoration(
-
                 image: DecorationImage(
-                    image: AssetImage("assets/images/SignIn.png"),
-                    fit: BoxFit.cover),
-
+                  image: AssetImage("assets/images/SignIn.png"),
+                  fit: BoxFit.cover,
+                ),
               ),
               child: Padding(
                 padding: const EdgeInsets.only(top: 90.0),
                 child: SizedBox(
-                  width: MediaQuery
-                      .sizeOf(context)
-                      .width,
+                  width: MediaQuery.sizeOf(context).width,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
-
                     children: [
                       // Company Logo ==================
                       SvgPicture.asset(
                         'assets/images/logo.svg',
-                        width: MediaQuery
-                            .sizeOf(context)
-                            .width * 0.5,
+                        width: MediaQuery.sizeOf(context).width * 0.5,
                       ),
-                      Text('Hello',
-                          style: AppTextStyle.interSemiBold64(context)),
-                      SizedBox(height: MediaQuery
-                          .sizeOf(context)
-                          .height * 0.03),
+                      Text(
+                        'Hello',
+                        style: AppTextStyle.interSemiBold64(context),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.03,
+                      ),
 
                       Text(
                         "Sign in to your account",
                         style: AppTextStyle.latoRegular19(context),
                       ),
-                      SizedBox(height: MediaQuery
-                          .sizeOf(context)
-                          .height * 0.06),
+                      SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.06,
+                      ),
                       // Inbut Area ======================
                       SizedBox(
-                        width: MediaQuery
-                            .sizeOf(context)
-                            .width * 0.8,
-                        child: Column(
-                          spacing: 40,
-                          children: [
-                            //   UserName Inbut
-                            CustomInputWidget(
-                              inbutIcon: 'assets/images/profile.svg',
-                              inbutHintText: 'Username',
-                              changeToPass: false,
-                              textEditingController: email,
-                              textInputType: TextInputType.emailAddress,
-                            ),
-                            // Password Inbut
-                            CustomInputWidget(
-                              inbutIcon: 'assets/images/Password.svg',
-                              inbutHintText: 'Password',
-                              changeToPass: true,
-                              textEditingController: password,
-                              textInputType: TextInputType.visiblePassword,
-                            ),
-                            SizedBox(
-                              height: MediaQuery
-                                  .sizeOf(context)
-                                  .height * 0.02,
-                            ),
+                        width: MediaQuery.sizeOf(context).width * 0.8,
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            spacing: 40,
+                            children: [
+                              CustomInputWidget(
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Please Enter Your Email';
+                                  }
+                                  if (!RegExp(
+                                    r'^[^@]+@[^@]+\.[^@]+',
+                                  ).hasMatch(value)) {
+                                    return "Email is not valid";
+                                  }
+                                  return null;
+                                },
+                                inbutIcon: 'assets/images/profile.svg',
+                                inbutHintText: 'Email',
+                                changeToPass: false,
+                                textEditingController: email,
+                                textInputType: TextInputType.emailAddress,
+                              ),
+                              // Password Inbut
+                              CustomInputWidget(
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Please Enter Your Password';
+                                  }
+                                  return null;
+                                },
+                                inbutIcon: 'assets/images/Password.svg',
+                                inbutHintText: 'Password',
+                                changeToPass: true,
+                                textEditingController: password,
+                                textInputType: TextInputType.visiblePassword,
+                              ),
+                              SizedBox(
+                                height:
+                                    MediaQuery.sizeOf(context).height * 0.02,
+                              ),
 
-                            //     sign In Button
-                            CustomLoginBtn(
-                              onPressed: () {
-                                context.read<AuthCubit>().login(
-                                  email: email.text,
-                                  password: password.text,);
-                              },
-                            ),
-                          ],
+                              CustomLoginBtn(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    context.read<AuthCubit>().login(
+                                      email: email.text,
+                                      password: password.text,
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -127,26 +139,10 @@ class _AuthPageState extends State<AuthPage> {
                 ),
               ),
             ),
-          ),
-        );
-      },
-      listener: (BuildContext context, AuthCubitState state) {
-        if (state is LoginSuccess) {
-          Get.to(() =>
-              HomePage());
-        } else
-        if (state is LoginFailure)
-        {
-          Get.snackbar(
-            "Error",
-            state.errorMsg,
-            backgroundColor: Colors.red,
-            colorText: AppColors.white,
           );
-        }
-      },
+        },
+      ),
     );
   }
 }
-
 

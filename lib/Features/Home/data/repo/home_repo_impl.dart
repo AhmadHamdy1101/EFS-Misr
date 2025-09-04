@@ -1,0 +1,21 @@
+import 'package:dartz/dartz.dart';
+import 'package:efs_misr/Features/Home/data/data_source/remote_data_source.dart';
+import 'package:efs_misr/Features/Home/data/models/tickets.dart';
+import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
+import 'package:efs_misr/core/Errors/failure.dart';
+
+class HomeRepoImpl extends HomeRepo {
+  HomeRemoteDataSource homeRemoteDataSource;
+
+  HomeRepoImpl(this.homeRemoteDataSource);
+
+  @override
+  Future<Either<Failure, List<Tickets>>> getTickets() async {
+    try {
+      final tickets = await homeRemoteDataSource.getTickets();
+      return Right(tickets);
+    } catch (e) {
+      return Left(Failure.fromException(e));
+    }
+  }
+}

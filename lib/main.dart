@@ -1,6 +1,8 @@
 
 import 'package:efs_misr/Features/Auth/domain/auth_repo.dart';
 import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
+import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -22,6 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(providers: [
       BlocProvider(create: (context) => AuthCubit(getIt.get<AuthRepo>())),
+      BlocProvider(create: (context) => HomeCubit(getIt.get<HomeRepo>())..getTickets()),
     ], child: GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'EFS',
