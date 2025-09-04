@@ -7,46 +7,7 @@ import '../../../../core/utils/widgets/custome_back_shape_wedget.dart';
 import '../../../../core/utils/widgets/custome_overview_widget.dart';
 import '../../../../core/utils/widgets/ticket_overview_widget.dart';
 
-final List<Map<String, dynamic>> TicketData = [
-  {
-    'id': '1',
-    'TicketNo': '202156',
-    'BranchId': 'BR-101',
-    'BranchName': 'Cairo Branch',
-    'Area': 'New Cairo',
-    'Status': 'Awaiting',
-    'RequestDate': '20 August 2025',
-    'ResponseDate': '21 August 2025',
-    'Priority': 'A',
-    'RepairDate': '22 August 2025',
-    'ClosedBy': '----',
-    'Engineer': '----',
-  },
-  {
-    'id': '2',
-    'TicketNo': '202157',
-    'BranchId': 'BR-102',
-    'BranchName': 'Giza Branch',
-    'Area': '6th October',
-    'Status': 'Completed',
-    'RequestDate': '18 August 2025',
-    'ResponseDate': '19 August 2025',
-    'Priority': 'B',
-    'RepairDate': '',
-  },
-  {
-    'id': '3',
-    'TicketNo': '202157',
-    'BranchId': 'BR-102',
-    'BranchName': 'Giza Branch',
-    'Area': '6th October',
-    'Status': 'Rejected',
-    'RequestDate': '18 August 2025',
-    'ResponseDate': '19 August 2025',
-    'Priority': 'B',
-    'RepairDate': '',
-  },
-];
+
 
 class HomePageBody extends StatefulWidget {
   const HomePageBody({super.key});
@@ -57,9 +18,13 @@ class HomePageBody extends StatefulWidget {
 }
 
 class _HomePageBodyState extends State<HomePageBody> {
+   int totalTickets = 0;
+   int totalDoneTickets = 0;
+   int totalAwaitingTickets = 0;
   @override
   void initState() {
     super.initState();
+    totalTickets = context.read<HomeCubit>().totalTickets;
   }
 
   @override
@@ -109,7 +74,7 @@ class _HomePageBodyState extends State<HomePageBody> {
               // الجزء اللي في نص Stack
               CustomOverviewWidget(
                 screenHeight: screenWidth,
-                screenWidth: screenWidth,
+                screenWidth: screenWidth, totalTickets: totalTickets, doneTickets: totalDoneTickets, awaitTickets: totalAwaitingTickets,
               ),
             ],
           ),
@@ -154,12 +119,15 @@ class _HomePageBodyState extends State<HomePageBody> {
                         return Center(child: Text(state.errMsg));
                       }
                       if (state is GetTicketsSuccess) {
+                        totalTickets = state.tickets.length;
                         return ListView.builder(
                           padding: EdgeInsets.zero,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: state.tickets.length,
                           itemBuilder: (context, index) {
+                              totalDoneTickets = state.tickets.where((ticket) => ticket.status == 'Completed').length;
+                              totalAwaitingTickets = state.tickets.where((ticket) => ticket.status == 'Awaiting').length;
                             return Container(
                                 margin: EdgeInsets.only(
                                     bottom: screenHeight * 0.05),

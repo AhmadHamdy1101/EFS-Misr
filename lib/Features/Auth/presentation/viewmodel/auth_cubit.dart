@@ -15,7 +15,7 @@ class AuthCubit extends Cubit<AuthCubitState> {
   AuthCubit(this.authRepo) : super(AuthInitial());
 
   Future<void> login({required String email, required String password}) async {
-    print('loadinnnnnnnnnnggggggggggggggggggg');
+
     emit(AuthLoading());
     final response = await authRepo.login(email, password);
     response.fold(
@@ -23,7 +23,6 @@ class AuthCubit extends Cubit<AuthCubitState> {
         emit(LoginFailure(errorMsg:l.message));
       },
       (userId) async {
-        print(userId+'user iddddddddddddddddddddddddddddd');
         emit(LoginSuccess(userId: userId));
         emit(SessionExist(userId: userId));
       },

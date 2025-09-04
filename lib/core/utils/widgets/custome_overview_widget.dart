@@ -1,20 +1,27 @@
 
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 import '../app_colors.dart';
 import '../app_text_styles.dart';
 class CustomOverviewWidget extends StatelessWidget {
-  const CustomOverviewWidget({
+   const CustomOverviewWidget({
     super.key,
     required this.screenHeight,
-    required this.screenWidth,
+    required this.screenWidth, required this.totalTickets, required this.doneTickets, required this.awaitTickets,
   });
 
   final double screenHeight;
   final double screenWidth;
 
+
+  final int totalTickets;
+  final int doneTickets;
+  final int awaitTickets;
+
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+    final formattedDate = DateFormat('d MMM yyyy').format(now);
     return Positioned(
       top: screenHeight * 0.39,
       left: screenWidth * 0.035,
@@ -44,7 +51,7 @@ class CustomOverviewWidget extends StatelessWidget {
               ).copyWith(color: AppColors.gray),
             ),
             Text(
-              '2 Sep 2025',
+              formattedDate,
               style: AppTextStyle.latoBold26(
                 context,
               ).copyWith(color: AppColors.green),
@@ -67,12 +74,12 @@ class CustomOverviewWidget extends StatelessWidget {
                     spacing: 6,
                     children: [
                       Text(
-                        "Total \n Ticket",
+                        "Total \n Tickets",
                         style: AppTextStyle.latoBold26(context),
                         textAlign: TextAlign.center,
                       ),
                       Text(
-                        "20",
+                        "$totalTickets",
                         style: AppTextStyle.latoBold26(context).copyWith(color: AppColors.green),
                       ),
 
@@ -92,13 +99,13 @@ class CustomOverviewWidget extends StatelessWidget {
                     spacing: 6,
                     children: [
                       Text(
-                        "Done \n Ticket",
+                        "Done \n Tickets",
                         style: AppTextStyle.latoBold26(context),
                         textAlign: TextAlign.center,
 
                       ),
                       Text(
-                        "20",
+                        "$doneTickets",
                         style: AppTextStyle.latoBold26(context).copyWith(color: AppColors.green),
                       ),
 
@@ -118,13 +125,13 @@ class CustomOverviewWidget extends StatelessWidget {
                     spacing: 6,
                     children: [
                       Text(
-                        "Awaiting \n Ticket",
+                        "Awaiting \n Tickets",
                         style: AppTextStyle.latoBold26(context),
                         textAlign: TextAlign.center,
 
                       ),
                       Text(
-                        "20",
+                        "$awaitTickets",
                         style: AppTextStyle.latoBold26(context).copyWith(color: AppColors.green),
                       ),
 

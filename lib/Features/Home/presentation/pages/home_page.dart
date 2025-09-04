@@ -4,7 +4,6 @@ import 'package:efs_misr/Features/Home/presentation/widgets/QRView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/widgets/custom_navigation_bar.dart';

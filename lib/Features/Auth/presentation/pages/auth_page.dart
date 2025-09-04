@@ -28,7 +28,7 @@ class _AuthPageState extends State<AuthPage> {
       resizeToAvoidBottomInset: false,
       body: BlocBuilder<AuthCubit, AuthCubitState>(
         builder: (context, state) {
-          print('state is $state ');
+
           if (state is AuthLoading) {
             return Center(
               child: CircularProgressIndicator(
