@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+
+import '../../../../constants/constants.dart';
+import '../../data/models/assets.dart';
+import '../pages/assets_details_page.dart';
 
 class QRScanPage extends StatefulWidget {
   @override
@@ -28,7 +34,9 @@ class _QRScanPageState extends State<QRScanPage> {
                   setState(() {
                     this.barcode = barcode.rawValue;
                   });
-                  // Get.to(AssetsDetailsPage(assets: null,));
+                  final data = supabaseClient.from('assets').select().eq('barcode', barcode).single();
+                  final asset = Assets.fromJson(data as Map<String, dynamic>);
+                  Get.to(AssetsDetailsPage(assets: asset,));
                 }
               },
             ),
