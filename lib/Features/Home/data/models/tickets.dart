@@ -22,9 +22,9 @@ class Tickets implements SupadartClass<Tickets> {
   final String? comment;
   final String? status;
   final BigInt? assetId;
-  final DateTime createdAt;
+  final DateTime? createdAt;
 
-  const Tickets( {
+  const Tickets({
     required this.id,
     this.orecalId,
     this.branch,
@@ -40,7 +40,7 @@ class Tickets implements SupadartClass<Tickets> {
     this.comment,
     this.status,
     this.assetId,
-    required this.createdAt,
+    this.createdAt,
     this.branchObject,
   });
 
@@ -110,8 +110,7 @@ class Tickets implements SupadartClass<Tickets> {
       if (branch != null) 'branch': branch.toString(),
       if (requestDate != null) 'request_date': requestDate.toIso8601String(),
       if (repairDate != null) 'repair_date': repairDate.toIso8601String(),
-      if (responseDate != null)
-        'response_date': responseDate.toIso8601String(),
+      if (responseDate != null) 'response_date': responseDate.toIso8601String(),
       if (repairDuration != null)
         'repair_duration': repairDuration.toIso8601String(),
       if (priority != null) 'priority': priority,
@@ -239,12 +238,14 @@ class Tickets implements SupadartClass<Tickets> {
       comment: jsonn['comment'] != null ? jsonn['comment'].toString() : null,
       status: jsonn['status'] != null ? jsonn['status'].toString() : null,
       assetId: jsonn['asset_id'] != null
-          ? BigInt.parse(jsonn['asset_id'].toString())
+          ? BigInt.tryParse(jsonn['asset_id'].toString())
           : null,
       createdAt: jsonn['created_at'] != null
           ? DateTime.parse(jsonn['created_at'].toString())
           : DateTime.fromMillisecondsSinceEpoch(0),
-      branchObject: jsonn['branch'] != null ? Branch.fromJson(jsonn['branch']) : null,
+      branchObject: jsonn['branch'] is Map<String, dynamic>
+          ? Branch.fromJson(jsonn['branch'])
+          : null,
     );
   }
 

@@ -20,8 +20,10 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource{
   Future<List<Assets>> getAssets() async{
     final assets = await supabaseClient.assets.select('''
       *,
-      Branch(*)
+      Branch(*),
+      tickets(*)
     ''').withConverter(Assets.converter);
+
     return assets;
   }
 

@@ -12,7 +12,7 @@ class AuthRemoteDataImpl extends AuthRemoteData{
 
   @override
   Future<Users> getUserData({required String userId}) async {
-      final user = await supabaseClient.users.select().eq('userid', userId).withConverter(Users.converter);
+      final user = await supabaseClient.users.select('*,positions(*)').eq('userid', userId).withConverter(Users.converter);
       return user.first;
   }
 

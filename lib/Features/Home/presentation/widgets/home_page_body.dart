@@ -74,7 +74,7 @@ class _HomePageBodyState extends State<HomePageBody> {
                 screenWidth: screenWidth,
                 image: "assets/images/profile.jpg",
                 name: '${widget.user.name}',
-                position: '${widget.user.email}',
+                position: '${widget.user.position!.name}',
                 onPress: () {},
               ),
               // الجزء اللي في نص Stack

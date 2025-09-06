@@ -20,7 +20,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-
+    print(widget.assets.tickets);
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -215,10 +215,27 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                     ],
                   ),
                 ],
+
               ),
             ),
           ),
         ),
+
+
+        // هنا list من ال tickets شوف هتظبطها ازاي
+
+
+        SliverFillRemaining(
+          child:ListView.builder(itemBuilder: (context, index) {
+            return ListTile(
+              title: Text('${widget.assets.tickets![index].orecalId}'),
+              subtitle: Text(widget.assets.tickets![index].status.toString()),
+              leading: Text(widget.assets.tickets![index].id.toString()),
+            );
+          },
+          itemCount: widget.assets.tickets!.length,
+          ),
+        )
       ],
     );
   }
