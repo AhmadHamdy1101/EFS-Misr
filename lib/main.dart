@@ -3,6 +3,7 @@ import 'package:efs_misr/Features/Auth/domain/auth_repo.dart';
 import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/qrcode_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_translations.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
       BlocProvider(create: (context) => AuthCubit(getIt.get<AuthRepo>())),
       BlocProvider(create: (context) => TicketsCubit(getIt.get<HomeRepo>())..getTickets()),
       BlocProvider(create: (context) => AssetsCubit(getIt.get<HomeRepo>())..getAssets()),
+      BlocProvider(create: (context) => QrcodeCubit(getIt.get<HomeRepo>())),
     ], child: GetMaterialApp(
       translations: AppTranslations(),
       locale: Locale('ar'),

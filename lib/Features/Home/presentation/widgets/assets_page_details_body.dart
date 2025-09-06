@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
+import '../../data/models/tickets.dart';
 
 class AssetsDetailsPageBody extends StatefulWidget {
   const AssetsDetailsPageBody({super.key, required this.assets});
@@ -16,7 +17,25 @@ class AssetsDetailsPageBody extends StatefulWidget {
 }
 
 class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
-  @override
+   BigInt totalAmount = BigInt.zero;
+
+   @override
+   void initState() {
+     super.initState();
+     totalAmount = calculateTotalAmount(widget.assets.tickets!);
+   }
+   BigInt calculateTotalAmount(List<Tickets> tickets) {
+     BigInt total = BigInt.zero;
+     for (final ticket in tickets) {
+       if (ticket.amount != null) {
+         total += ticket.amount!;
+       }
+     }
+
+     return total;
+   }
+
+   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -91,7 +110,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                                 borderRadius: BorderRadius.circular(50),
                               ),
                               child: Text(
-                                "1,000 EGP",
+                                "$totalAmount EGP",
                                 style: AppTextStyle.latoBold16(
                                   context,
                                 ).copyWith(color: AppColors.white),
@@ -226,21 +245,6 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
           ),
         ),
 
-
-        // هنا list من ال tickets شوف هتظبطها ازاي
-
-
-        // SliverFillRemaining(
-        //   child:ListView.builder(itemBuilder: (context, index) {
-        //     return ListTile(
-        //       title: Text('${widget.assets.tickets![index].orecalId}'),
-        //       subtitle: Text(widget.assets.tickets![index].status.toString()),
-        //       leading: Text(widget.assets.tickets![index].id.toString()),
-        //     );
-        //   },
-        //   itemCount: widget.assets.tickets!.length,
-        //   ),
-        // )
       ],
     );
   }

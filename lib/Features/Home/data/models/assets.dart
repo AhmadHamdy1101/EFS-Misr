@@ -133,8 +133,6 @@ class Assets implements SupadartClass<Assets> {
   }
 
   factory Assets.fromJson(Map<String, dynamic> jsonn) {
-    print(jsonn['Branch']);
-    print(jsonn['tickets']);
     return Assets(
       id: jsonn['id'] != null
           ? BigInt.parse(jsonn['id'].toString())
@@ -216,7 +214,7 @@ class Assets implements SupadartClass<Assets> {
       name: name == _unset ? this.name : name as String?,
       floor: floor == _unset ? this.floor : floor as String?,
       place: place == _unset ? this.place : place as String?,
-      branchId: Branch == _unset ? this.branchId : Branch as BigInt?,
+      branchId: Branch == _unset ? branchId : Branch as BigInt?,
       createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
       area: area == _unset ? this.area : area as String?,
       type: type == _unset ? this.type : type as String?,

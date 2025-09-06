@@ -29,4 +29,15 @@ class HomeRepoImpl extends HomeRepo {
       return Left(Failure.fromException(e));
     }
   }
+
+  @override
+  Future<Either<Failure, Assets>> getAssetsByQrCode(String barcode) async{
+try{
+  final assets = await homeRemoteDataSource.getAssetsByQrCode(barcode);
+  return Right(assets);
+}
+    catch(e){
+      return Left(Failure.fromException(e));
+    }
+  }
 }

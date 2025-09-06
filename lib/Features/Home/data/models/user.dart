@@ -4,7 +4,6 @@
 
 import 'package:efs_misr/Features/Home/data/models/positions.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
-import 'package:geolocator/geolocator.dart';
 
 class Users implements SupadartClass<Users> {
   final BigInt id;
