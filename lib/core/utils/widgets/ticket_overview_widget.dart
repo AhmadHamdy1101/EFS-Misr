@@ -51,14 +51,14 @@ class TicketOverViewWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Ticket No. ${ticketData.id}".tr,
+                      "Ticket No. ${ticketData.orecalId}".tr,
                       style: AppTextStyle.latoBold20(context),
                     ),
                     Row(
                       spacing: 4,
                       children: [
                         Text(
-                          '${ticketData.branchObject?.name}'.tr,
+                          '${ticketData.branchObject?.branchId}'.tr,
                           style: AppTextStyle.latoBold16(
                             context,
                           ).copyWith(color: AppColors.green),
@@ -74,7 +74,7 @@ class TicketOverViewWidget extends StatelessWidget {
                         FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
-                            '${ticketData.priority}',
+                            '${ticketData.branchObject?.name}',
                             overflow: TextOverflow.clip,
                             style: AppTextStyle.latoBold16(
                               context,
@@ -84,7 +84,7 @@ class TicketOverViewWidget extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      '${ticketData.attachment}',
+                      '${ticketData.branchObject?.area}',
                       style: AppTextStyle.latoRegular19(context),
                     ),
                   ],
@@ -119,7 +119,7 @@ class TicketOverViewWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
-        Text("Comment".tr),
+        Text('${ticketData.comment}'.tr),
         Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(

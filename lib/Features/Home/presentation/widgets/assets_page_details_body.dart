@@ -59,15 +59,17 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(children: [Text("AC:"), Text('9154567945')]),
+                          Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [Text("${widget.assets.type}"), Text('${widget.assets.barcode}')]),
                           Text(
-                            'Branch Name'.tr,
+                            '${widget.assets.branchObject?.name}'.tr,
                             style: AppTextStyle.latoRegular16(
                               context,
                             ).copyWith(color: AppColors.green),
                           ),
                           Text(
-                            '${widget.assets.branchObject!.name}'.tr,
+                            '${widget.assets.branchObject!.area}'.tr,
                             style: AppTextStyle.latoRegular16(
                               context,
                             ).copyWith(color: AppColors.gray),
@@ -115,8 +117,8 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                           crossAxisAlignment: CrossAxisAlignment.start,
 
                           children: [
-                            Text('Room: Manager Room'),
-                            Text('Type: Career 2.5 horse power'),
+                            Text('Room: ${widget.assets.place}'),
+                            Text('Type: ${widget.assets.type}'),
                           ],
                         ),
                       ],

@@ -67,14 +67,14 @@ class TicketDetailsPageBody extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "${ticket.id}",
+                                    "${ticket.orecalId}",
                                     style: AppTextStyle.latoBold20(context),
                                   ),
                                   Row(
                                     spacing: 4,
                                     children: [
                                       Text(
-                                        '2358',
+                                        '${ticket.branchObject?.branchId}',
                                         style: AppTextStyle.latoBold16(
                                           context,
                                         ).copyWith(color: AppColors.green),
@@ -105,7 +105,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                 child: Column(
                                   children: [
                                     Text(
-                                      "${ticket.status}".tr,
+                                      "Status".tr,
                                       style: AppTextStyle.latoRegular16(context),
                                     ),
                                     Container(
@@ -114,12 +114,16 @@ class TicketDetailsPageBody extends StatelessWidget {
                                         horizontal: screenWidth * 0.04,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xffDFE699),
+                                        color: '${ticket.status}' == 'Awaiting'
+                                            ? const Color(0xffDFE699)
+                                            : '${ticket.status}' == 'Completed'
+                                            ? const Color(0xff8FCFAD)
+                                            : const Color(0xffDBA0A0),
                                         borderRadius: BorderRadius.circular(50),
                                       ),
                                       child: Text(
                                         '${ticket.status}'.tr,
-                                        style: AppTextStyle.latoBold16(
+                                        style: AppTextStyle.latoBold13(
                                           context,
                                         ).copyWith(color: AppColors.white),
                                       ),
