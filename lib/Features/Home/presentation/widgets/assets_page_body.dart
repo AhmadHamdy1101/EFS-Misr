@@ -79,9 +79,10 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(children: [Text("AC:"), Text('${assets[index].id}')]),
+                              Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,children: [Text("${assets[index].type}:"), Text('${assets[index].barcode}')]),
                               Text(
-                                'Branch name'.tr,
+                                '${assets[index].branchObject?.name}'.tr,
                                 style: AppTextStyle.latoRegular16(
                                   context,
                                 ).copyWith(color: AppColors.green),

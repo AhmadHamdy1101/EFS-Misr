@@ -129,95 +129,100 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
             ),
           ),
         ),
-        SliverToBoxAdapter(
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 4,
-            color: AppColors.white,
-            margin: const EdgeInsets.all(12),
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-              child: Column(
-                spacing: 10,
-                children: [
-                  Row(
-                    spacing: 15,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
+        SliverFillRemaining(
+          child: ListView.builder(
+            itemCount: widget.assets.tickets?.length,
+            itemBuilder:  (context, index) {
+              return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 4,
+                color: AppColors.white,
+                margin: const EdgeInsets.all(12),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  child: Column(
+                    spacing: 10,
                     children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: screenWidth * 0.03,
-                          vertical: screenHeight * 0.01,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(60),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.black.withAlpha(30),
-                              spreadRadius: 0,
-                              blurRadius: 11.2,
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          child: SvgPicture.asset(
-                            'assets/images/deductions.svg',
-                            color: AppColors.green,
-                            width: screenWidth * 0.09,
-                            height: screenWidth * 0.09,
-                          ),
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
+                        spacing: 15,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Container(
                             padding: EdgeInsets.symmetric(
-                              vertical: 5,
-                              horizontal: 10,
+                              horizontal: screenWidth * 0.03,
+                              vertical: screenHeight * 0.01,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.green,
-                              borderRadius: BorderRadius.circular(50),
+                              color: AppColors.white,
+                              borderRadius: BorderRadius.circular(60),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.black.withAlpha(30),
+                                  spreadRadius: 0,
+                                  blurRadius: 11.2,
+                                ),
+                              ],
                             ),
+                            child: ClipRRect(
+                              child: SvgPicture.asset(
+                                'assets/images/deductions.svg',
+                                color: AppColors.green,
+                                width: screenWidth * 0.09,
+                                height: screenWidth * 0.09,
+                              ),
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 5,
+                                  horizontal: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.green,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Text(
+                                  '${widget.assets.tickets![index].variation}',
+                                  style: AppTextStyle.latoRegular15(
+                                    context,
+                                  ).copyWith(color: AppColors.white),
+                                ),
+                              ),
+                              Text(
+                                '${widget.assets.tickets![index].repairDate}',
+                                style: AppTextStyle.latoBold16(context),
+                              ),
+                              Text(
+                                '${widget.assets.tickets![index].comment}',
+                                style: AppTextStyle.latoRegular16(
+                                  context,
+                                ).copyWith(color: AppColors.gray),
+                              ),
+                            ],
+                          ),
+                          Expanded(
                             child: Text(
-                              'Spare Parts',
-                              style: AppTextStyle.latoRegular15(
+                              "${widget.assets.tickets![index].amount}",
+                              style: AppTextStyle.latoBold26(
                                 context,
-                              ).copyWith(color: AppColors.white),
+                              ).copyWith(color: AppColors.green),
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                          Text(
-                            '10 August 2025',
-                            style: AppTextStyle.latoBold16(context),
-                          ),
-                          Text(
-                            'Comment'.tr,
-                            style: AppTextStyle.latoRegular16(
-                              context,
-                            ).copyWith(color: AppColors.gray),
                           ),
                         ],
                       ),
-                      Expanded(
-                        child: Text(
-                          "1,000 EGP",
-                          style: AppTextStyle.latoBold26(
-                            context,
-                          ).copyWith(color: AppColors.green),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
                     ],
-                  ),
-                ],
 
-              ),
-            ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
 
@@ -225,17 +230,17 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
         // هنا list من ال tickets شوف هتظبطها ازاي
 
 
-        SliverFillRemaining(
-          child:ListView.builder(itemBuilder: (context, index) {
-            return ListTile(
-              title: Text('${widget.assets.tickets![index].orecalId}'),
-              subtitle: Text(widget.assets.tickets![index].status.toString()),
-              leading: Text(widget.assets.tickets![index].id.toString()),
-            );
-          },
-          itemCount: widget.assets.tickets!.length,
-          ),
-        )
+        // SliverFillRemaining(
+        //   child:ListView.builder(itemBuilder: (context, index) {
+        //     return ListTile(
+        //       title: Text('${widget.assets.tickets![index].orecalId}'),
+        //       subtitle: Text(widget.assets.tickets![index].status.toString()),
+        //       leading: Text(widget.assets.tickets![index].id.toString()),
+        //     );
+        //   },
+        //   itemCount: widget.assets.tickets!.length,
+        //   ),
+        // )
       ],
     );
   }

@@ -17,10 +17,12 @@ class Tickets implements SupadartClass<Tickets> {
   final String? priority;
   final BigInt? engineer;
   final BigInt? closedBy;
+  final BigInt? amount;
   final String? damageDescription;
   final String? attachment;
   final String? comment;
   final String? status;
+  final String? variation;
   final BigInt? assetId;
   final DateTime? createdAt;
 
@@ -42,6 +44,8 @@ class Tickets implements SupadartClass<Tickets> {
     this.assetId,
     this.createdAt,
     this.branchObject,
+    this.variation,
+    this.amount
   });
 
   static String get table_name => 'tickets';
@@ -73,8 +77,10 @@ class Tickets implements SupadartClass<Tickets> {
   static String get c_comment => 'comment';
 
   static String get c_status => 'status';
+  static String get c_variation => 'variation';
 
   static String get c_assetId => 'asset_id';
+  static String get c_amount => 'amount';
 
   static String get c_createdAt => 'created_at';
 
@@ -101,7 +107,9 @@ class Tickets implements SupadartClass<Tickets> {
     String? attachment,
     String? comment,
     String? status,
+    String? variation,
     BigInt? assetId,
+    BigInt? amount,
     DateTime? createdAt,
   }) {
     return {
@@ -114,6 +122,7 @@ class Tickets implements SupadartClass<Tickets> {
       if (repairDuration != null)
         'repair_duration': repairDuration.toIso8601String(),
       if (priority != null) 'priority': priority,
+      if (variation != null) 'variation': variation,
       if (engineer != null) 'engineer': engineer.toString(),
       if (closedBy != null) 'closed_by': closedBy.toString(),
       if (damageDescription != null) 'damage_description': damageDescription,
@@ -121,6 +130,7 @@ class Tickets implements SupadartClass<Tickets> {
       if (comment != null) 'comment': comment,
       if (status != null) 'status': status,
       if (assetId != null) 'asset_id': assetId.toString(),
+      if (amount != null) 'amount': assetId.toString(),
       if (createdAt != null) 'created_at': createdAt.toUtc().toIso8601String(),
     };
   }
@@ -140,7 +150,9 @@ class Tickets implements SupadartClass<Tickets> {
     String? attachment,
     String? comment,
     String? status,
+    String? variation,
     BigInt? assetId,
+    BigInt? amount,
     DateTime? createdAt,
   }) {
     return _generateMap(
@@ -158,7 +170,9 @@ class Tickets implements SupadartClass<Tickets> {
       attachment: attachment,
       comment: comment,
       status: status,
+      variation: variation,
       assetId: assetId,
+      amount: amount,
       createdAt: createdAt,
     );
   }
@@ -178,7 +192,9 @@ class Tickets implements SupadartClass<Tickets> {
     String? attachment,
     String? comment,
     String? status,
+    String? variation,
     BigInt? assetId,
+    BigInt? amount,
     DateTime? createdAt,
   }) {
     return _generateMap(
@@ -196,7 +212,9 @@ class Tickets implements SupadartClass<Tickets> {
       attachment: attachment,
       comment: comment,
       status: status,
+      variation: variation,
       assetId: assetId,
+      amount: amount,
       createdAt: createdAt,
     );
   }
@@ -237,8 +255,12 @@ class Tickets implements SupadartClass<Tickets> {
           : null,
       comment: jsonn['comment'] != null ? jsonn['comment'].toString() : null,
       status: jsonn['status'] != null ? jsonn['status'].toString() : null,
+      variation: jsonn['variation'] != null ? jsonn['variation'].toString() : null,
       assetId: jsonn['asset_id'] != null
           ? BigInt.tryParse(jsonn['asset_id'].toString())
+          : null,
+      amount: jsonn['amount'] != null
+          ? BigInt.tryParse(jsonn['amount'].toString())
           : null,
       createdAt: jsonn['created_at'] != null
           ? DateTime.parse(jsonn['created_at'].toString())
@@ -264,7 +286,9 @@ class Tickets implements SupadartClass<Tickets> {
     String? attachment,
     String? comment,
     String? status,
+    String? variation,
     BigInt? assetId,
+    BigInt? amount,
     DateTime? createdAt,
   }) {
     return {
@@ -282,7 +306,9 @@ class Tickets implements SupadartClass<Tickets> {
       if (attachment != null) 'attachment': attachment,
       if (comment != null) 'comment': comment,
       if (status != null) 'status': status,
+      if (variation != null) 'variation': variation,
       if (assetId != null) 'asset_id': assetId,
+      if (assetId != null) 'amount': amount,
       if (createdAt != null) 'created_at': createdAt,
     };
   }
@@ -303,7 +329,9 @@ class Tickets implements SupadartClass<Tickets> {
       attachment: attachment,
       comment: comment,
       status: status,
+      variation: variation,
       assetId: assetId,
+      amount: amount,
       createdAt: createdAt,
     );
   }
@@ -325,7 +353,9 @@ class Tickets implements SupadartClass<Tickets> {
     Object? attachment = _unset,
     Object? comment = _unset,
     Object? status = _unset,
+    Object? variation = _unset,
     Object? assetId = _unset,
+    Object? amount = _unset,
     Object? createdAt = _unset,
   }) {
     return Tickets(
@@ -355,7 +385,9 @@ class Tickets implements SupadartClass<Tickets> {
           : attachment as String?,
       comment: comment == _unset ? this.comment : comment as String?,
       status: status == _unset ? this.status : status as String?,
+      variation: variation == _unset ? this.variation : variation as String?,
       assetId: assetId == _unset ? this.assetId : assetId as BigInt?,
+      amount: amount == _unset ? this.amount : amount as BigInt?,
       createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
     );
   }
