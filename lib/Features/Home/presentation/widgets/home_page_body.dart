@@ -1,6 +1,8 @@
-import 'package:efs_misr/Features/Home/presentation/viewmodel/home_cubit.dart';
+import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/widgets/custom_profile_wedget.dart';
 import '../../../../core/utils/widgets/custome_back_shape_wedget.dart';
@@ -10,7 +12,9 @@ import '../../../../core/utils/widgets/ticket_overview_widget.dart';
 
 
 class HomePageBody extends StatefulWidget {
-  const HomePageBody({super.key});
+  const HomePageBody({super.key, required this.user});
+
+  final  Users user;
 
 
   @override
@@ -24,7 +28,9 @@ class _HomePageBodyState extends State<HomePageBody> {
   @override
   void initState() {
     super.initState();
-    totalTickets = context.read<HomeCubit>().totalTickets;
+    totalTickets = context.read<TicketsCubit>().totalTickets;
+    totalDoneTickets = context.read<TicketsCubit>().totalDoneTickets;
+    totalAwaitingTickets = context.read<TicketsCubit>().totalAwaitingTickets;
   }
 
   @override
@@ -67,8 +73,8 @@ class _HomePageBodyState extends State<HomePageBody> {
               CustomProfileWidget(
                 screenWidth: screenWidth,
                 image: "assets/images/profile.jpg",
-                name: 'Mohamed Said',
-                position: 'Oporation',
+                name: '${widget.user.name}',
+                position: '${widget.user.email}',
                 onPress: () {},
               ),
               // الجزء اللي في نص Stack
@@ -101,7 +107,7 @@ class _HomePageBodyState extends State<HomePageBody> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Tickets Overview",
+                        "Tickets Overview".tr,
                         style: TextStyle(
                           fontSize: screenWidth * 0.045,
                           fontWeight: FontWeight.bold,
@@ -110,7 +116,7 @@ class _HomePageBodyState extends State<HomePageBody> {
 
                     ],
                   ),
-                  BlocBuilder<HomeCubit, HomeState>(
+                  BlocBuilder<TicketsCubit, TicketsState>(
                     builder: (context, state) {
                       if (state is GetTicketsLoading) {
                         return const Center(child: CircularProgressIndicator());
@@ -126,8 +132,7 @@ class _HomePageBodyState extends State<HomePageBody> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: state.tickets.length,
                           itemBuilder: (context, index) {
-                              totalDoneTickets = state.tickets.where((ticket) => ticket.status == 'Completed').length;
-                              totalAwaitingTickets = state.tickets.where((ticket) => ticket.status == 'Awaiting').length;
+
                             return Container(
                                 margin: EdgeInsets.only(
                                     bottom: screenHeight * 0.05),

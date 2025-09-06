@@ -1,7 +1,4 @@
-import 'package:efs_misr/Features/Home/presentation/pages/assets_details_page.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class QRScanPage extends StatefulWidget {
@@ -31,8 +28,7 @@ class _QRScanPageState extends State<QRScanPage> {
                   setState(() {
                     this.barcode = barcode.rawValue;
                   });
-                  Get.to(AssetsDetailsPage(Assetsid:barcode.rawValue ,));
-
+                  // Get.to(AssetsDetailsPage(assets: null,));
                 }
               },
             ),

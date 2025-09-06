@@ -84,7 +84,7 @@ class AuthRepoImpl extends AuthRepo {
   }
 
   @override
-  Future<Either<Failure, User>> getUserData({
+  Future<Either<Failure, Users>> getUserData({
     required String userId,
   }) async {
     try {

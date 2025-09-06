@@ -35,14 +35,14 @@ class _AuthGateState extends State<AuthGate> {
         }
         if (state is SessionExist) {
           return AdaptiveLayout(
-            mobileLayout: (context) => MobileLayout(userID: state.userId),
+            mobileLayout: (context) => MobileLayout(user: state.user),
             tabletLayout: (context) => TabletLayout(),
             desktopLayout: (context) => DesktopLayout(),
           );
         }
         if (state is LoginSuccess) {
           return AdaptiveLayout(
-            mobileLayout: (context) => MobileLayout(userID: state.userId),
+            mobileLayout: (context) => MobileLayout(user: state.user),
             tabletLayout: (context) => TabletLayout(),
             desktopLayout: (context) => DesktopLayout(),
           );
@@ -52,14 +52,13 @@ class _AuthGateState extends State<AuthGate> {
       listener: (BuildContext context, AuthCubitState state) {
         if (state is LoginFailure) {
           Get.snackbar(
-            'Error',
+            'Error'.tr,
             state.errorMsg,
             colorText: AppColors.white,
             backgroundColor: Colors.red,
             snackPosition: SnackPosition.BOTTOM,
             snackStyle: SnackStyle.FLOATING,
             isDismissible: true,
-
           );
         }
       },

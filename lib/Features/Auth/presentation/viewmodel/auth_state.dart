@@ -6,9 +6,9 @@ final class AuthInitial extends AuthCubitState {}
 final class AuthLoading extends AuthCubitState {}
 
 final class LoginSuccess extends AuthCubitState {
-  final String userId;
+  final Users user;
 
-  LoginSuccess({required this.userId});
+  LoginSuccess({required this.user});
 }
 
 final class LoginFailure extends AuthCubitState {
@@ -18,8 +18,8 @@ final class LoginFailure extends AuthCubitState {
 }
 
 final class SessionExist extends AuthCubitState {
-  String userId;
-  SessionExist({required this.userId});
+ final Users user;
+  SessionExist({required this.user});
 }
 final class SessionNotExist extends AuthCubitState {
 }

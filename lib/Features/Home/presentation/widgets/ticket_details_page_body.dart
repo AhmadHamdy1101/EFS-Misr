@@ -2,46 +2,10 @@ import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 import '../../../../core/utils/app_text_styles.dart';
 
-final List<Map<String, dynamic>> TicketData = [
-  {
-    'TicketNo': '202156',
-    'BranchId': 'BR-101',
-    'BranchName': 'Cairo Branch',
-    'Area': 'New Cairo',
-    'Status': 'Awaiting',
-    'RequestDate': '20 August 2025',
-    'ResponseDate': '21 August 2025',
-    'Priority': 'A',
-    'RepairDate': '22 August 2025',
-    'ClosedBy': '----',
-    'Engineer': '----',
-  },
-  {
-    'TicketNo': '202157',
-    'BranchId': 'BR-102',
-    'BranchName': 'Giza Branch',
-    'Area': '6th October',
-    'Status': 'Completed',
-    'RequestDate': '18 August 2025',
-    'ResponseDate': '19 August 2025',
-    'Priority': 'B',
-    'RepairDate': '',
-  },
-  {
-    'TicketNo': '202157',
-    'BranchId': 'BR-102',
-    'BranchName': 'Giza Branch',
-    'Area': '6th October',
-    'Status': 'Rejected',
-    'RequestDate': '18 August 2025',
-    'ResponseDate': '19 August 2025',
-    'Priority': 'B',
-    'RepairDate': '',
-  },
-];
 
 class TicketDetailsPageBody extends StatelessWidget {
   final Tickets ticket;
@@ -59,7 +23,7 @@ class TicketDetailsPageBody extends StatelessWidget {
 
         centerTitle: true,
         title: Text(
-          'Tickets Details',
+          'Tickets Details'.tr,
           style: AppTextStyle.latoBold26(
             context,
           ).copyWith(color: AppColors.green),
@@ -124,7 +88,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                         ),
                                       ),
                                       Text(
-                                        '${ticket.branchObject?.name}',
+                                        '${ticket.branchObject?.name}'.tr,
                                         style: AppTextStyle.latoBold16(
                                           context,
                                         ).copyWith(color: AppColors.green),
@@ -132,7 +96,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     ],
                                   ),
                                   Text(
-                                    '${ticket.branchObject?.area}',
+                                    '${ticket.branchObject?.area}'.tr,
                                     style: AppTextStyle.latoRegular19(context),
                                   ),
                                 ],
@@ -141,7 +105,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                 child: Column(
                                   children: [
                                     Text(
-                                      "${ticket.status}",
+                                      "${ticket.status}".tr,
                                       style: AppTextStyle.latoRegular16(context),
                                     ),
                                     Container(
@@ -154,7 +118,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                         borderRadius: BorderRadius.circular(50),
                                       ),
                                       child: Text(
-                                        '${ticket.status}',
+                                        '${ticket.status}'.tr,
                                         style: AppTextStyle.latoBold16(
                                           context,
                                         ).copyWith(color: AppColors.white),
@@ -165,7 +129,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Text('${ticket.comment}'),
+                          Text('${ticket.comment}'.tr),
                         ],
                       ),
                     ),
@@ -195,13 +159,13 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                      Text('Request Date',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                                      Text('Request Date'.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
                                       Text("${ticket.requestDate}")
                                     ],),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text('Repair Date:',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                                        Text('Repair Date:'.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
                                         Text("${ticket.repairDate}")
                                       ],),
 
@@ -227,13 +191,13 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text('Request Date: ',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                                        Text('Request Date: '.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
                                         Text("${ticket.requestDate}")
                                       ],),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text('Response Date:',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                                        Text('Response Date:'.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
                                         Text("${ticket.responseDate}")
                                       ],),
 
@@ -266,13 +230,13 @@ class TicketDetailsPageBody extends StatelessWidget {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Priority:',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                                    Text('Priority:'.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
                                     Text("${ticket.priority}")
                                   ],),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Closed By:',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                                    Text('Closed By:'.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
                                     Text("----")
                                   ],),
 
@@ -299,7 +263,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Engineer:',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                                    Text('Engineer:'.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
                                     Text("----")
                                   ],),
 
@@ -322,7 +286,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Damage Description:',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                          Text('Damage Description:'.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
                           Text("${ticket.damageDescription}")
                         ],),
 

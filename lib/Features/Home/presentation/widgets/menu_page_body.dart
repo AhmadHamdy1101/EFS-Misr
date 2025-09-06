@@ -102,7 +102,7 @@ class _MenuPageBodyState extends State<MenuPageBody> {
               // عناصر البروفايل فوق الخلفية
               Positioned(
                 top: 60,
-                child: Container(
+                child: SizedBox(
                   width: screenWidth,
                   child: Column(
                     spacing: 20,
@@ -180,14 +180,31 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                     color: AppColors.white,
                     child: Column(
                       children: [
-                        CustomMenuButtonWidget(title: 'Account Sitting', icon: Icons.account_circle,onPress: (){},),
-                        CustomMenuButtonWidget(title: 'Language', icon:Icons.language,onPress: (){},),
-                        CustomMenuButtonWidget(title: 'Dark mode', icon:Icons.dark_mode,onPress: (){},),
+                        CustomMenuButtonWidget(title: 'Account Settings'.tr, icon: Icons.account_circle,onPress: (){},),
+                        CustomMenuButtonWidget(title: 'Language'.tr, icon:Icons.language,onPress: (){
+                          showDialog(context: context, builder: (context) {
+                            return AlertDialog(
+                              backgroundColor: AppColors.AppBackground,
+                              title: Text('Language'.tr),
+                              content: Column(
+                                children: [
+                                  ElevatedButton(onPressed: () {
+                                    Get.updateLocale(Locale('en'));
+                                  }, child: Text('English')),
+                                  ElevatedButton(onPressed: () {
+                                    Get.updateLocale(Locale('ar'));
+                                  }, child: Text('Arabic')),
+                                ],
+                              ),
+                            );
+                          },);
+                        },),
+                        CustomMenuButtonWidget(title: 'Dark mode'.tr, icon:Icons.dark_mode,onPress: (){},),
                       ],
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
                   width: screenWidth,
                   child: Card(
                     shape: RoundedRectangleBorder(
@@ -197,7 +214,7 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                     color: AppColors.white,
                     child: Column(
                       children: [
-                       CustomMenuButtonWidget(title: "Log Out", onPress: () async {await supabaseClient.auth.signOut();}, icon: Icons.exit_to_app)
+                       CustomMenuButtonWidget(title: "Log Out".tr, onPress: () async {await supabaseClient.auth.signOut();}, icon: Icons.exit_to_app)
                       ],
                     ),
                   ),

@@ -4,7 +4,7 @@
 
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 
-class User implements SupadartClass<User> {
+class Users implements SupadartClass<Users> {
   final BigInt id;
   final String? userid;
   final String? name;
@@ -17,7 +17,7 @@ class User implements SupadartClass<User> {
   final int? status;
   final DateTime createdAt;
 
-  const User({
+  const Users({
     required this.id,
     this.userid,
     this.name,
@@ -44,12 +44,12 @@ class User implements SupadartClass<User> {
   static String get c_status => 'status';
   static String get c_createdAt => 'created_at';
 
-  static List<User> converter(List<Map<String, dynamic>> data) {
-    return data.map(User.fromJson).toList();
+  static List<Users> converter(List<Map<String, dynamic>> data) {
+    return data.map(Users.fromJson).toList();
   }
 
-  static User converterSingle(Map<String, dynamic> data) {
-    return User.fromJson(data);
+  static Users converterSingle(Map<String, dynamic> data) {
+    return Users.fromJson(data);
   }
 
   static Map<String, dynamic> _generateMap({
@@ -136,8 +136,8 @@ class User implements SupadartClass<User> {
     );
   }
 
-  factory User.fromJson(Map<String, dynamic> jsonn) {
-    return User(
+  factory Users.fromJson(Map<String, dynamic> jsonn) {
+    return Users(
       id: jsonn['id'] != null
           ? BigInt.parse(jsonn['id'].toString())
           : BigInt.from(0),
@@ -207,7 +207,7 @@ class User implements SupadartClass<User> {
   }
 
   static const _unset = Object();
-  User copyWith({
+  Users copyWith({
     Object? id = _unset,
     Object? userid = _unset,
     Object? name = _unset,
@@ -220,7 +220,7 @@ class User implements SupadartClass<User> {
     Object? status = _unset,
     Object? createdAt = _unset,
   }) {
-    return User(
+    return Users(
       id: id == _unset ? this.id : id as BigInt,
       userid: userid == _unset ? this.userid : userid as String?,
       name: name == _unset ? this.name : name as String?,

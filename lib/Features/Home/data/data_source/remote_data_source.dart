@@ -4,6 +4,7 @@ import 'package:efs_misr/constants/constants.dart';
 
 abstract class HomeRemoteDataSource{
   Future<List<Tickets>> getTickets();
+  Future<List<Assets>> getAssets();
 }
 class HomeRemoteDataSourceImpl extends HomeRemoteDataSource{
   @override
@@ -13,6 +14,15 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource{
       branch(*)
     ''').withConverter(Tickets.converter);
    return tickets;
+  }
+
+  @override
+  Future<List<Assets>> getAssets() async{
+    final assets = await supabaseClient.assets.select('''
+      *,
+      Branch(*)
+    ''').withConverter(Assets.converter);
+    return assets;
   }
 
 }

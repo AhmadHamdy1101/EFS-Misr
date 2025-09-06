@@ -1,22 +1,15 @@
 
 
+import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/presentation/widgets/assets_page_details_body.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 
-class AssetsDetailsPage extends StatefulWidget {
-  const AssetsDetailsPage({super.key, this.Assetsid});
-final Assetsid;
-  @override
-  State<AssetsDetailsPage> createState() => _AssetsDetailsPageState();
-}
-
-class _AssetsDetailsPageState extends State<AssetsDetailsPage> {
-
-
-
+class AssetsDetailsPage extends StatelessWidget {
+  const AssetsDetailsPage({super.key, required this.assets});
+final Assets assets;
   @override
   Widget build(BuildContext context) {
 
@@ -32,6 +25,6 @@ class _AssetsDetailsPageState extends State<AssetsDetailsPage> {
             ).copyWith(color: AppColors.green),
           ),
         ),
-        backgroundColor: AppColors.AppBackground,body: AssetsDetailsPageBody()) ;
+        backgroundColor: AppColors.AppBackground,body: AssetsDetailsPageBody(assets: assets,)) ;
   }
 }

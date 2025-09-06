@@ -7,13 +7,16 @@ import 'package:get/get.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/widgets/custom_navigation_bar.dart';
+import '../../data/models/user.dart';
 import '../widgets/home_page_body.dart';
 import 'assets_page.dart';
 import 'menu_page.dart';
 
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, });
+  const HomePage({super.key, required this.user, });
+
+  final Users user;
 
 
 
@@ -42,10 +45,9 @@ class _HomePageState extends State<HomePage> {
       "assets/images/menu.svg",
     ];
 
-    final pages = [HomePageBody(),AssetsPage(), TicketPage(), MenuPage()];
+    final pages = [HomePageBody(user: widget.user,),AssetsPage(), TicketPage(), MenuPage()];
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-
         elevation: 5,
         backgroundColor: AppColors.green,
         foregroundColor: Colors.white,

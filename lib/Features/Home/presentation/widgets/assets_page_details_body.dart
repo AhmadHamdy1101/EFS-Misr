@@ -1,12 +1,21 @@
+import 'package:efs_misr/Features/Home/data/models/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 
-class AssetsDetailsPageBody extends StatelessWidget {
-  const AssetsDetailsPageBody({super.key});
+class AssetsDetailsPageBody extends StatefulWidget {
+  const AssetsDetailsPageBody({super.key, required this.assets});
 
+  final Assets assets;
+
+  @override
+  State<AssetsDetailsPageBody> createState() => _AssetsDetailsPageBodyState();
+}
+
+class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -52,13 +61,13 @@ class AssetsDetailsPageBody extends StatelessWidget {
                         children: [
                           Row(children: [Text("AC:"), Text('9154567945')]),
                           Text(
-                            'Branch Name',
+                            'Branch Name'.tr,
                             style: AppTextStyle.latoRegular16(
                               context,
                             ).copyWith(color: AppColors.green),
                           ),
                           Text(
-                            'New Cairo',
+                            '${widget.assets.branchObject!.name}'.tr,
                             style: AppTextStyle.latoRegular16(
                               context,
                             ).copyWith(color: AppColors.gray),
@@ -69,7 +78,7 @@ class AssetsDetailsPageBody extends StatelessWidget {
                         child: Column(
                           spacing: 10,
                           children: [
-                            Text("Total Spend"),
+                            Text("Total Spend".tr),
                             Container(
                               padding: EdgeInsets.symmetric(
                                 vertical: screenHeight * 0.01,
@@ -137,11 +146,20 @@ class AssetsDetailsPageBody extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal:screenWidth * 0.03 ,vertical: screenHeight*0.01),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: screenWidth * 0.03,
+                          vertical: screenHeight * 0.01,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.white,
                           borderRadius: BorderRadius.circular(60),
-                          boxShadow: [BoxShadow(color: AppColors.black.withAlpha(30),spreadRadius: 0,blurRadius: 11.2)]
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.black.withAlpha(30),
+                              spreadRadius: 0,
+                              blurRadius: 11.2,
+                            ),
+                          ],
                         ),
                         child: ClipRRect(
                           child: SvgPicture.asset(
@@ -156,21 +174,27 @@ class AssetsDetailsPageBody extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-    padding: EdgeInsets.symmetric(vertical: 5,horizontal: 10),
+                            padding: EdgeInsets.symmetric(
+                              vertical: 5,
+                              horizontal: 10,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.green,
-                              borderRadius: BorderRadius.circular(50)
+                              borderRadius: BorderRadius.circular(50),
                             ),
-                            child: Text('Spare Parts',style: AppTextStyle.latoRegular15(context).copyWith(color: AppColors.white),),
+                            child: Text(
+                              'Spare Parts',
+                              style: AppTextStyle.latoRegular15(
+                                context,
+                              ).copyWith(color: AppColors.white),
+                            ),
                           ),
                           Text(
                             '10 August 2025',
-                            style: AppTextStyle.latoBold16(
-                              context,
-                            ),
+                            style: AppTextStyle.latoBold16(context),
                           ),
                           Text(
-                            'Comment',
+                            'Comment'.tr,
                             style: AppTextStyle.latoRegular16(
                               context,
                             ).copyWith(color: AppColors.gray),
@@ -188,7 +212,6 @@ class AssetsDetailsPageBody extends StatelessWidget {
                       ),
                     ],
                   ),
-
                 ],
               ),
             ),

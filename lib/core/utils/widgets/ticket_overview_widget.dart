@@ -1,6 +1,7 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 import '../app_colors.dart';
 import '../app_text_styles.dart';
@@ -50,14 +51,14 @@ class TicketOverViewWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Ticket No. ${ticketData.id}",
+                      "Ticket No. ${ticketData.id}".tr,
                       style: AppTextStyle.latoBold20(context),
                     ),
                     Row(
                       spacing: 4,
                       children: [
                         Text(
-                          '${ticketData.branchObject?.name}',
+                          '${ticketData.branchObject?.name}'.tr,
                           style: AppTextStyle.latoBold16(
                             context,
                           ).copyWith(color: AppColors.green),
@@ -92,7 +93,7 @@ class TicketOverViewWidget extends StatelessWidget {
             ),
             Column(
               children: [
-                Text("Status", style: AppTextStyle.latoRegular16(context)),
+                Text("Status".tr, style: AppTextStyle.latoRegular16(context)),
                 Container(
                   padding: EdgeInsets.symmetric(
                     vertical: screenHeight * 0.01,
@@ -107,7 +108,7 @@ class TicketOverViewWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(50),
                   ),
                   child: Text(
-                    '${ticketData.status}',
+                    '${ticketData.status}'.tr,
                     style: AppTextStyle.latoBold16(
                       context,
                     ).copyWith(color: AppColors.white),
@@ -118,7 +119,7 @@ class TicketOverViewWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
-        Text("Comment"),
+        Text("Comment".tr),
         Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
@@ -133,12 +134,12 @@ class TicketOverViewWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 10,
                   children: [
-                    _buildInfoRow('Request Date', '${ticketData.requestDate}'),
+                    _buildInfoRow('Request Date'.tr, '${ticketData.requestDate}'),
                     _buildInfoRow(
-                      'Response Date',
+                      'Response Date'.tr,
                       '${ticketData.responseDate}',
                     ),
-                    _buildInfoRow('Priority', '${ticketData.priority}'),
+                    _buildInfoRow('Priority'.tr, '${ticketData.priority}'),
                   ],
                 ),
               ),
@@ -154,9 +155,9 @@ class TicketOverViewWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: 10,
                     children: [
-                      _buildInfoRow('Repair Date', '${ticketData.repairDate}'),
-                      _buildInfoRow('Closed By', '${ticketData.closedBy}'),
-                      _buildInfoRow('Engineer', '${ticketData.engineer}'),
+                      _buildInfoRow('Repair Date'.tr, '${ticketData.repairDate}'),
+                      _buildInfoRow('Closed By'.tr, '${ticketData.closedBy}'),
+                      _buildInfoRow('Engineer'.tr, '${ticketData.engineer}'),
                     ],
                   ),
                 ),

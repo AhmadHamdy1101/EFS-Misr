@@ -4,8 +4,5 @@ output: lib/Features/Home/data/models
 separated: true
 mappings:
   assets: Assets
-  users: User
-  branch: Branch
-  tickets: Tickets
-  positions: Positions
+
 

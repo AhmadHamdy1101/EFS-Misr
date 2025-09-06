@@ -1,6 +1,7 @@
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:efs_misr/core/utils/app_text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../widgets/ticket_page_body.dart';
 
@@ -16,7 +17,7 @@ class TicketPage extends StatelessWidget {
           leading: SizedBox(),
           centerTitle: true,
           title: Text(
-            'Tickets',
+            'Tickets'.tr,
             style: AppTextStyle.latoBold26(
               context,
             ).copyWith(color: AppColors.green),

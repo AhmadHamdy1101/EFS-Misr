@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../app_colors.dart';
 import '../app_text_styles.dart';
@@ -45,7 +46,7 @@ class CustomOverviewWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Today Overview",
+              "Today Overview".tr,
               style: AppTextStyle.latoBold26(
                 context,
               ).copyWith(color: AppColors.gray),
@@ -74,7 +75,7 @@ class CustomOverviewWidget extends StatelessWidget {
                     spacing: 6,
                     children: [
                       Text(
-                        "Total \n Tickets",
+                        "Total \n Tickets".tr,
                         style: AppTextStyle.latoBold26(context),
                         textAlign: TextAlign.center,
                       ),
@@ -99,7 +100,7 @@ class CustomOverviewWidget extends StatelessWidget {
                     spacing: 6,
                     children: [
                       Text(
-                        "Done \n Tickets",
+                        "Done \n Tickets".tr,
                         style: AppTextStyle.latoBold26(context),
                         textAlign: TextAlign.center,
 
@@ -125,7 +126,7 @@ class CustomOverviewWidget extends StatelessWidget {
                     spacing: 6,
                     children: [
                       Text(
-                        "Awaiting \n Tickets",
+                        "Awaiting \n Tickets".tr,
                         style: AppTextStyle.latoBold26(context),
                         textAlign: TextAlign.center,
 

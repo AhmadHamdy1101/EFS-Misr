@@ -6,6 +6,7 @@ import 'package:efs_misr/core/utils/widgets/custom_signin_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -28,7 +29,6 @@ class _AuthPageState extends State<AuthPage> {
       resizeToAvoidBottomInset: false,
       body: BlocBuilder<AuthCubit, AuthCubitState>(
         builder: (context, state) {
-
           if (state is AuthLoading) {
             return Center(
               child: CircularProgressIndicator(
@@ -61,7 +61,7 @@ class _AuthPageState extends State<AuthPage> {
                         width: MediaQuery.sizeOf(context).width * 0.5,
                       ),
                       Text(
-                        'Hello',
+                        'Hello'.tr,
                         style: AppTextStyle.interSemiBold64(context),
                       ),
                       SizedBox(
@@ -69,7 +69,7 @@ class _AuthPageState extends State<AuthPage> {
                       ),
 
                       Text(
-                        "Sign in to your account",
+                        "Sign in to your account".tr,
                         style: AppTextStyle.latoRegular19(context),
                       ),
                       SizedBox(
@@ -86,17 +86,17 @@ class _AuthPageState extends State<AuthPage> {
                               CustomInputWidget(
                                 validator: (value) {
                                   if (value!.isEmpty) {
-                                    return 'Please Enter Your Email';
+                                    return 'Please Enter Your Email'.tr;
                                   }
                                   if (!RegExp(
                                     r'^[^@]+@[^@]+\.[^@]+',
                                   ).hasMatch(value)) {
-                                    return "Email is not valid";
+                                    return "Email is not valid".tr;
                                   }
                                   return null;
                                 },
                                 inbutIcon: 'assets/images/profile.svg',
-                                inbutHintText: 'Email',
+                                inbutHintText: 'Email'.tr,
                                 changeToPass: false,
                                 textEditingController: email,
                                 textInputType: TextInputType.emailAddress,
@@ -105,12 +105,12 @@ class _AuthPageState extends State<AuthPage> {
                               CustomInputWidget(
                                 validator: (value) {
                                   if (value!.isEmpty) {
-                                    return 'Please Enter Your Password';
+                                    return 'Please Enter Your Password'.tr;
                                   }
                                   return null;
                                 },
                                 inbutIcon: 'assets/images/Password.svg',
-                                inbutHintText: 'Password',
+                                inbutHintText: 'Password'.tr,
                                 changeToPass: true,
                                 textEditingController: password,
                                 textInputType: TextInputType.visiblePassword,

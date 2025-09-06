@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../constants/constants.dart';
+import '../../../Home/data/models/user.dart';
 import '../../domain/auth_repo.dart';
 part 'auth_state.dart';
 
@@ -23,30 +24,50 @@ class AuthCubit extends Cubit<AuthCubitState> {
         emit(LoginFailure(errorMsg:l.message));
       },
       (userId) async {
-        emit(LoginSuccess(userId: userId));
-        emit(SessionExist(userId: userId));
+       final user =  await authRepo.getUserData(userId: userId);
+        user.fold(
+              (l) {
+            emit(LoginFailure(errorMsg:l.message));
+          },
+              (user) {
+            emit(LoginSuccess(user: user));
+            emit(SessionExist(user: user));
+          },
+        );
+        // emit(LoginSuccess(userId: userId));
+        // emit(SessionExist(userId: userId));
       },
     );
   }
 
 
 
-  void checkSession() {
+  Future<void> checkSession() async {
     final s = auth.currentSession;
     if (s?.user != null) {
-      emit(SessionExist( userId: s!.user.id));
+      final user =  await authRepo.getUserData(userId: s!.user.id);
+      user.fold((l) {
+        emit(SessionNotExist());
+      }, (r) {
+        emit(SessionExist( user: r));
+      },);
     } else {
       emit(SessionNotExist());
     }
-    _sub?.cancel();
-    _sub = auth.onAuthStateChange.listen((event) {
-      final session = event.session;
-      if (session?.user != null) {
-        emit(SessionExist(userId: session!.user.id));
-      } else {
-        emit(SessionNotExist());
-      }
-    });
+    // _sub?.cancel();
+    // _sub = auth.onAuthStateChange.listen((event) async {
+    //   final session = event.session;
+    //   if (session?.user != null) {
+    //     final user =  await authRepo.getUserData(userId: s!.user.id);
+    //     user.fold((l) {
+    //       emit(SessionNotExist());
+    //     }, (r) {
+    //       emit(SessionExist( user: r));
+    //     },);
+    //   } else {
+    //     emit(SessionNotExist());
+    //   }
+    // });
   }
 
 
