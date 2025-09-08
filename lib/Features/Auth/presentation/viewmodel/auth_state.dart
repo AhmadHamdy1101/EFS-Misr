@@ -21,7 +21,10 @@ final class SessionExist extends AuthCubitState {
  final Users user;
   SessionExist({required this.user});
 }
-final class SessionNotExist extends AuthCubitState {
+final class SessionNotExist extends AuthCubitState {}
+final class SessionLoadFailed extends AuthCubitState {
+  final String errMsg;
+  SessionLoadFailed(this.errMsg);
 }
 
 

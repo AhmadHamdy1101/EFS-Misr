@@ -21,7 +21,7 @@ class CustomLoginBtn extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 15),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppColors.green, AppColors.lightgreen],
+                colors: [AppColors.green, AppColors.lightGreen],
                 begin: Alignment.topLeft, // نقطة البداية
                 end: Alignment.bottomRight, // نقطة النهاية
               ),

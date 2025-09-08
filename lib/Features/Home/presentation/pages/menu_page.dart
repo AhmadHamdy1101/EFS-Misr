@@ -9,7 +9,7 @@ class MenuPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.AppBackground,
+      backgroundColor: AppColors.appBackground,
         body: MenuPageBody());
   }
 }

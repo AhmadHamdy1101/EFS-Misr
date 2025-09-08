@@ -1,7 +1,6 @@
-import 'package:bloc/bloc.dart';
 import 'package:efs_misr/Features/Home/data/models/assets.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'qrcode_state.dart';
 

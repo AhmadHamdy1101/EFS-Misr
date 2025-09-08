@@ -64,7 +64,7 @@ class CustomOverviewWidget extends StatelessWidget {
                 vertical: 20,
               ),
               decoration: BoxDecoration(
-                color: AppColors.lightgray,
+                color: AppColors.lightGray,
                 borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
               child: Row(

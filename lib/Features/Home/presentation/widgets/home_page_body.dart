@@ -10,11 +10,10 @@ import '../../../../core/utils/widgets/custome_overview_widget.dart';
 import '../../../../core/utils/widgets/ticket_overview_widget.dart';
 
 
-
 class HomePageBody extends StatefulWidget {
   const HomePageBody({super.key, required this.user});
 
-  final  Users user;
+  final Users user;
 
 
   @override
@@ -22,15 +21,9 @@ class HomePageBody extends StatefulWidget {
 }
 
 class _HomePageBodyState extends State<HomePageBody> {
-   int totalTickets = 0;
-   int totalDoneTickets = 0;
-   int totalAwaitingTickets = 0;
   @override
   void initState() {
     super.initState();
-    totalTickets = context.read<TicketsCubit>().totalTickets;
-    totalDoneTickets = context.read<TicketsCubit>().totalDoneTickets;
-    totalAwaitingTickets = context.read<TicketsCubit>().totalAwaitingTickets;
   }
 
   @override
@@ -54,7 +47,7 @@ class _HomePageBodyState extends State<HomePageBody> {
                 width: screenWidth,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppColors.green, AppColors.lightgreen],
+                    colors: [AppColors.green, AppColors.lightGreen],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -77,10 +70,30 @@ class _HomePageBodyState extends State<HomePageBody> {
                 position: '${widget.user.position!.name}',
                 onPress: () {},
               ),
-              // الجزء اللي في نص Stack
-              CustomOverviewWidget(
-                screenHeight: screenWidth,
-                screenWidth: screenWidth, totalTickets: totalTickets, doneTickets: totalDoneTickets, awaitTickets: totalAwaitingTickets,
+              BlocBuilder<TicketsCubit, TicketsState>(
+                builder: (context, state) {
+                  if (state is GetTicketsLoading) {
+                    return const Center(child: CircularProgressIndicator(
+                      color: AppColors.green,
+                    ));
+                  }
+                  if (state is GetTicketsSuccess) {
+                    return CustomOverviewWidget(
+                      screenHeight: screenWidth,
+                      screenWidth: screenWidth,
+                      totalTickets: state.tickets.length,
+                      doneTickets: state.tickets.where((ticket) => ticket.status == 'Completed').length,
+                      awaitTickets: state.tickets.where((ticket) => ticket.status == 'Awaiting').length,
+                    );
+                  }
+                  return CustomOverviewWidget(
+                    screenHeight: screenWidth,
+                    screenWidth: screenWidth,
+                    totalTickets: 0,
+                    doneTickets: 0,
+                    awaitTickets: 0,
+                  );
+                },
               ),
             ],
           ),
@@ -119,28 +132,28 @@ class _HomePageBodyState extends State<HomePageBody> {
                   BlocBuilder<TicketsCubit, TicketsState>(
                     builder: (context, state) {
                       if (state is GetTicketsLoading) {
-                        return const Center(child: CircularProgressIndicator());
+                        return const Center(child: CircularProgressIndicator(
+                          color: AppColors.green,
+                        ));
                       }
                       if (state is GetTicketsFailure) {
                         return Center(child: Text(state.errMsg));
                       }
                       if (state is GetTicketsSuccess) {
-                        totalTickets = state.tickets.length;
                         return ListView.builder(
                           padding: EdgeInsets.zero,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: state.tickets.length,
                           itemBuilder: (context, index) {
-
                             return Container(
                                 margin: EdgeInsets.only(
                                     bottom: screenHeight * 0.05),
                                 child: TicketOverViewWidget(
                                     screenWidth: screenWidth,
                                     screenHeight: screenHeight,
-                                    ticketData:state.tickets[index]
-                                    ));
+                                    ticketData: state.tickets[index]
+                                ));
                           },
                         );
                       }

@@ -79,6 +79,7 @@ class AppTranslations extends Translations {
       'Attachment:': 'Attachment:',
       'Ticket Details': 'Ticket Details',
       'Tickets': 'Tickets',
+      'Canceled': 'Canceled',
     },
     'ar': {
       'Error': 'خطأ',
@@ -151,7 +152,8 @@ class AppTranslations extends Translations {
       'Tickets Details': 'تفاصيل التذكرة',
       'Damage Description:': 'وصف الضرر',
       'Attachment:': 'المرفقات',
-      'Tickets':'التذاكر'
+      'Tickets':'التذاكر',
+      'Canceled': 'ملغي',
     },
   };
 }

@@ -17,7 +17,7 @@ class TicketDetailsPageBody extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: AppColors.AppBackground,
+      backgroundColor: AppColors.appBackground,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
 
@@ -51,7 +51,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                               Container(
                                 padding: EdgeInsets.all(screenWidth * 0.03),
                                 decoration: BoxDecoration(
-                                  color: AppColors.lightgreen.withOpacity(0.25),
+                                  color: AppColors.lightGreen.withOpacity(0.25),
                                   borderRadius: BorderRadius.circular(60),
                                 ),
                                 child: ClipRRect(

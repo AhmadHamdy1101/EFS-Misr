@@ -6,7 +6,6 @@ import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_menu_button_widget.dart';
 import '../../../../core/utils/widgets/custome_back_shape_wedget.dart';
-import '../pages/assets_page.dart';
 
 class MenuPageBody extends StatefulWidget {
   const MenuPageBody({super.key});
@@ -25,52 +24,52 @@ class _MenuPageBodyState extends State<MenuPageBody> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final List<Map<String, dynamic>> attendants = [
-      {
-        'name': 'Mohamed Said',
-        'image': 'assets/images/profile.jpg',
-        'position': 'operation',
-        'status': 'Check In',
-        'location': 'New Cairo,Egypt',
-        'time': '8:00 AM',
-      },
-      {
-        'name': 'Mohamed Said',
-        'image': 'assets/images/profile.jpg',
-        'position': 'operation',
-        'status': 'Check Out',
-        'location': 'New Cairo,Egypt',
-        'time': '8:00 AM',
-      },
-    ];
-    final List<Map<String, dynamic>> buttonsData = [
-      {
-        'title': 'Cash',
-        'icon': 'assets/images/cash.svg',
-        'color': Color(0xffDE5A5A),
-        'onTap': () {},
-      },
-      {
-        'title': 'Overtime',
-        'icon': "assets/images/Overtime.svg",
-        'color': Color(0xff20CF74),
-        'onTap': () {
-          Get.to(AssetsPage());
-        },
-      },
-      {
-        'title': 'Vacations',
-        'icon': "assets/images/vecation.svg",
-        'color': Color(0xffD0CD21),
-        'onTap': () {},
-      },
-      {
-        'title': 'Deductions',
-        'icon': "assets/images/deductions.svg",
-        'color': Color(0xff008C43),
-        'onTap': () {},
-      },
-    ];
+    // final List<Map<String, dynamic>> attendants = [
+    //   {
+    //     'name': 'Mohamed Said',
+    //     'image': 'assets/images/profile.jpg',
+    //     'position': 'operation',
+    //     'status': 'Check In',
+    //     'location': 'New Cairo,Egypt',
+    //     'time': '8:00 AM',
+    //   },
+    //   {
+    //     'name': 'Mohamed Said',
+    //     'image': 'assets/images/profile.jpg',
+    //     'position': 'operation',
+    //     'status': 'Check Out',
+    //     'location': 'New Cairo,Egypt',
+    //     'time': '8:00 AM',
+    //   },
+    // ];
+    // final List<Map<String, dynamic>> buttonsData = [
+    //   {
+    //     'title': 'Cash',
+    //     'icon': 'assets/images/cash.svg',
+    //     'color': Color(0xffDE5A5A),
+    //     'onTap': () {},
+    //   },
+    //   {
+    //     'title': 'Overtime',
+    //     'icon': "assets/images/Overtime.svg",
+    //     'color': Color(0xff20CF74),
+    //     'onTap': () {
+    //       Get.to(AssetsPage());
+    //     },
+    //   },
+    //   {
+    //     'title': 'Vacations',
+    //     'icon': "assets/images/vecation.svg",
+    //     'color': Color(0xffD0CD21),
+    //     'onTap': () {},
+    //   },
+    //   {
+    //     'title': 'Deductions',
+    //     'icon': "assets/images/deductions.svg",
+    //     'color': Color(0xff008C43),
+    //     'onTap': () {},
+    //   },
+    // ];
 
     return CustomScrollView(
       slivers: [
@@ -83,7 +82,7 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                 width: screenWidth,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppColors.green, AppColors.lightgreen],
+                    colors: [AppColors.green, AppColors.lightGreen],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -184,7 +183,7 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                         CustomMenuButtonWidget(title: 'Language'.tr, icon:Icons.language,onPress: (){
                           showDialog(context: context, builder: (context) {
                             return AlertDialog(
-                              backgroundColor: AppColors.AppBackground,
+                              backgroundColor: AppColors.appBackground,
                               title: Text('Language'.tr),
                               content: Column(
                                 children: [

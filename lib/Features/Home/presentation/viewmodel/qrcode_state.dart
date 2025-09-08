@@ -1,6 +1,5 @@
 part of 'qrcode_cubit.dart';
 
-@immutable
 sealed class QrcodeState {}
 
 final class QrcodeInitial extends QrcodeState {}

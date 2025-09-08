@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomBottomNav extends StatefulWidget {
-  // الصفحات
-  // أيقونات SVG
   const CustomBottomNav({
     super.key,
     required this.icons,

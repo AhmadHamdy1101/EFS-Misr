@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final iconPaths = [
       "assets/images/home.svg",
@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
         },
         child: SvgPicture.asset('assets/images/Qr code scanner.svg',width: screenWidth*0.07 ,),
       ),
-      backgroundColor: AppColors.AppBackground,
+      backgroundColor: AppColors.appBackground,
       body: pages[selectedIndex],
       bottomNavigationBar: CustomBottomNav(
         icons: iconPaths,

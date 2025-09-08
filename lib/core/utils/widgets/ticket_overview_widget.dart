@@ -35,7 +35,7 @@ class TicketOverViewWidget extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(screenWidth * 0.03),
                   decoration: BoxDecoration(
-                    color: AppColors.lightgreen.withOpacity(0.25),
+                    color: AppColors.lightGreen.withOpacity(0.25),
                     borderRadius: BorderRadius.circular(60),
                   ),
                   child: ClipRRect(
@@ -123,7 +123,7 @@ class TicketOverViewWidget extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: AppColors.lightgray,
+            color: AppColors.lightGray,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(

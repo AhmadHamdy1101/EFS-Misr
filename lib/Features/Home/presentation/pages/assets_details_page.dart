@@ -25,6 +25,6 @@ final Assets assets;
             ).copyWith(color: AppColors.green),
           ),
         ),
-        backgroundColor: AppColors.AppBackground,body: AssetsDetailsPageBody(assets: assets,)) ;
+        backgroundColor: AppColors.appBackground,body: AssetsDetailsPageBody(assets: assets,)) ;
   }
 }

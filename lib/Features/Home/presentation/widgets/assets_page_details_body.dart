@@ -39,7 +39,6 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    print(widget.assets.tickets);
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -63,7 +62,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                       Container(
                         padding: EdgeInsets.all(screenWidth * 0.03),
                         decoration: BoxDecoration(
-                          color: AppColors.lightgreen.withOpacity(0.25),
+                          color: AppColors.lightGreen.withOpacity(0.25),
                           borderRadius: BorderRadius.circular(60),
                         ),
                         child: ClipRRect(
@@ -126,7 +125,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                     width: screenWidth,
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: AppColors.lightgray,
+                      color: AppColors.lightGray,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Column(

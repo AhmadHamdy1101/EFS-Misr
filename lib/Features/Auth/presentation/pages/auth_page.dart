@@ -25,7 +25,7 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.AppBackground,
+      backgroundColor: AppColors.appBackground,
       resizeToAvoidBottomInset: false,
       body: BlocBuilder<AuthCubit, AuthCubitState>(
         builder: (context, state) {

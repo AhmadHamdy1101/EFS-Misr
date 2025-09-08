@@ -3,7 +3,7 @@ import '../../../../constants/constants.dart';
 import '../../../../core/Errors/failure.dart';
 import '../../../Home/data/models/user.dart';
 import '../../domain/auth_repo.dart';
-import '../DataSources/remote_data_source.dart';
+import '../source/remote_data_source.dart';
 
 class AuthRepoImpl extends AuthRepo {
   final AuthRemoteData authRemoteData;

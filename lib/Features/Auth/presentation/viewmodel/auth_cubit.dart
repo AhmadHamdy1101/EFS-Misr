@@ -16,7 +16,6 @@ class AuthCubit extends Cubit<AuthCubitState> {
   AuthCubit(this.authRepo) : super(AuthInitial());
 
   Future<void> login({required String email, required String password}) async {
-
     emit(AuthLoading());
     final response = await authRepo.login(email, password);
     response.fold(
@@ -34,8 +33,6 @@ class AuthCubit extends Cubit<AuthCubitState> {
             emit(SessionExist(user: user));
           },
         );
-        // emit(LoginSuccess(userId: userId));
-        // emit(SessionExist(userId: userId));
       },
     );
   }
@@ -43,31 +40,38 @@ class AuthCubit extends Cubit<AuthCubitState> {
 
 
   Future<void> checkSession() async {
-    final s = auth.currentSession;
-    if (s?.user != null) {
-      final user =  await authRepo.getUserData(userId: s!.user.id);
-      user.fold((l) {
-        emit(SessionNotExist());
-      }, (r) {
-        emit(SessionExist( user: r));
-      },);
+    final session = auth.currentSession;
+    if (session?.user != null) {
+      final res = await authRepo.getUserData(userId: session!.user.id);
+      res.fold(
+            (failure) {
+          emit(SessionLoadFailed(failure.message)); // اعمل الحالة دي لو مش موجودة
+        },
+            (user) {
+          emit(SessionExist(user: user));
+        },
+      );
     } else {
       emit(SessionNotExist());
     }
-    // _sub?.cancel();
-    // _sub = auth.onAuthStateChange.listen((event) async {
-    //   final session = event.session;
-    //   if (session?.user != null) {
-    //     final user =  await authRepo.getUserData(userId: s!.user.id);
-    //     user.fold((l) {
-    //       emit(SessionNotExist());
-    //     }, (r) {
-    //       emit(SessionExist( user: r));
-    //     },);
-    //   } else {
-    //     emit(SessionNotExist());
-    //   }
-    // });
+
+    await _sub?.cancel();
+    _sub = auth.onAuthStateChange.listen((event) async {
+      final newSession = event.session;
+      if (newSession?.user != null) {
+        final res = await authRepo.getUserData(userId: newSession!.user.id);
+        res.fold(
+              (failure) {
+            emit(SessionLoadFailed(failure.message));
+          },
+              (user) {
+            emit(SessionExist(user: user));
+          },
+        );
+      } else {
+        emit(SessionNotExist());
+      }
+    });
   }
 
 

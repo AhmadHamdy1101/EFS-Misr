@@ -20,7 +20,7 @@ class _QRScanPageState extends State<QRScanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.AppBackground,
+      backgroundColor: AppColors.appBackground,
       appBar: AppBar(title: Text('Scan barcode/QR')),
       body: BlocConsumer<QrcodeCubit, QrcodeState>(
         listener: (context, state) {

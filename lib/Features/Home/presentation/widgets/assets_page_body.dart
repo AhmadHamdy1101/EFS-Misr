@@ -32,7 +32,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
           ).copyWith(color: AppColors.green),
         ),
       ),
-      backgroundColor: AppColors.AppBackground,
+      backgroundColor: AppColors.appBackground,
       body: BlocConsumer<AssetsCubit, AssetsState>(
         builder: (context, state) {
           if (state is GetAssetsLoading) {
@@ -64,7 +64,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                           Container(
                             padding: EdgeInsets.all(screenWidth * 0.03),
                             decoration: BoxDecoration(
-                              color: AppColors.lightgreen.withOpacity(0.25),
+                              color: AppColors.lightGreen.withOpacity(0.25),
                               borderRadius: BorderRadius.circular(60),
                             ),
                             child: ClipRRect(
