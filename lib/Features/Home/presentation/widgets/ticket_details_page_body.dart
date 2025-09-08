@@ -1,4 +1,5 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
+import 'package:efs_misr/core/Functions/GetDate_Function.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -66,9 +67,25 @@ class TicketDetailsPageBody extends StatelessWidget {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    "${ticket.orecalId}",
-                                    style: AppTextStyle.latoBold20(context),
+                                  Row(
+                                    spacing: 5,
+                                    children: [
+                                      Text(
+                                        "Ticket No.".tr,
+                                        style: AppTextStyle.latoBold20(context),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                        softWrap: false,
+
+                                      ),       Text(
+                                        "${ticket.orecalId}".tr,
+                                        style: AppTextStyle.latoBold20(context),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                        softWrap: false,
+
+                                      ),
+                                    ],
                                   ),
                                   Row(
                                     spacing: 4,
@@ -88,7 +105,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                         ),
                                       ),
                                       Text(
-                                        '${ticket.branchObject?.name}'.tr,
+                                        '${ticket.branchObject?.name}',
                                         style: AppTextStyle.latoBold16(
                                           context,
                                         ).copyWith(color: AppColors.green),
@@ -96,7 +113,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     ],
                                   ),
                                   Text(
-                                    '${ticket.branchObject?.area}'.tr,
+                                    '${ticket.branchObject?.area}',
                                     style: AppTextStyle.latoRegular19(context),
                                   ),
                                 ],
@@ -139,7 +156,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "Ticket Overview",
+                    "Ticket Overview".tr,
                     style: TextStyle(
                       fontSize: screenWidth * 0.045,
                       fontWeight: FontWeight.bold,
@@ -164,13 +181,13 @@ class TicketDetailsPageBody extends StatelessWidget {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                       Text('Request Date'.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
-                                      Text("${ticket.requestDate}")
+                                      Text(getDateFromTimestamp(ticket.requestDate!))
                                     ],),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text('Repair Date:'.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
-                                        Text("${ticket.repairDate}")
+                                        Text(getDateFromTimestamp(ticket.repairDate!))
                                       ],),
 
                                   ],
@@ -195,14 +212,14 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text('Request Date: '.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
-                                        Text("${ticket.requestDate}")
+                                        Text('Request Date:'.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                                        Text(getDateFromTimestamp(ticket.requestDate!))
                                       ],),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text('Response Date:'.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
-                                        Text("${ticket.responseDate}")
+                                        Text(getDateFromTimestamp(ticket.responseDate!))
                                       ],),
 
                                   ],
@@ -307,7 +324,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Attachment :',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
+                          Text('Attachment:'.tr,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)),
                           Text("${ticket.attachment}")
                         ],),
 

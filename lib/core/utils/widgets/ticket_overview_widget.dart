@@ -2,7 +2,9 @@ import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:marquee/marquee.dart';
 
+import '../../Functions/GetDate_Function.dart';
 import '../app_colors.dart';
 import '../app_text_styles.dart';
 
@@ -26,7 +28,7 @@ class TicketOverViewWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Row(
-          spacing: 10,
+          spacing: 5,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
@@ -50,18 +52,40 @@ class TicketOverViewWidget extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Ticket No. ${ticketData.orecalId}".tr,
-                      style: AppTextStyle.latoBold20(context),
+                    SizedBox(
+                      height: 24,
+                      width: screenWidth * 0.32,
+                      child: Row(
+                        spacing: 5,
+                        children: [
+                          Text(
+                            "Ticket No.".tr,
+                            style: AppTextStyle.latoBold20(context),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            softWrap: false,
+
+                          ),       Text(
+                            "${ticketData.orecalId}".tr,
+                            style: AppTextStyle.latoBold20(context),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            softWrap: false,
+
+                          ),
+                        ],
+                      ),
                     ),
                     Row(
                       spacing: 4,
                       children: [
-                        Text(
-                          '${ticketData.branchObject?.branchId}'.tr,
-                          style: AppTextStyle.latoBold16(
-                            context,
-                          ).copyWith(color: AppColors.green),
+                        SizedBox(
+                          child: Text(
+                            '${ticketData.branchObject?.branchId}'.tr,
+                            style: AppTextStyle.latoBold16(
+                              context,
+                            ).copyWith(color: AppColors.green),
+                          ),
                         ),
                         Container(
                           width: screenWidth * 0.012,
@@ -83,9 +107,15 @@ class TicketOverViewWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Text(
-                      '${ticketData.branchObject?.area}',
-                      style: AppTextStyle.latoRegular19(context),
+                    SizedBox(
+                      height: 24,
+                      width: screenWidth * 0.32,
+                      child: Text(
+                        '${ticketData.branchObject?.area}',
+                        style: AppTextStyle.latoRegular19(context),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
                     ),
                   ],
                 ),
@@ -119,7 +149,9 @@ class TicketOverViewWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
-        Text('${ticketData.comment}'.tr),
+        Text('${ticketData.comment}'.tr,style: AppTextStyle.latoBold20(context),
+
+        ),
         Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
@@ -134,12 +166,12 @@ class TicketOverViewWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 10,
                   children: [
-                    _buildInfoRow('Request Date'.tr, '${ticketData.requestDate}'),
+                    _buildInfoRow('Request Date'.tr, getDateFromTimestamp(ticketData.requestDate!),context),
                     _buildInfoRow(
                       'Response Date'.tr,
-                      '${ticketData.responseDate}',
+                      getDateFromTimestamp(ticketData.responseDate!),context
                     ),
-                    _buildInfoRow('Priority'.tr, '${ticketData.priority}'),
+                    _buildInfoRow('Priority'.tr, '${ticketData.priority}',context),
                   ],
                 ),
               ),
@@ -155,9 +187,9 @@ class TicketOverViewWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: 10,
                     children: [
-                      _buildInfoRow('Repair Date'.tr, '${ticketData.repairDate}'),
-                      _buildInfoRow('Closed By'.tr, '${ticketData.closedBy}'),
-                      _buildInfoRow('Engineer'.tr, '${ticketData.engineer}'),
+                      _buildInfoRow('Repair Date'.tr, getDateFromTimestamp(ticketData.repairDate!),context),
+                      _buildInfoRow('Closed By'.tr, '${ticketData.closedBy?? '__'}',context),
+                      _buildInfoRow('Engineer'.tr, '${ticketData.engineer?? '__'}',context),
                     ],
                   ),
                 ),
@@ -169,10 +201,10 @@ class TicketOverViewWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, dynamic value) {
+  Widget _buildInfoRow(String label, dynamic value,context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [Text(label), Text(value ?? '----')],
+      children: [Text(label, style: AppTextStyle.latoBold23(context)), Text(value ?? '----')],
     );
   }
 }

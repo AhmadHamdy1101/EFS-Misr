@@ -65,7 +65,7 @@ class _HomePageBodyState extends State<HomePageBody> {
               // عناصر البروفايل فوق الخلفية
               CustomProfileWidget(
                 screenWidth: screenWidth,
-                image: "assets/images/profile.jpg",
+                image: "assets/images/user.png",
                 name: '${widget.user.name}',
                 position: '${widget.user.position!.name}',
                 onPress: () {},

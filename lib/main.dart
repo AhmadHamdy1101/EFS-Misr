@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       BlocProvider(create: (context) => QrcodeCubit(getIt.get<HomeRepo>())),
     ], child: GetMaterialApp(
       translations: AppTranslations(),
-      locale: Locale('ar'),
+      locale: Locale('en'),
       debugShowCheckedModeBanner: false,
       title: 'EFS',
       theme: ThemeData(

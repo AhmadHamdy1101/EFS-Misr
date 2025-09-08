@@ -26,7 +26,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
         leading: SizedBox(),
         centerTitle: true,
         title: Text(
-          'Assets',
+          'ِAssets'.tr,
           style: AppTextStyle.latoBold26(
             context,
           ).copyWith(color: AppColors.green),
@@ -43,7 +43,14 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
             return ListView.builder(
               itemCount: state.assets.length,
               itemBuilder: (context, index) {
-                return GestureDetector(
+
+                BigInt total = BigInt.zero;
+                for (final ticket in assets[index].tickets!) {
+                  if (ticket.amount != null) {
+                    total += ticket.amount!;
+                  }}
+
+                  return GestureDetector(
                   onTap: () {
                     Get.to(AssetsDetailsPage(assets: state.assets[index],));
                   },
@@ -80,7 +87,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,children: [Text("${assets[index].type}:"), Text('${assets[index].barcode}')]),
+                                  crossAxisAlignment: CrossAxisAlignment.start,children: [Text("${assets[index].type}".tr), Text('${assets[index].barcode}')]),
                               Text(
                                 '${assets[index].branchObject?.name}'.tr,
                                 style: AppTextStyle.latoRegular16(
@@ -88,7 +95,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                 ).copyWith(color: AppColors.green),
                               ),
                               Text(
-                                '${assets[index].branchObject?.name}'.tr,
+                                '${assets[index].branchObject?.area}'.tr,
                                 style: AppTextStyle.latoRegular16(
                                   context,
                                 ).copyWith(color: AppColors.gray),
@@ -109,12 +116,25 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                     color: Color(0xff8FCFAD),
                                     borderRadius: BorderRadius.circular(50),
                                   ),
-                                  child: Text(
-                                    "1,000 EGP",
-                                    style: AppTextStyle.latoBold16(
-                                      context,
-                                    ).copyWith(color: AppColors.white),
-                                    textAlign: TextAlign.center,
+                                  child: Row(
+                                    spacing: 4,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        "$total ",
+                                        style: AppTextStyle.latoBold16(
+                                          context,
+                                        ).copyWith(color: AppColors.white),
+                                        textAlign: TextAlign.center,
+                                      ),  Text(
+                                        "EGP".tr,
+                                        style: AppTextStyle.latoBold16(
+                                          context,
+                                        ).copyWith(color: AppColors.white),
+                                        textAlign: TextAlign.center,
+                                      ),
+
+                                    ],
                                   ),
                                 ),
                               ],

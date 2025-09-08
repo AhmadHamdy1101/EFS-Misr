@@ -1,6 +1,8 @@
 
+import 'package:efs_misr/Features/Home/data/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../constants/constants.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
@@ -8,7 +10,9 @@ import '../../../../core/utils/widgets/custom_menu_button_widget.dart';
 import '../../../../core/utils/widgets/custome_back_shape_wedget.dart';
 
 class MenuPageBody extends StatefulWidget {
-  const MenuPageBody({super.key});
+  const MenuPageBody({super.key, required this.user});
+
+  final Users user;
 
   @override
   State<MenuPageBody> createState() => _MenuPageBodyState();
@@ -24,52 +28,7 @@ class _MenuPageBodyState extends State<MenuPageBody> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    // final List<Map<String, dynamic>> attendants = [
-    //   {
-    //     'name': 'Mohamed Said',
-    //     'image': 'assets/images/profile.jpg',
-    //     'position': 'operation',
-    //     'status': 'Check In',
-    //     'location': 'New Cairo,Egypt',
-    //     'time': '8:00 AM',
-    //   },
-    //   {
-    //     'name': 'Mohamed Said',
-    //     'image': 'assets/images/profile.jpg',
-    //     'position': 'operation',
-    //     'status': 'Check Out',
-    //     'location': 'New Cairo,Egypt',
-    //     'time': '8:00 AM',
-    //   },
-    // ];
-    // final List<Map<String, dynamic>> buttonsData = [
-    //   {
-    //     'title': 'Cash',
-    //     'icon': 'assets/images/cash.svg',
-    //     'color': Color(0xffDE5A5A),
-    //     'onTap': () {},
-    //   },
-    //   {
-    //     'title': 'Overtime',
-    //     'icon': "assets/images/Overtime.svg",
-    //     'color': Color(0xff20CF74),
-    //     'onTap': () {
-    //       Get.to(AssetsPage());
-    //     },
-    //   },
-    //   {
-    //     'title': 'Vacations',
-    //     'icon': "assets/images/vecation.svg",
-    //     'color': Color(0xffD0CD21),
-    //     'onTap': () {},
-    //   },
-    //   {
-    //     'title': 'Deductions',
-    //     'icon': "assets/images/deductions.svg",
-    //     'color': Color(0xff008C43),
-    //     'onTap': () {},
-    //   },
-    // ];
+
 
     return CustomScrollView(
       slivers: [
@@ -100,25 +59,25 @@ class _MenuPageBodyState extends State<MenuPageBody> {
 
               // عناصر البروفايل فوق الخلفية
               Positioned(
-                top: 60,
+                top: screenHeight * 0.06,
                 child: SizedBox(
                   width: screenWidth,
                   child: Column(
-                    spacing: 20,
+                    spacing: 10,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(50),
                         child: Image.asset(
-                          'assets/images/profile.jpg',
-                          width: 100,
-                          height: 100,
+                          'assets/images/user.png',
+                          width: 80,
+                          height: 80,
                           fit: BoxFit.cover,
                         ),
                       ),
                       Text(
-                        "Mohamed Said",
+                        "${widget.user.name}",
                         style: AppTextStyle.latoBold26(
                           context,
                         ).copyWith(color: AppColors.white),
@@ -128,7 +87,7 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                         spacing: 8,
                         children: [
                           Text(
-                            "Operation",
+                            "${widget.user.position?.name}",
                             style: AppTextStyle.latoRegular16(
                               context,
                             ).copyWith(color: AppColors.white),
@@ -143,7 +102,7 @@ class _MenuPageBodyState extends State<MenuPageBody> {
 
                           ),
                           Text(
-                            "124542",
+                            "${widget.user.id}",
                             style: AppTextStyle.latoRegular19(
                               context,
                             ).copyWith(color: AppColors.white),
@@ -172,6 +131,7 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                   padding: EdgeInsets.zero,
                   width: screenWidth,
                   child: Card(
+
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -179,30 +139,20 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                     color: AppColors.white,
                     child: Column(
                       children: [
-                        CustomMenuButtonWidget(title: 'Account Settings'.tr, icon: Icons.account_circle,onPress: (){},),
-                        CustomMenuButtonWidget(title: 'Language'.tr, icon:Icons.language,onPress: (){
-                          showDialog(context: context, builder: (context) {
-                            return AlertDialog(
-                              backgroundColor: AppColors.appBackground,
-                              title: Text('Language'.tr),
-                              content: Column(
-                                children: [
-                                  ElevatedButton(onPressed: () {
-                                    Get.updateLocale(Locale('en'));
-                                  }, child: Text('English')),
-                                  ElevatedButton(onPressed: () {
-                                    Get.updateLocale(Locale('ar'));
-                                  }, child: Text('Arabic')),
-                                ],
-                              ),
-                            );
-                          },);
-                        },),
-                        CustomMenuButtonWidget(title: 'Dark mode'.tr, icon:Icons.dark_mode,onPress: (){},),
+                        CustomMenuButtonWidget(title: 'Language'.tr, icon:Icons.language,children: [
+                          ListTile(title: Text("English",style: AppTextStyle.latoBold23(context),), onTap: () { Get.updateLocale(Locale('en'));}),
+                          ListTile(title: Text("العربية",style: AppTextStyle.latoBold23(context),), onTap: () { Get.updateLocale(Locale('ar'));}),
+                        ],),
+                        CustomMenuButtonWidget(title: 'Dark mode'.tr, icon:Icons.dark_mode,children: [
+                          ListTile(title: Text('Light'.tr,style: AppTextStyle.latoBold23(context),), onTap: () {},),
+                          ListTile(title: Text('Dark'.tr,style: AppTextStyle.latoBold23(context),), onTap: () {},)
+                        ],),
                       ],
                     ),
                   ),
                 ),
+
+
                 SizedBox(
                   width: screenWidth,
                   child: Card(
@@ -211,10 +161,36 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                     ),
                     elevation: 4,
                     color: AppColors.white,
-                    child: Column(
-                      children: [
-                       CustomMenuButtonWidget(title: "Log Out".tr, onPress: () async {await supabaseClient.auth.signOut();}, icon: Icons.exit_to_app)
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 0),
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll(
+                            Colors.transparent,
+                          ),
+                          foregroundColor: WidgetStatePropertyAll(
+                            AppColors.black,
+                          ),
+                          elevation: WidgetStatePropertyAll(0),
+                        ),
+                        onPressed: () async {await supabaseClient.auth.signOut();},
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              spacing: 10,
+                              children: [
+                                Icon(Icons.exit_to_app,size: 25,),
+                                Text(
+                                  "Log Out",
+                                  style: AppTextStyle.latoBold23(context),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -226,5 +202,3 @@ class _MenuPageBodyState extends State<MenuPageBody> {
     );
   }
 }
-
-

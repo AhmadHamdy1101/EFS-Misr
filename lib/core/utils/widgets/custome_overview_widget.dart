@@ -22,7 +22,7 @@ class CustomOverviewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
-    final formattedDate = DateFormat('d MMM yyyy').format(now);
+    final formattedDate = DateFormat('d - MMM - yyyy').format(now);
     return Positioned(
       top: screenHeight * 0.39,
       left: screenWidth * 0.035,
