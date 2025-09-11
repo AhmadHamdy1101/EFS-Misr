@@ -7,7 +7,7 @@ double getScaleFactor(BuildContext context) {
   if (width < SizeConfig.tablet) {
     return width / 550;
   } else if (width < SizeConfig.desktop) {
-    return width / 850;
+    return width / 800;
   } else {
     return width / 1850;
   }
@@ -17,8 +17,8 @@ double getResponsiveFontSize(BuildContext context, double fontSize) {
   double scaleFactor = getScaleFactor(context);
   double responseFont = fontSize * scaleFactor;
 
-  double lowerLimit = fontSize * .8;
-  double upperLimit = fontSize * 1.2;
+  double lowerLimit = fontSize * .6;
+  double upperLimit = fontSize * 1.1;
 
   return responseFont.clamp(lowerLimit, upperLimit);
 }

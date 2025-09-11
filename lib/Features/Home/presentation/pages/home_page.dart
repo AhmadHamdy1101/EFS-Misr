@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
       "assets/images/menu.svg",
     ];
 
-    final pages = [HomePageBody(user: widget.user,),AssetsPage(), TicketPage(), MenuPage()];
+    final pages = [HomePageBody(user: widget.user,),AssetsPage(), TicketPage(), MenuPage(user: widget.user)];
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         elevation: 5,

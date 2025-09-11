@@ -3,6 +3,7 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/presentation/widgets/assets_page_details_body.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
@@ -19,7 +20,7 @@ final Assets assets;
 
           centerTitle: true,
           title: Text(
-            'Assets Details',
+            'Assets Details'.tr,
             style: AppTextStyle.latoBold26(
               context,
             ).copyWith(color: AppColors.green),

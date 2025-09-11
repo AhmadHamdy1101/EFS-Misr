@@ -79,7 +79,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                         children: [
                           Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [Text("${widget.assets.type}"), Text('${widget.assets.barcode}')]),
+                              children: [Text("${widget.assets.type}".tr), Text('${widget.assets.barcode}')]),
                           Text(
                             '${widget.assets.branchObject?.name}'.tr,
                             style: AppTextStyle.latoRegular16(
@@ -108,12 +108,23 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                                 color: Color(0xff8FCFAD),
                                 borderRadius: BorderRadius.circular(50),
                               ),
-                              child: Text(
-                                "$totalAmount EGP",
-                                style: AppTextStyle.latoBold16(
-                                  context,
-                                ).copyWith(color: AppColors.white),
-                                textAlign: TextAlign.center,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    "$totalAmount",
+                                    style: AppTextStyle.latoBold16(
+                                      context,
+                                    ).copyWith(color: AppColors.white),
+                                    textAlign: TextAlign.center,
+                                  ),   Text(
+                                    "EGP".tr,
+                                    style: AppTextStyle.latoBold16(
+                                      context,
+                                    ).copyWith(color: AppColors.white),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -135,8 +146,18 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                           crossAxisAlignment: CrossAxisAlignment.start,
 
                           children: [
-                            Text('Room: ${widget.assets.place}'),
-                            Text('Type: ${widget.assets.type}'),
+                            Row(
+                              children: [
+                                Text('Room:'.tr),
+                                Text('${widget.assets.place}'.tr),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text('Type:'.tr),
+                                Text('${widget.assets.type}'.tr),
+                              ],
+                            ),
                           ],
                         ),
                       ],
@@ -151,6 +172,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
           child: ListView.builder(
             itemCount: widget.assets.tickets?.length,
             itemBuilder:  (context, index) {
+              print(widget.assets.tickets?.length);
               return Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
