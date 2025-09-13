@@ -24,7 +24,7 @@ class CustomProfileWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       left: 30,
-      top: 60,
+      top: 40,
       child: SizedBox(
         width: screenWidth*0.85,
         child: Row(

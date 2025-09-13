@@ -24,10 +24,11 @@ class CustomOverviewWidget extends StatelessWidget {
     DateTime now = DateTime.now();
     final formattedDate = DateFormat('d - MMM - yyyy').format(now);
     return Positioned(
-      top: screenHeight * 0.39,
+      top: screenHeight * 0.15,
       left: screenWidth * 0.035,
       child: Container(
         width: screenWidth * 0.93,
+        
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(13),

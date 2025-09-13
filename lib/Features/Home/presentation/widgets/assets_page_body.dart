@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
+import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
 
 class AssetsPageBody extends StatefulWidget {
   const AssetsPageBody({super.key});
@@ -18,6 +19,8 @@ class AssetsPageBody extends StatefulWidget {
 class _AssetsPageBodyState extends State<AssetsPageBody> {
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final TextEditingController search = TextEditingController();
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -40,112 +43,168 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
           }
           else if (state is GetAssetsSuccess) {
             final assets = state.assets;
-            return ListView.builder(
-              itemCount: state.assets.length,
-              itemBuilder: (context, index) {
-
-                BigInt total = BigInt.zero;
-                for (final ticket in assets[index].tickets!) {
-                  if (ticket.amount != null) {
-                    total += ticket.amount!;
-                  }}
-
-                  return GestureDetector(
-                  onTap: () {
-                    Get.to(AssetsDetailsPage(assets: state.assets[index],));
-                  },
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 4,
-                    color: AppColors.white,
-                    margin: const EdgeInsets.all(12),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                      child: Row(
-                        spacing: 15,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
+            return  CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    width: MediaQuery.sizeOf(context).width * 0.8,
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        spacing: 40,
                         children: [
-                          Container(
-                            padding: EdgeInsets.all(screenWidth * 0.03),
-                            decoration: BoxDecoration(
-                              color: AppColors.lightGreen.withOpacity(0.25),
-                              borderRadius: BorderRadius.circular(60),
-                            ),
-                            child: ClipRRect(
-                              child: SvgPicture.asset(
-                                'assets/images/Chair.svg',
-                                color: AppColors.green,
-                                width: screenWidth * 0.1,
-                                height: screenWidth * 0.1,
-                              ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: CustomInputWidget(
+                              validator: (value) { },
+                              inbutIcon: 'assets/images/search.svg',
+                              inbutHintText: 'Search'.tr,
+                              changeToPass: false,
+                              textEditingController: search,
+                              textInputType: TextInputType.emailAddress,
                             ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,children: [Text("${assets[index].type}".tr), Text('${assets[index].barcode}')]),
-                              Text(
-                                '${assets[index].branchObject?.name}'.tr,
-                                style: AppTextStyle.latoRegular16(
-                                  context,
-                                ).copyWith(color: AppColors.green),
-                              ),
-                              Text(
-                                '${assets[index].branchObject?.area}'.tr,
-                                style: AppTextStyle.latoRegular16(
-                                  context,
-                                ).copyWith(color: AppColors.gray),
-                              ),
-                            ],
-                          ),
-                          Expanded(
-                            child: Column(
-                              spacing: 10,
-                              children: [
-                                Text("Total Spend".tr),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: screenHeight * 0.01,
-                                    horizontal: screenWidth * 0.04,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xff8FCFAD),
-                                    borderRadius: BorderRadius.circular(50),
-                                  ),
-                                  child: Row(
-                                    spacing: 4,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        "$total ",
-                                        style: AppTextStyle.latoBold16(
-                                          context,
-                                        ).copyWith(color: AppColors.white),
-                                        textAlign: TextAlign.center,
-                                      ),  Text(
-                                        "EGP".tr,
-                                        style: AppTextStyle.latoBold16(
-                                          context,
-                                        ).copyWith(color: AppColors.white),
-                                        textAlign: TextAlign.center,
-                                      ),
+                          // Password Inbut
 
+                          SizedBox(
+                            height: 1,
+                          ),
+
+
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Container(
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                              ),
+                              onPressed: () { }, child: Row(spacing:10,children: [ SvgPicture.asset('assets/images/Excel.svg'), Text('Export',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green),)],)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SliverFillRemaining(
+                  child: ListView.builder(
+                    itemCount: state.assets.length,
+                    itemBuilder: (context, index) {
+
+                      BigInt total = BigInt.zero;
+                      for (final ticket in assets[index].tickets!) {
+                        if (ticket.amount != null) {
+                          total += ticket.amount!;
+                        }}
+
+                      return GestureDetector(
+                        onTap: () {
+                          Get.to(AssetsDetailsPage(assets: state.assets[index],));
+                        },
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 4,
+                          color: AppColors.white,
+                          margin: const EdgeInsets.all(12),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                            child: Row(
+                              spacing: 15,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(screenWidth * 0.03),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.lightGreen.withOpacity(0.25),
+                                    borderRadius: BorderRadius.circular(60),
+                                  ),
+                                  child: ClipRRect(
+                                    child: SvgPicture.asset(
+                                      'assets/images/Chair.svg',
+                                      color: AppColors.green,
+                                      width: screenWidth * 0.1,
+                                      height: screenWidth * 0.1,
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,children: [Text("${assets[index].type}".tr), Text('${assets[index].barcode}')]),
+                                    Text(
+                                      '${assets[index].branchObject?.name}'.tr,
+                                      style: AppTextStyle.latoRegular16(
+                                        context,
+                                      ).copyWith(color: AppColors.green),
+                                    ),
+                                    Text(
+                                      '${assets[index].branchObject?.area}'.tr,
+                                      style: AppTextStyle.latoRegular16(
+                                        context,
+                                      ).copyWith(color: AppColors.gray),
+                                    ),
+                                  ],
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    spacing: 10,
+                                    children: [
+                                      Text("Total Spend".tr),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: screenHeight * 0.01,
+                                          horizontal: screenWidth * 0.04,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xff8FCFAD),
+                                          borderRadius: BorderRadius.circular(50),
+                                        ),
+                                        child: Row(
+                                          spacing: 4,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              "$total ",
+                                              style: AppTextStyle.latoBold16(
+                                                context,
+                                              ).copyWith(color: AppColors.white),
+                                              textAlign: TextAlign.center,
+                                            ),  Text(
+                                              "EGP".tr,
+                                              style: AppTextStyle.latoBold16(
+                                                context,
+                                              ).copyWith(color: AppColors.white),
+                                              textAlign: TextAlign.center,
+                                            ),
+
+                                          ],
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
+                )
+              ],
             );
           }
           else if (state is GetAssetsFailure) {

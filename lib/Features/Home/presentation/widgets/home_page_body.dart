@@ -9,12 +9,10 @@ import '../../../../core/utils/widgets/custome_back_shape_wedget.dart';
 import '../../../../core/utils/widgets/custome_overview_widget.dart';
 import '../../../../core/utils/widgets/ticket_overview_widget.dart';
 
-
 class HomePageBody extends StatefulWidget {
   const HomePageBody({super.key, required this.user});
 
   final Users user;
-
 
   @override
   State<HomePageBody> createState() => _HomePageBodyState();
@@ -22,22 +20,14 @@ class HomePageBody extends StatefulWidget {
 
 class _HomePageBodyState extends State<HomePageBody> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final textScale = MediaQuery.textScaleFactorOf(context);
+
     return CustomScrollView(
       slivers: [
+        /// Header + Profile + Overview
         SliverToBoxAdapter(
           child: Stack(
             clipBehavior: Clip.none,
@@ -57,12 +47,10 @@ class _HomePageBodyState extends State<HomePageBody> {
                   ),
                 ),
               ),
-              // شعار SVG على الخلفية
               CustomBackShapeWedget(
                 screenWidth: screenWidth,
                 screenHeight: screenHeight,
               ),
-              // عناصر البروفايل فوق الخلفية
               CustomProfileWidget(
                 screenWidth: screenWidth,
                 image: "assets/images/user.png",
@@ -73,21 +61,25 @@ class _HomePageBodyState extends State<HomePageBody> {
               BlocBuilder<TicketsCubit, TicketsState>(
                 builder: (context, state) {
                   if (state is GetTicketsLoading) {
-                    return const Center(child: CircularProgressIndicator(
-                      color: AppColors.green,
-                    ));
+                    return const Center(
+                      child: CircularProgressIndicator(color: AppColors.green),
+                    );
                   }
                   if (state is GetTicketsSuccess) {
                     return CustomOverviewWidget(
-                      screenHeight: screenWidth,
+                      screenHeight: screenHeight,
                       screenWidth: screenWidth,
                       totalTickets: state.tickets.length,
-                      doneTickets: state.tickets.where((ticket) => ticket.status == 'Completed').length,
-                      awaitTickets: state.tickets.where((ticket) => ticket.status == 'Awaiting').length,
+                      doneTickets: state.tickets
+                          .where((ticket) => ticket.status == 'Completed')
+                          .length,
+                      awaitTickets: state.tickets
+                          .where((ticket) => ticket.status == 'Awaiting')
+                          .length,
                     );
                   }
                   return CustomOverviewWidget(
-                    screenHeight: screenWidth,
+                    screenHeight: screenHeight,
                     screenWidth: screenWidth,
                     totalTickets: 0,
                     doneTickets: 0,
@@ -98,10 +90,14 @@ class _HomePageBodyState extends State<HomePageBody> {
             ],
           ),
         ),
-        SliverToBoxAdapter(child: SizedBox(height: 190)),
 
+        /// مسافة ديناميكية بدل 190px ثابتة
         SliverToBoxAdapter(
-          // fillOverscroll: true,
+          child: SizedBox(height: screenHeight >= 600 ? 150 : 15),
+        ),
+
+        /// Tickets Overview Card
+        SliverToBoxAdapter(
           child: Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -112,34 +108,37 @@ class _HomePageBodyState extends State<HomePageBody> {
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
-                spacing: 20,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header
+                  /// Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         "Tickets Overview".tr,
                         style: TextStyle(
-                          fontSize: screenWidth * 0.045,
+                          fontSize: screenWidth * 0.045 * textScale,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-
                     ],
                   ),
+                  const SizedBox(height: 20),
+
+                  /// Tickets List
                   BlocBuilder<TicketsCubit, TicketsState>(
                     builder: (context, state) {
                       if (state is GetTicketsLoading) {
-                        return const Center(child: CircularProgressIndicator(
-                          color: AppColors.green,
-                        ));
+                        return const Center(
+                          child:
+                          CircularProgressIndicator(color: AppColors.green),
+                        );
                       }
                       if (state is GetTicketsFailure) {
                         return Center(child: Text(state.errMsg));
                       }
-                      if (state is GetTicketsSuccess) {
+                      if (state is GetTicketsSuccess &&
+                          state.tickets.isNotEmpty) {
                         return ListView.builder(
                           padding: EdgeInsets.zero,
                           shrinkWrap: true,
@@ -147,17 +146,28 @@ class _HomePageBodyState extends State<HomePageBody> {
                           itemCount: state.tickets.length,
                           itemBuilder: (context, index) {
                             return Container(
-                                margin: EdgeInsets.only(
-                                    bottom: screenHeight * 0.05),
-                                child: TicketOverViewWidget(
-                                    screenWidth: screenWidth,
-                                    screenHeight: screenHeight,
-                                    ticketData: state.tickets[index]
-                                ));
+                              margin:
+                              EdgeInsets.only(bottom: screenHeight * 0.04),
+                              child: TicketOverViewWidget(
+                                screenWidth: screenWidth,
+                                screenHeight: screenHeight,
+                                ticketData: state.tickets[index],
+                              ),
+                            );
                           },
                         );
                       }
-                      return const Center(child: Text("No Tickets Found"));
+                      return Column(
+                        children: [
+                          const Icon(Icons.inbox,
+                              size: 64, color: Colors.grey),
+                          const SizedBox(height: 10),
+                          Text(
+                            "No Tickets Found",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      );
                     },
                   ),
                 ],
@@ -165,9 +175,7 @@ class _HomePageBodyState extends State<HomePageBody> {
             ),
           ),
         ),
-
       ],
-
     );
   }
 }
