@@ -29,7 +29,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
         leading: SizedBox(),
         centerTitle: true,
         title: Text(
-          'ِAssets'.tr,
+          'Assets'.tr,
           style: AppTextStyle.latoBold26(
             context,
           ).copyWith(color: AppColors.green),
@@ -37,13 +37,18 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
       ),
       backgroundColor: AppColors.appBackground,
       body: BlocConsumer<AssetsCubit, AssetsState>(
+        buildWhen: (previous, current) =>
+            current is GetAssetsLoading ||
+            current is GetAssetsSuccess ||
+            current is GetAssetsFailure,
         builder: (context, state) {
           if (state is GetAssetsLoading) {
-            return Center(child: CircularProgressIndicator(color: AppColors.green,));
-          }
-          else if (state is GetAssetsSuccess) {
+            return Center(
+              child: CircularProgressIndicator(color: AppColors.green),
+            );
+          } else if (state is GetAssetsSuccess) {
             final assets = state.assets;
-            return  CustomScrollView(
+            return CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
                   child: SizedBox(
@@ -56,7 +61,11 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: CustomInputWidget(
-                              validator: (value) { },
+                              onChanged: (search) {
+                                return context.read<AssetsCubit>().searchAssets(
+                                  search,
+                                );
+                              },
                               inbutIcon: 'assets/images/search.svg',
                               inbutHintText: 'Search'.tr,
                               changeToPass: false,
@@ -64,13 +73,9 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                               textInputType: TextInputType.emailAddress,
                             ),
                           ),
+
                           // Password Inbut
-
-                          SizedBox(
-                            height: 1,
-                          ),
-
-
+                          SizedBox(height: 1),
                         ],
                       ),
                     ),
@@ -81,15 +86,28 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
                       children: [
-                        Container(
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                          ),
+                          onPressed: () {
+                            context.read<AssetsCubit>().convertAssetsToExcel();
+                          },
+                          child: Row(
+                            spacing: 10,
+                            children: [
+                              SvgPicture.asset('assets/images/Excel.svg'),
+                              Text(
+                                'Export',
+                                style: AppTextStyle.latoBold20(
+                                  context,
+                                ).copyWith(color: AppColors.green),
                               ),
-                              onPressed: () { }, child: Row(spacing:10,children: [ SvgPicture.asset('assets/images/Excel.svg'), Text('Export',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green),)],)),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -99,16 +117,18 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                   child: ListView.builder(
                     itemCount: state.assets.length,
                     itemBuilder: (context, index) {
-
                       BigInt total = BigInt.zero;
                       for (final ticket in assets[index].tickets!) {
                         if (ticket.amount != null) {
                           total += ticket.amount!;
-                        }}
+                        }
+                      }
 
                       return GestureDetector(
                         onTap: () {
-                          Get.to(AssetsDetailsPage(assets: state.assets[index],));
+                          Get.to(
+                            AssetsDetailsPage(assets: state.assets[index]),
+                          );
                         },
                         child: Card(
                           shape: RoundedRectangleBorder(
@@ -118,7 +138,10 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                           color: AppColors.white,
                           margin: const EdgeInsets.all(12),
                           child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                            padding: EdgeInsets.symmetric(
+                              vertical: 20,
+                              horizontal: 20,
+                            ),
                             child: Row(
                               spacing: 15,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -127,7 +150,9 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                 Container(
                                   padding: EdgeInsets.all(screenWidth * 0.03),
                                   decoration: BoxDecoration(
-                                    color: AppColors.lightGreen.withOpacity(0.25),
+                                    color: AppColors.lightGreen.withOpacity(
+                                      0.25,
+                                    ),
                                     borderRadius: BorderRadius.circular(60),
                                   ),
                                   child: ClipRRect(
@@ -143,7 +168,13 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,children: [Text("${assets[index].type}".tr), Text('${assets[index].barcode}')]),
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text("${assets[index].type}".tr),
+                                        Text('${assets[index].barcode}'),
+                                      ],
+                                    ),
                                     Text(
                                       '${assets[index].branchObject?.name}'.tr,
                                       style: AppTextStyle.latoRegular16(
@@ -170,7 +201,9 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                         ),
                                         decoration: BoxDecoration(
                                           color: Color(0xff8FCFAD),
-                                          borderRadius: BorderRadius.circular(50),
+                                          borderRadius: BorderRadius.circular(
+                                            50,
+                                          ),
                                         ),
                                         child: Row(
                                           spacing: 4,
@@ -178,18 +211,24 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                           children: [
                                             Text(
                                               "$total ",
-                                              style: AppTextStyle.latoBold16(
-                                                context,
-                                              ).copyWith(color: AppColors.white),
-                                              textAlign: TextAlign.center,
-                                            ),  Text(
-                                              "EGP".tr,
-                                              style: AppTextStyle.latoBold16(
-                                                context,
-                                              ).copyWith(color: AppColors.white),
+                                              style:
+                                                  AppTextStyle.latoBold16(
+                                                    context,
+                                                  ).copyWith(
+                                                    color: AppColors.white,
+                                                  ),
                                               textAlign: TextAlign.center,
                                             ),
-
+                                            Text(
+                                              "EGP".tr,
+                                              style:
+                                                  AppTextStyle.latoBold16(
+                                                    context,
+                                                  ).copyWith(
+                                                    color: AppColors.white,
+                                                  ),
+                                              textAlign: TextAlign.center,
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -203,18 +242,16 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                       );
                     },
                   ),
-                )
+                ),
               ],
             );
-          }
-          else if (state is GetAssetsFailure) {
+          } else if (state is GetAssetsFailure) {
             return Center(child: Text(state.errMsg));
-          }
-          else {
+          } else {
             return Center(child: Text('No Assets Found'));
           }
-
-        }, listener: (BuildContext context, AssetsState state) {  },
+        },
+        listener: (BuildContext context, AssetsState state) {},
       ),
     );
   }

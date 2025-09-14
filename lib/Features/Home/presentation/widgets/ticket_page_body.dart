@@ -1,27 +1,18 @@
-
-
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-
 
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
 import '../../../../core/utils/widgets/ticket_overview_widget.dart';
 import '../pages/ticket_details_page.dart';
 
-
-
-
 class TicketPageBody extends StatelessWidget {
   const TicketPageBody({super.key});
 
-
-  // design here
   @override
   Widget build(BuildContext context) {
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -29,11 +20,12 @@ class TicketPageBody extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return BlocConsumer<TicketsCubit, TicketsState>(
-      listener: (context, state) {
-
-      },
+      buildWhen: (previous, current) =>
+          current is GetTicketsSuccess ||
+          current is GetTicketsLoading ||
+          current is GetTicketsFailure,
+      listener: (context, state) {},
       builder: (context, state) {
-
         if (state is GetTicketsLoading) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -60,16 +52,14 @@ class TicketPageBody extends StatelessWidget {
                             textEditingController: search,
                             textInputType: TextInputType.emailAddress,
                             onChanged: (search) {
-                              return context.read<TicketsCubit>().searchTickets(search);
+                              return context.read<TicketsCubit>().searchTickets(
+                                search,
+                              );
                             },
                           ),
                         ),
 
-                        SizedBox(
-                          height: 1,
-                        ),
-
-
+                        SizedBox(height: 1),
                       ],
                     ),
                   ),
@@ -81,26 +71,68 @@ class TicketPageBody extends StatelessWidget {
                   child: Row(
                     children: [
                       ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
                           ),
-                          onPressed: () { }, child: Row(spacing:10,children: [ SvgPicture.asset('assets/images/Excel.svg'), Text('Export',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green),)],)),
+                        ),
+                        onPressed: () {
+                          context.read<TicketsCubit>().convertTicketsToExcel();
+                        },
+                        child: BlocBuilder<TicketsCubit, TicketsState>(
+                          buildWhen: (previous, current) =>
+                              current is ConvertTicketsToExcelLoading ||
+                              current is ConvertTicketsToExcelFailed ||
+                              current is ConvertTicketsToExcelSuccess,
+                          builder: (context, state) {
+                            if (state is ConvertTicketsToExcelLoading) {
+                              return SizedBox(
+                                width: 15,
+                                height: 15,
+                                child: const CircularProgressIndicator(
+                                  color: AppColors.green,
+                                ),
+                              );
+                            }
+                            if (state is ConvertTicketsToExcelFailed) {
+                              Get.snackbar(
+                                "Error",
+                                'Export Failed',
+                                backgroundColor: Colors.red,
+                                colorText: AppColors.white,
+                              );
+                            }
+                            return Row(
+                              spacing: 10,
+                              children: [
+                                SvgPicture.asset('assets/images/Excel.svg'),
+                                Text(
+                                  'Export',
+                                  style: AppTextStyle.latoBold20(
+                                    context,
+                                  ).copyWith(color: AppColors.green),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
               SliverFillRemaining(
-                child:  ListView.builder(
+                child: ListView.builder(
                   padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   itemCount: state.tickets.length,
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        Get.to(TicketDetailsPage(tickets: state.tickets[index]));
+                        Get.to(
+                          TicketDetailsPage(tickets: state.tickets[index]),
+                        );
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -119,7 +151,7 @@ class TicketPageBody extends StatelessWidget {
                     );
                   },
                 ),
-              )
+              ),
             ],
           );
         }
@@ -128,6 +160,7 @@ class TicketPageBody extends StatelessWidget {
     );
   }
 }
+
 //
 // Future<void> exportDataToExcel(BuildContext context) async {
 //   try {
