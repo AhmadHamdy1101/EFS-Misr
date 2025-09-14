@@ -59,14 +59,14 @@ class TicketOverViewWidget extends StatelessWidget {
                         children: [
                           Text(
                             "Ticket No.".tr,
-                            style: AppTextStyle.latoBold20(context),
+                            style: AppTextStyle.latoBold16(context),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
                             softWrap: false,
 
                           ),       Text(
                             "${ticketData.orecalId}".tr,
-                            style: AppTextStyle.latoBold20(context),
+                            style: AppTextStyle.latoBold16(context),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
                             softWrap: false,
