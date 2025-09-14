@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
@@ -5,7 +6,11 @@ import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
 import 'package:efs_misr/constants/constants.dart';
 import 'package:file_saver/file_saver.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
 
 part 'tickets_state.dart';
@@ -64,6 +69,8 @@ class TicketsCubit extends Cubit<TicketsState> {
     emit(GetTicketsSuccess(tickets: searchedTickets));
   }
 
+
+
   Future<void> convertTicketsToExcel() async {
     emit(ConvertTicketsToExcelLoading());
 
@@ -76,57 +83,73 @@ class TicketsCubit extends Cubit<TicketsState> {
 
       final workbook = xlsio.Workbook();
       final sheet = workbook.worksheets[0];
-
       final headers = data.first.keys.toList();
 
-
-      final headerStyle = workbook.styles.add('HeaderStyle');
-      headerStyle.bold = true;
-      headerStyle.fontSize = 14;
-      headerStyle.hAlign = xlsio.HAlignType.center;
-      headerStyle.backColor = '#D9E1F2';
-      headerStyle.fontColor = '#000000';
-
-      final dataStyle = workbook.styles.add('DataStyle');
-      dataStyle.fontSize = 12;
-      dataStyle.hAlign = xlsio.HAlignType.center;
-
-
+      //  headers
       for (var i = 0; i < headers.length; i++) {
-        final cell = sheet.getRangeByIndex(1, i + 1);
-        cell.setText(headers[i].toString());
-        cell.cellStyle = headerStyle;
+        sheet.getRangeByIndex(1, i + 1).setText(headers[i].toString());
       }
 
-
+      //  data
       for (var rowIndex = 0; rowIndex < data.length; rowIndex++) {
         final row = data[rowIndex];
         for (var colIndex = 0; colIndex < headers.length; colIndex++) {
           final value = row[headers[colIndex]]?.toString() ?? '';
-          final cell = sheet.getRangeByIndex(rowIndex + 2, colIndex + 1);
-          cell.setText(value);
-          cell.cellStyle = dataStyle;
+          sheet.getRangeByIndex(rowIndex + 2, colIndex + 1).setText(value);
         }
       }
 
-
-      final lastRow = data.length + 1;
-      sheet.getRangeByIndex(1, 1, lastRow, headers.length).autoFitColumns();
-
       final List<int> bytes = workbook.saveAsStream();
       workbook.dispose();
+      final Uint8List fileBytes = Uint8List.fromList(bytes);
 
-      await FileSaver.instance.saveFile(
-        name: "tickets",
-        bytes: Uint8List.fromList(bytes),
-        fileExtension: "xlsx",
-        mimeType: MimeType.microsoftExcel,
-      );
+      final timestamp =
+          DateTime.now().toIso8601String().replaceAll(":", "-").split(".").first;
+      final fileName = "tickets_$timestamp.xlsx";
+
+      // Platform Check
+      if (kIsWeb || Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+        // 🖥 Web & Desktop → FileSaver
+        await FileSaver.instance.saveFile(
+          name: fileName,
+          bytes: fileBytes,
+          fileExtension: "xlsx",
+          mimeType: MimeType.microsoftExcel,
+        );
+        print(" File saved via FileSaver");
+      } else if (Platform.isAndroid) {
+        // 📱 Android → Downloads folder
+        if (await Permission.storage.request().isDenied) {
+          emit(ConvertTicketsToExcelFailed());
+          return;
+        }
+
+        final downloadsDir = Directory("/storage/emulated/0/Download");
+        if (!downloadsDir.existsSync()) {
+          downloadsDir.createSync(recursive: true);
+        }
+
+        final filePath = "${downloadsDir.path}/$fileName";
+        final file = File(filePath);
+        await file.writeAsBytes(fileBytes);
+
+        await OpenFilex.open(filePath);
+        print(" Saved in $filePath");
+      } else if (Platform.isIOS) {
+        //  iOS → Documents folder
+        final dir = await getApplicationDocumentsDirectory();
+        final filePath = "${dir.path}/$fileName";
+
+        final file = File(filePath);
+        await file.writeAsBytes(fileBytes);
+
+        await OpenFilex.open(file.path);
+        print(" Saved in $filePath");
+      }
 
       emit(ConvertTicketsToExcelSuccess());
     } catch (e) {
-      print(e.toString());
+      print(" Error: $e");
       emit(ConvertTicketsToExcelFailed());
     }
-  }
-}
+  }}
