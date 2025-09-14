@@ -10,13 +10,25 @@ import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
 import '../../../../core/utils/widgets/ticket_overview_widget.dart';
 import '../pages/ticket_details_page.dart';
 
-class TicketPageBody extends StatelessWidget {
+class TicketPageBody extends StatefulWidget {
   const TicketPageBody({super.key});
 
   @override
+  State<TicketPageBody> createState() => _TicketPageBodyState();
+}
+
+class _TicketPageBodyState extends State<TicketPageBody> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController search = TextEditingController();
+  @override
+  void dispose() {
+    search.dispose();
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-    final TextEditingController search = TextEditingController();
+
+
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return BlocConsumer<TicketsCubit, TicketsState>(
@@ -50,7 +62,7 @@ class TicketPageBody extends StatelessWidget {
                             inbutHintText: 'Search'.tr,
                             changeToPass: false,
                             textEditingController: search,
-                            textInputType: TextInputType.emailAddress,
+                            textInputType: TextInputType.text,
                             onChanged: (search) {
                               return context.read<TicketsCubit>().searchTickets(
                                 search,
