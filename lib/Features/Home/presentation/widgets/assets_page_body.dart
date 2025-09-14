@@ -17,10 +17,12 @@ class AssetsPageBody extends StatefulWidget {
 }
 
 class _AssetsPageBodyState extends State<AssetsPageBody> {
+
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController search = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-    final TextEditingController search = TextEditingController();
+
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -54,7 +56,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                   child: SizedBox(
                     width: MediaQuery.sizeOf(context).width * 0.8,
                     child: Form(
-                      key: _formKey,
+                      key: formKey,
                       child: Column(
                         spacing: 40,
                         children: [
