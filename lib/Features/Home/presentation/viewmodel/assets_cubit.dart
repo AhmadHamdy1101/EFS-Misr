@@ -1,7 +1,6 @@
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/models/assets.dart';
-import '../../data/models/tickets.dart';
 part 'assets_state.dart';
 
 class AssetsCubit extends Cubit<AssetsState> {

@@ -6,9 +6,7 @@ import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-
-import 'package:get/get.dart';import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get.dart';
 
 
 import '../../../../core/utils/app_text_styles.dart';
@@ -26,7 +24,7 @@ class TicketPageBody extends StatelessWidget {
   // design here
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     final TextEditingController search = TextEditingController();
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -49,22 +47,23 @@ class TicketPageBody extends StatelessWidget {
                 child: SizedBox(
                   width: MediaQuery.sizeOf(context).width * 0.8,
                   child: Form(
-                    key: _formKey,
+                    key: formKey,
                     child: Column(
                       spacing: 40,
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: CustomInputWidget(
-                            validator: (value) { },
                             inbutIcon: 'assets/images/search.svg',
                             inbutHintText: 'Search'.tr,
                             changeToPass: false,
                             textEditingController: search,
                             textInputType: TextInputType.emailAddress,
+                            onChanged: (search) {
+                              return context.read<TicketsCubit>().searchTickets(search);
+                            },
                           ),
                         ),
-                        // Password Inbut
 
                         SizedBox(
                           height: 1,
@@ -81,16 +80,14 @@ class TicketPageBody extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: [
-                      Container(
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50),
-                              ),
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
                             ),
-                            onPressed: () { }, child: Row(spacing:10,children: [ SvgPicture.asset('assets/images/Excel.svg'), Text('Export',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green),)],)),
-                      ),
+                          ),
+                          onPressed: () { }, child: Row(spacing:10,children: [ SvgPicture.asset('assets/images/Excel.svg'), Text('Export',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green),)],)),
                     ],
                   ),
                 ),
