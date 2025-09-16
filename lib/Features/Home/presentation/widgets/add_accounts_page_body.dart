@@ -160,7 +160,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                     child: ElevatedButton(
                       style: ButtonStyle(
                         padding: WidgetStatePropertyAll(
-                          EdgeInsets.symmetric(vertical: 20),
+                          EdgeInsets.symmetric(vertical: 10),
                         ),
                         backgroundColor: WidgetStatePropertyAll(
                           AppColors.green,

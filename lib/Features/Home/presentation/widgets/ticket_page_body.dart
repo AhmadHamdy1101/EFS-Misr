@@ -121,7 +121,7 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                           children: [
                             Icon(Icons.add, color: AppColors.green),
                             Text(
-                              'Add Account',
+                              'Add Ticket',
                               style: AppTextStyle.latoBold20(
                                 context,
                               ).copyWith(color: AppColors.green),

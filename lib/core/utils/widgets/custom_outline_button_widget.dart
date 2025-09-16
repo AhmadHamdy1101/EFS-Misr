@@ -9,7 +9,7 @@ class CustomOutlineButtonWidget extends StatelessWidget {
     required this.screenWidth, this.text, this.color, this.foregroundcolor, this.onpressed, this.bordercolor, this.toppadding, this.textstyle,
   });
 
-  final double screenWidth;
+  final screenWidth;
   final text;
   final color;
   final foregroundcolor;

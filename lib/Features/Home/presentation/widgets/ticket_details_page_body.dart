@@ -189,7 +189,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     onpressed: () {},
                                     text: 'Canceled',
                                     bordercolor: AppColors.green,
-                                    toppadding: 15,
+                                    toppadding: 15.0,
                                     textstyle: AppTextStyle.latoBold20(context),
                                   ),
                                 ),
@@ -200,7 +200,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     onpressed: () {},
                                     foregroundcolor: AppColors.white,
                                     color: AppColors.green,
-                                    toppadding: 15,
+                                    toppadding: 15.0,
                                     textstyle: AppTextStyle.latoBold20(context),
                                   ),
                                 ),
@@ -446,7 +446,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                                 ),
                                                 CustomButtonWidget(
                                                   screenWidth: screenWidth,
-                                                  toppadding: 10,
+                                                  toppadding: 10.0,
                                                   textstyle: AppTextStyle.latoBold20(context),
                                                   foregroundcolor: AppColors.white,
                                                   onpressed: () {
