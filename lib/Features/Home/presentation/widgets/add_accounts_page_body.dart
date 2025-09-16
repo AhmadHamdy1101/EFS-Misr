@@ -25,8 +25,8 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
     {'name': 'Bank Misr', 'value': 'Bank Misr'},
   ];
   final role = [
-    {'name': 'Admin', 'value': '1'},
-    {'name': 'User', 'value': '2'},
+    {'name': 'Admin', 'value': 'Admin'},
+    {'name': 'User', 'value': 'User'},
   ];
   final status = [
     {'name': 'Active', 'value': '1'},
