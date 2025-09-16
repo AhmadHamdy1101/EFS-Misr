@@ -20,23 +20,22 @@ class TicketPageBody extends StatefulWidget {
 class _TicketPageBodyState extends State<TicketPageBody> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController search = TextEditingController();
+
   @override
   void dispose() {
     search.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-
-
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    return BlocConsumer<TicketsCubit, TicketsState>(
+    return BlocBuilder<TicketsCubit, TicketsState>(
       buildWhen: (previous, current) =>
           current is GetTicketsSuccess ||
           current is GetTicketsLoading ||
           current is GetTicketsFailure,
-      listener: (context, state) {},
       builder: (context, state) {
         if (state is GetTicketsLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -92,42 +91,17 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                         onPressed: () {
                           context.read<TicketsCubit>().convertTicketsToExcel();
                         },
-                        child: BlocBuilder<TicketsCubit, TicketsState>(
-                          buildWhen: (previous, current) =>
-                              current is ConvertTicketsToExcelLoading ||
-                              current is ConvertTicketsToExcelFailed ||
-                              current is ConvertTicketsToExcelSuccess,
-                          builder: (context, state) {
-                            if (state is ConvertTicketsToExcelLoading) {
-                              return SizedBox(
-                                width: 15,
-                                height: 15,
-                                child: const CircularProgressIndicator(
-                                  color: AppColors.green,
-                                ),
-                              );
-                            }
-                            if (state is ConvertTicketsToExcelFailed) {
-                              Get.snackbar(
-                                "Error",
-                                'Export Failed',
-                                backgroundColor: Colors.red,
-                                colorText: AppColors.white,
-                              );
-                            }
-                            return Row(
-                              spacing: 10,
-                              children: [
-                                SvgPicture.asset('assets/images/Excel.svg'),
-                                Text(
-                                  'Export',
-                                  style: AppTextStyle.latoBold20(
-                                    context,
-                                  ).copyWith(color: AppColors.green),
-                                ),
-                              ],
-                            );
-                          },
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            SvgPicture.asset('assets/images/Excel.svg'),
+                            Text(
+                              'Export',
+                              style: AppTextStyle.latoBold20(
+                                context,
+                              ).copyWith(color: AppColors.green),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -172,62 +146,3 @@ class _TicketPageBodyState extends State<TicketPageBody> {
     );
   }
 }
-
-//
-// Future<void> exportDataToExcel(BuildContext context) async {
-//   try {
-//     final supabase = Supabase.instance.client;
-//
-//     // هات البيانات من جدول tickets
-//     final response = await supabase.from('tickets').select();
-//
-//     if (response.isEmpty) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text("لا يوجد بيانات للتصدير")),
-//       );
-//       return;
-//     }
-//
-//     // اعمل ملف Excel جديد
-//     var excel = Excel.createExcel();
-//     Sheet sheet = excel['Tickets'];
-//
-//     // اضف العناوين
-//     final headers = response.first.keys.toList();
-//     sheet.appendRow(headers);
-//
-//     // اضف الصفوف
-//     for (var row in response) {
-//       sheet.appendRow(row.values.toList());
-//     }
-//
-//     // encode() بيرجع List<int>? فنعمله check
-//     final fileBytes = excel.encode();
-//     if (fileBytes == null) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text("فشل إنشاء الملف")),
-//       );
-//       return;
-//     }
-//
-//     // نحول List<int> → Uint8List
-//     final Uint8List uint8list = Uint8List.fromList(fileBytes);
-//
-//     // نحفظ الملف
-//     await FileSaver.instance.saveFile(
-//       name: "tickets_export",
-//       fileExtension: "xlsx",
-//       // نحول ونأمنها من null
-//       bytes: fileBytes,
-//       mimeType: MimeType.microsoftExcel,
-//     );
-//
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text("✅ تم حفظ الملف في Downloads")),
-//     );
-//   } catch (e) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(content: Text("خطأ أثناء التصدير: $e")),
-//     );
-//   }
-// }

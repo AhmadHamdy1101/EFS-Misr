@@ -23,7 +23,7 @@ class CustomDropdownWidget extends StatefulWidget {
   final TextEditingController textEditingController;
   final TextInputType? textInputType;
   final String? Function(String?)? validator;
-  final void Function(String?)? onChanged; // ✅ عدلتها
+  final void Function(String?)? onChanged;
 
   @override
   State<CustomDropdownWidget> createState() => _CustomDropdownWidgetState();
@@ -73,7 +73,6 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
           if (widget.onChanged != null) {
             widget.onChanged!(value);
           }
-          print("القيمة المختارة: $_currentValue");
         },
         decoration: InputDecoration(
           prefixIconConstraints: const BoxConstraints(

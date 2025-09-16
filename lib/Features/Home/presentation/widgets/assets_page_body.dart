@@ -38,7 +38,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
         ),
       ),
       backgroundColor: AppColors.appBackground,
-      body: BlocConsumer<AssetsCubit, AssetsState>(
+      body: BlocBuilder<AssetsCubit, AssetsState>(
         buildWhen: (previous, current) =>
             current is GetAssetsLoading ||
             current is GetAssetsSuccess ||
@@ -76,7 +76,6 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                             ),
                           ),
 
-                          // Password Inbut
                           SizedBox(height: 1),
                         ],
                       ),
@@ -253,7 +252,6 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
             return Center(child: Text('No Assets Found'));
           }
         },
-        listener: (BuildContext context, AssetsState state) {},
       ),
     );
   }

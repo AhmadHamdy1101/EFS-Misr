@@ -26,6 +26,7 @@ class AuthCubit extends Cubit<AuthCubitState> {
        final user =  await authRepo.getUserData(userId: userId);
         user.fold(
               (l) {
+                print(l.message);
             emit(LoginFailure(errorMsg:l.message));
           },
               (user) {
@@ -77,33 +78,38 @@ class AuthCubit extends Cubit<AuthCubitState> {
 
   Future<void> addAccount({
     required String email,
-    required String password,
     required String userName,
+    required String password,
     required String phone,
     required String address,
     required String companyEmail,
-    required int position,
-    required double salary,
+    required String company,
+    required BigInt position,
+    required String role,
     required int status,
+    required int userStatus,
   }) async
   {
     emit(RegisterLoading());
-    final result = await authRepo.addAccount(email, password);
+    final result = await authRepo.addAccount(email: email,password: password);
     result.fold(
       (l) {
         emit(RegisterFailure(errorMsg: l.message));
       },
       (userId) async {
         final savingData = await authRepo.saveUsersData(
-          userId,
-          userName,
-          phone,
-          address,
-          position,
-          salary,
-          status,
-          companyEmail,
-          email,
+          password: password,
+          role: role,
+          companyEmail: companyEmail,
+          email: email,
+          address: address,
+          company:company,
+          phone: phone,
+          position: position,
+          status: status,
+          userID: userId,
+          userName: userName,
+          userStatus: userStatus
         );
         savingData.fold(
           (l) {

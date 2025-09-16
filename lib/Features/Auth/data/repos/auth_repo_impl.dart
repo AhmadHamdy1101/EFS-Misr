@@ -1,4 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../constants/constants.dart';
 import '../../../../core/Errors/failure.dart';
 import '../../../Home/data/models/user.dart';
@@ -28,8 +30,7 @@ class AuthRepoImpl extends AuthRepo {
 
   @override
   Future<Either<Failure, String>> addAccount(
-    String email,
-    String password,
+      {required String password, required String email}
   ) async {
     try {
       final signUp = await supabaseClient.auth.signUp(
@@ -50,32 +51,37 @@ class AuthRepoImpl extends AuthRepo {
   }
 
   @override
-  Future<Either<Failure, String>> saveUsersData(
-    String userID,
-    String userName,
-    String phone,
-    String address,
-    int position,
-    double salary,
-    int status,
-    String companyEmail,
-    String email,
-  ) async {
+  Future<Either<Failure, String>> saveUsersData({
+    required String userID,
+    required String email,
+    required String userName,
+    required String password,
+    required String phone,
+    required String address,
+    required String companyEmail,
+    required String company,
+    required BigInt position,
+    required String role,
+    required int status,
+    required int userStatus,
+}) async {
     try {
-      // await supabaseClient.users.insert(
-      //   User.insert(
-      //     id: userID,
-      //     email: email,
-      //     status: status,
-      //     address: address,
-      //     phone: phone,
-      //     companyEmail: companyEmail,
-      //     createdAt: DateTime.now(),
-      //     position: position,
-      //     salary: salary,
-      //     userName: userName,
-      //   ),
-      // );
+      await supabaseClient.users.insert(
+        Users.insert(
+          userid: userID,
+          email: email,
+          status: status,
+          address: address,
+          phone: phone,
+          createdAt: DateTime.now(),
+          name: userName,
+          positionID:position,
+          companyEmail: companyEmail,
+          role: role,
+          password: password,
+          user_status: userStatus
+        ),
+      );
       return Right(userID);
     } catch (e) {
       final failure = Failure.fromException(e);

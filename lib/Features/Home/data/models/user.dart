@@ -11,13 +11,16 @@ class Users implements SupadartClass<Users> {
   final String? name;
   final String? email;
   final String? password;
-  final BigInt? phone;
+  final String? phone;
   final String? address;
-  final BigInt? positions;
-  final int? role;
+  final BigInt? positionId;
+  final String? role;
   final int? status;
   final DateTime createdAt;
   final Positions? position;
+  final String? companyEmail;
+  final String? company;
+  final int? user_status;
 
   const Users({
     required this.id,
@@ -27,11 +30,14 @@ class Users implements SupadartClass<Users> {
     this.password,
     this.phone,
     this.address,
-    this.positions,
+    this.positionId,
     this.role,
     this.status,
     required this.createdAt,
     this.position,
+    this.companyEmail,
+    this.user_status,
+    this.company,
   });
 
   static String get table_name => 'users';
@@ -42,10 +48,13 @@ class Users implements SupadartClass<Users> {
   static String get c_password => 'password';
   static String get c_phone => 'phone';
   static String get c_address => 'address';
-  static String get c_positions => 'positions';
+  static String get c_positionId => 'positions';
   static String get c_role => 'role';
   static String get c_status => 'status';
   static String get c_createdAt => 'created_at';
+  static String get c_companyEmail => 'company_email';
+  static String get c_user_status => 'user_status';
+  static String get c_company => 'Company';
 
   static List<Users> converter(List<Map<String, dynamic>> data) {
     return data.map(Users.fromJson).toList();
@@ -61,12 +70,15 @@ class Users implements SupadartClass<Users> {
     String? name,
     String? email,
     String? password,
-    BigInt? phone,
+    String? phone,
     String? address,
-    BigInt? positions,
-    int? role,
+    BigInt? positionId,
+    String? role,
     int? status,
     DateTime? createdAt,
+    String? companyEmail,
+    String? company,
+    int? user_status,
   }) {
     return {
       if (id != null) 'id': id.toString(),
@@ -76,10 +88,13 @@ class Users implements SupadartClass<Users> {
       if (password != null) 'password': password,
       if (phone != null) 'phone': phone.toString(),
       if (address != null) 'address': address,
-      if (positions != null) 'positions': positions.toString(),
+      if (positionId != null) 'positions': positionId.toString(),
       if (role != null) 'role': role,
       if (status != null) 'status': status,
       if (createdAt != null) 'created_at': createdAt.toUtc().toIso8601String(),
+      if (companyEmail != null) 'company_email': companyEmail,
+      if (user_status != null) 'user_status': user_status,
+      if (company != null) 'Company': company,
     };
   }
 
@@ -89,12 +104,15 @@ class Users implements SupadartClass<Users> {
     String? name,
     String? email,
     String? password,
-    BigInt? phone,
+    String? phone,
     String? address,
-    BigInt? positions,
-    int? role,
+    BigInt? positionID,
+    String? role,
     int? status,
     DateTime? createdAt,
+    String? companyEmail,
+    int? user_status,
+    String? company,
   }) {
     return _generateMap(
       id: id,
@@ -104,10 +122,13 @@ class Users implements SupadartClass<Users> {
       password: password,
       phone: phone,
       address: address,
-      positions: positions,
+      positionId: positionID,
       role: role,
       status: status,
       createdAt: createdAt,
+      companyEmail: companyEmail,
+      user_status: user_status,
+      company: company,
     );
   }
 
@@ -117,12 +138,15 @@ class Users implements SupadartClass<Users> {
     String? name,
     String? email,
     String? password,
-    BigInt? phone,
+    String? phone,
     String? address,
-    BigInt? positions,
-    int? role,
+    BigInt? positionID,
+    String? role,
     int? status,
     DateTime? createdAt,
+    String? companyEmail,
+    int? user_status,
+    String? company,
   }) {
     return _generateMap(
       id: id,
@@ -132,10 +156,13 @@ class Users implements SupadartClass<Users> {
       password: password,
       phone: phone,
       address: address,
-      positions: positions,
+      positionId: positionID,
       role: role,
       status: status,
       createdAt: createdAt,
+      companyEmail: companyEmail,
+      user_status: user_status,
+      company: company,
     );
   }
 
@@ -148,23 +175,22 @@ class Users implements SupadartClass<Users> {
       name: jsonn['name'] != null ? jsonn['name'].toString() : null,
       email: jsonn['email'] != null ? jsonn['email'].toString() : null,
       password: jsonn['password'] != null ? jsonn['password'].toString() : null,
-      phone: jsonn['phone'] != null
-          ? BigInt.parse(jsonn['phone'].toString())
-          : null,
+      phone: jsonn['phone'] != null ? jsonn['phone'].toString() : null,
       address: jsonn['address'] != null ? jsonn['address'].toString() : null,
-      positions: jsonn['positions'] != null
-          ? BigInt.tryParse(jsonn['positions'].toString())
-          : null,
-      role: jsonn['role'] != null ? int.parse(jsonn['role'].toString()) : null,
+      role: jsonn['role'] != null ? jsonn['role'].toString() : null,
       status: jsonn['status'] != null
           ? int.parse(jsonn['status'].toString())
           : null,
       createdAt: jsonn['created_at'] != null
           ? DateTime.parse(jsonn['created_at'].toString())
           : DateTime.fromMillisecondsSinceEpoch(0),
-      position:jsonn['positions'] != null
-    ? Positions.fromJson(jsonn['positions'])
-        : null,
+      position: jsonn['positions'] != null
+          ? Positions.fromJson(jsonn['positions'] as Map<String, dynamic>)
+          : null,
+      companyEmail: jsonn['company_email'] != null
+          ? jsonn['company_email'].toString()
+          : null,
+      company: jsonn['Company'] != null ? jsonn['Company'].toString() : null,
     );
   }
 
@@ -174,12 +200,15 @@ class Users implements SupadartClass<Users> {
     String? name,
     String? email,
     String? password,
-    BigInt? phone,
+    String? phone,
     String? address,
-    BigInt? positions,
-    int? role,
+    BigInt? positionID,
+    String? role,
     int? status,
     DateTime? createdAt,
+    String? companyEmail,
+    int? user_status,
+    String? company,
   }) {
     return {
       if (id != null) 'id': id,
@@ -189,10 +218,13 @@ class Users implements SupadartClass<Users> {
       if (password != null) 'password': password,
       if (phone != null) 'phone': phone,
       if (address != null) 'address': address,
-      if (positions != null) 'positions': positions,
+      if (positionID != null) 'positions': positionID,
       if (role != null) 'role': role,
       if (status != null) 'status': status,
       if (createdAt != null) 'created_at': createdAt,
+      if (companyEmail != null) 'company_email': companyEmail,
+      if (user_status != null) 'user_status': user_status,
+      if (company != null) 'Company': company,
     };
   }
 
@@ -205,10 +237,13 @@ class Users implements SupadartClass<Users> {
       password: password,
       phone: phone,
       address: address,
-      positions: positions,
+      positionId: positionId,
       role: role,
       status: status,
       createdAt: createdAt,
+      companyEmail: companyEmail,
+      user_status: user_status,
+      company: company,
     );
   }
 
@@ -221,10 +256,13 @@ class Users implements SupadartClass<Users> {
     Object? password = _unset,
     Object? phone = _unset,
     Object? address = _unset,
-    Object? positions = _unset,
+    Object? positionId = _unset,
     Object? role = _unset,
     Object? status = _unset,
     Object? createdAt = _unset,
+    Object? companyEmail = _unset,
+    Object? user_status = _unset,
+    Object? company = _unset,
   }) {
     return Users(
       id: id == _unset ? this.id : id as BigInt,
@@ -232,12 +270,15 @@ class Users implements SupadartClass<Users> {
       name: name == _unset ? this.name : name as String?,
       email: email == _unset ? this.email : email as String?,
       password: password == _unset ? this.password : password as String?,
-      phone: phone == _unset ? this.phone : phone as BigInt?,
+      phone: phone == _unset ? this.phone : phone as String?,
       address: address == _unset ? this.address : address as String?,
-      positions: positions == _unset ? this.positions : positions as BigInt?,
-      role: role == _unset ? this.role : role as int?,
+      positionId: positionId == _unset ? this.positionId : positionId as BigInt?,
+      role: role == _unset ? this.role : role as String?,
       status: status == _unset ? this.status : status as int?,
       createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
+      companyEmail: companyEmail == _unset ? this.companyEmail : companyEmail as String?,
+      user_status: user_status == _unset ? this.user_status : user_status as int?,
+      company: company == _unset ? this.company : company as String?,
     );
   }
 }

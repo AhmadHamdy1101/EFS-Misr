@@ -1,17 +1,20 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
+
 import '../../../../constants/constants.dart';
 import '../../data/models/assets.dart';
+
 part 'assets_state.dart';
 
 class AssetsCubit extends Cubit<AssetsState> {
@@ -26,15 +29,17 @@ class AssetsCubit extends Cubit<AssetsState> {
     emit(GetAssetsLoading());
     final result = await homeRepo.getAssets();
 
-    result.fold((failure) {
-      emit(GetAssetsFailure(errMsg: failure.message));
-    }, (assets) {
-      allAssets.clear();
-      allAssets.addAll(assets);
-      emit(GetAssetsSuccess(assets: allAssets));
-    },);
+    result.fold(
+      (failure) {
+        emit(GetAssetsFailure(errMsg: failure.message));
+      },
+      (assets) {
+        allAssets.clear();
+        allAssets.addAll(assets);
+        emit(GetAssetsSuccess(assets: allAssets));
+      },
+    );
   }
-
 
   searchAssets(String? search) {
     if (search == null || search.isEmpty) {
@@ -55,8 +60,6 @@ class AssetsCubit extends Cubit<AssetsState> {
   }
 
   Future<void> convertAssetsToExcel() async {
-    emit(ConvertAssetsToExcelLoading());
-
     try {
       final data = await supabaseClient.assets.select();
       if (data.isEmpty) {
@@ -66,9 +69,9 @@ class AssetsCubit extends Cubit<AssetsState> {
 
       final workbook = xlsio.Workbook();
       final sheet = workbook.worksheets[0];
+
       final headers = data.first.keys.toList();
 
-      // ✅ Styles
       final headerStyle = workbook.styles.add('HeaderStyle');
       headerStyle.bold = true;
       headerStyle.fontSize = 14;
@@ -80,14 +83,12 @@ class AssetsCubit extends Cubit<AssetsState> {
       dataStyle.fontSize = 12;
       dataStyle.hAlign = xlsio.HAlignType.center;
 
-      // ✅ Headers
       for (var i = 0; i < headers.length; i++) {
         final cell = sheet.getRangeByIndex(1, i + 1);
         cell.setText(headers[i].toString());
         cell.cellStyle = headerStyle;
       }
 
-      // ✅ Data
       for (var rowIndex = 0; rowIndex < data.length; rowIndex++) {
         final row = data[rowIndex];
         for (var colIndex = 0; colIndex < headers.length; colIndex++) {
@@ -103,33 +104,27 @@ class AssetsCubit extends Cubit<AssetsState> {
 
       final List<int> bytes = workbook.saveAsStream();
       workbook.dispose();
+
       final Uint8List fileBytes = Uint8List.fromList(bytes);
 
-      final timestamp =
-          DateTime
-              .now()
-              .toIso8601String()
-              .replaceAll(":", "-")
-              .split(".")
-              .first;
-      final fileName = "assets_$timestamp.xlsx";
+      final timestamp = DateTime.now();
+      DateFormat('d - MMM - yyyy').format(timestamp);
+      final fileName = "Assets $timestamp.xlsx";
 
       // Platform Check
-      if (kIsWeb || Platform.isWindows || Platform.isLinux ||
+      if (kIsWeb ||
+          Platform.isWindows ||
+          Platform.isLinux ||
           Platform.isMacOS) {
-        // Web/Desktop
         await FileSaver.instance.saveFile(
           name: fileName,
           bytes: fileBytes,
           fileExtension: "xlsx",
           mimeType: MimeType.microsoftExcel,
         );
-        print("File saved via FileSaver");
+
       } else if (Platform.isAndroid) {
-        // 📱 Android
-        if (await Permission.storage
-            .request()
-            .isDenied) {
+        if (await Permission.storage.request().isDenied) {
           emit(ConvertAssetsToExcelFailed());
           return;
         }
@@ -143,10 +138,12 @@ class AssetsCubit extends Cubit<AssetsState> {
         final file = File(filePath);
         await file.writeAsBytes(fileBytes);
 
-        await OpenFilex.open(file.path);
-        print(" Saved in $filePath");
+        await OpenFilex.open(filePath);
+        await SharePlus.instance.share(
+          ShareParams(files: [XFile(file.path)], text: 'Assets Export'),
+        );
+
       } else if (Platform.isIOS) {
-        //  iOS
         final dir = await getApplicationDocumentsDirectory();
         final filePath = "${dir.path}/$fileName";
 
@@ -154,13 +151,14 @@ class AssetsCubit extends Cubit<AssetsState> {
         await file.writeAsBytes(fileBytes);
 
         await OpenFilex.open(file.path);
-        print(" Saved in $filePath");
+        await SharePlus.instance.share(
+          ShareParams(files: [XFile(file.path)], text: 'Assets Export'),
+        );
       }
 
-      emit(ConvertAssetsToExcelSuccess());
+      // emit(ConvertAssetsToExcelSuccess());
     } catch (e) {
-      print(" Error: $e");
-      emit(ConvertAssetsToExcelFailed());
+      // emit(ConvertAssetsToExcelFailed());
     }
   }
 }

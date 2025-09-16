@@ -7,6 +7,8 @@ abstract class HomeRemoteDataSource {
 
   Future<List<Assets>> getAssets();
 
+  // Stream<List<Users>> getUsers();
+
   Future<Assets> getAssetsByQrCode(String qrCode);
 }
 
@@ -43,4 +45,11 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
         .withConverter(Assets.converter);
     return asset[0];
   }
+
+  // @override
+  // Stream<List<Users>> getUsers()  {
+  //   return supabaseClient.users.stream(primaryKey: ['id'],).map((data) {
+  //     return data.map((json) => Users.fromJson(json)).toList();
+  //   });
+  // }
 }

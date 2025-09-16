@@ -8,9 +8,11 @@ import 'package:efs_misr/constants/constants.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
 
 part 'tickets_state.dart';
@@ -72,12 +74,9 @@ class TicketsCubit extends Cubit<TicketsState> {
 
 
   Future<void> convertTicketsToExcel() async {
-    emit(ConvertTicketsToExcelLoading());
-
     try {
       final data = await supabaseClient.tickets.select();
       if (data.isEmpty) {
-        emit(ConvertTicketsToExcelFailed());
         return;
       }
 
@@ -104,23 +103,23 @@ class TicketsCubit extends Cubit<TicketsState> {
       final Uint8List fileBytes = Uint8List.fromList(bytes);
 
       final timestamp =
-          DateTime.now().toIso8601String().replaceAll(":", "-").split(".").first;
-      final fileName = "tickets_$timestamp.xlsx";
+          DateTime.now();
+      DateFormat('d - MMM - yyyy').format(timestamp);
+      final fileName = "Tickets_$timestamp.xlsx";
 
-      // Platform Check
+
       if (kIsWeb || Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-        // 🖥 Web & Desktop → FileSaver
+
         await FileSaver.instance.saveFile(
           name: fileName,
           bytes: fileBytes,
           fileExtension: "xlsx",
           mimeType: MimeType.microsoftExcel,
         );
-        print(" File saved via FileSaver");
+
       } else if (Platform.isAndroid) {
-        // 📱 Android → Downloads folder
+
         if (await Permission.storage.request().isDenied) {
-          emit(ConvertTicketsToExcelFailed());
           return;
         }
 
@@ -134,9 +133,12 @@ class TicketsCubit extends Cubit<TicketsState> {
         await file.writeAsBytes(fileBytes);
 
         await OpenFilex.open(filePath);
-        print(" Saved in $filePath");
+        await SharePlus.instance.share(
+          ShareParams(files: [XFile(file.path)], text: 'Tickets Export'),
+        );
+
       } else if (Platform.isIOS) {
-        //  iOS → Documents folder
+
         final dir = await getApplicationDocumentsDirectory();
         final filePath = "${dir.path}/$fileName";
 
@@ -144,12 +146,14 @@ class TicketsCubit extends Cubit<TicketsState> {
         await file.writeAsBytes(fileBytes);
 
         await OpenFilex.open(file.path);
-        print(" Saved in $filePath");
+        await SharePlus.instance.share(
+          ShareParams(files: [XFile(file.path)], text: 'Tickets Export'),
+        );
+
       }
 
-      emit(ConvertTicketsToExcelSuccess());
     } catch (e) {
-      print(" Error: $e");
-      emit(ConvertTicketsToExcelFailed());
+
+
     }
   }}
