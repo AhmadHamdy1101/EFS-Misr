@@ -1,3 +1,4 @@
+import 'package:efs_misr/Features/Home/presentation/pages/add_Tickets_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -80,6 +81,7 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
+                    spacing: 10,
                     children: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -104,6 +106,29 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                           ],
                         ),
                       ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                        ),
+                        onPressed: () {
+                          Get.to(AddTicketsPage());
+                        },
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            Icon(Icons.add, color: AppColors.green),
+                            Text(
+                              'Add Account',
+                              style: AppTextStyle.latoBold20(
+                                context,
+                              ).copyWith(color: AppColors.green),
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),

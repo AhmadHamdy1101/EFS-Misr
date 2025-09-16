@@ -63,7 +63,7 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
         items: widget.Data.map((status) {
           return DropdownMenuItem<String>(
             value: status['value'],
-            child: Text(status['name'], style: AppTextStyle.latoRegular16(context).copyWith(color: AppColors.gray)),
+            child: Text(status['name'], style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.black)),
           );
         }).toList(),
         onChanged: (value) {
