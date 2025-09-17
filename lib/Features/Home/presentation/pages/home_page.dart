@@ -74,7 +74,6 @@ class _HomePageState extends State<HomePage> {
           width: screenWidth * 0.07,
         ),
       ),
-      backgroundColor: AppColors.appBackground,
       body: widget.user.role == 'Admin'? pages[selectedIndex]:pagesuser[selectedIndex],
       bottomNavigationBar: CustomBottomNav(
         icons: widget.user.role == 'Admin'? iconPaths:iconPathsUser,

@@ -7,6 +7,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: AppColors.appBackground, body: AuthGate());
+    return Scaffold( body: AuthGate());
   }
 }

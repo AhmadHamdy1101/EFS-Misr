@@ -153,7 +153,7 @@ class TicketOverViewWidget extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: AppColors.lightGray,
+            color: Theme.of(context).colorScheme.tertiary,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(

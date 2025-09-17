@@ -1,10 +1,8 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/presentation/pages/add_account_page.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/accounts_cubit.dart';
 import 'package:efs_misr/constants/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
@@ -42,7 +40,6 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
         leading: SizedBox(),
         centerTitle: true,
         title: Text(
@@ -52,7 +49,6 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
           ).copyWith(color: AppColors.green),
         ),
       ),
-      backgroundColor: AppColors.appBackground,
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -66,7 +62,9 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: CustomInputWidget(
-                        onChanged: (value) {},
+                        onChanged: (value) {
+                          return null;
+                        },
                         inbutIcon: 'assets/images/search.svg',
                         inbutHintText: 'Search'.tr,
                         changeToPass: false,
@@ -90,7 +88,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.white,
+                      backgroundColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -111,7 +109,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.white,
+                      backgroundColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -140,7 +138,6 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
             child: Obx(() => ListView.builder(
               itemCount: users.length,
               itemBuilder: (context, index) {
-                BigInt total = BigInt.zero;
                 return GestureDetector(
                   onTap: () {},
                   child: Card(
@@ -148,7 +145,6 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     elevation: 4,
-                    color: AppColors.white,
                     margin: const EdgeInsets.all(12),
                     child: Container(
                       padding: EdgeInsets.symmetric(

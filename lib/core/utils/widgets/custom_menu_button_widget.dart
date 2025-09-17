@@ -15,9 +15,10 @@ class CustomMenuButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ExpansionTile(
       leading: Icon(icon),
-      title: Text(title, style: AppTextStyle.latoBold23(context),),
+      title: Text(title, style: AppTextStyle.latoBold23(context).copyWith(color: Theme.of(context).colorScheme.primary),),
       children: children,
-      iconColor:  AppColors.black,
+      iconColor:  Theme.of(context).colorScheme.primary,
+      collapsedIconColor: Theme.of(context).colorScheme.primary,
       shape: RoundedRectangleBorder(side: BorderSide.none),
     );
   }

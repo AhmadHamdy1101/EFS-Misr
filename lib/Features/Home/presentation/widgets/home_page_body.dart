@@ -103,7 +103,6 @@ class _HomePageBodyState extends State<HomePageBody> {
               borderRadius: BorderRadius.circular(16),
             ),
             elevation: 4,
-            color: AppColors.white,
             margin: const EdgeInsets.all(12),
             child: Padding(
               padding: const EdgeInsets.all(20),

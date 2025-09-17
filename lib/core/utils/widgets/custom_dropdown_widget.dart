@@ -43,7 +43,7 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(40), // pill shape
         boxShadow: [
           BoxShadow(

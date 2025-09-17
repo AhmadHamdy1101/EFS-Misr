@@ -11,9 +11,7 @@ class TicketPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.appBackground,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
           leading: SizedBox(),
           centerTitle: true,
           title: Text(

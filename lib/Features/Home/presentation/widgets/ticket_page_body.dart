@@ -85,7 +85,7 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                     children: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.white,
+                          backgroundColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),
                           ),
@@ -108,7 +108,7 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.white,
+                          backgroundColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),
                           ),
@@ -148,7 +148,6 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Card(
-                          color: AppColors.white,
                           child: Padding(
                             padding: const EdgeInsets.all(20.0),
                             child: TicketOverViewWidget(

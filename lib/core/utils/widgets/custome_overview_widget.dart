@@ -32,7 +32,7 @@ class CustomOverviewWidget extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(13),
-          color: AppColors.white,
+          color: Theme.of(context).colorScheme.surface,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.2),
@@ -65,7 +65,7 @@ class CustomOverviewWidget extends StatelessWidget {
                 vertical: 20,
               ),
               decoration: BoxDecoration(
-                color: AppColors.lightGray,
+                color: Theme.of(context).colorScheme.tertiary,
                 borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
               child: Row(

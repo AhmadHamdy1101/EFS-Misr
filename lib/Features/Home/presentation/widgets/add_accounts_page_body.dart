@@ -56,11 +56,9 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: AppColors.appBackground,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: Colors.transparent,
             centerTitle: true,
             title: Text(
               'Add Accounts'.tr,

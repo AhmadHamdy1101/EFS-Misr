@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../constants/constants.dart';
 import '../../../../core/Errors/failure.dart';
 import '../../../Home/data/models/user.dart';

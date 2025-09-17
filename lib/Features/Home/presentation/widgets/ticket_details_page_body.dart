@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/presentation/widgets/QRViewTicket.dart';
 import 'package:efs_misr/core/Functions/GetDate_Function.dart';
@@ -37,9 +36,7 @@ class TicketDetailsPageBody extends StatelessWidget {
           width: screenWidth * 0.07,
         ),
       ),
-      backgroundColor: AppColors.appBackground,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
 
         centerTitle: true,
         title: Text(
@@ -62,7 +59,6 @@ class TicketDetailsPageBody extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Card(
-                    color: AppColors.white,
                     child: Container(
                       padding: EdgeInsets.all(20.0),
                       child: Column(
@@ -184,7 +180,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                 Expanded(
                                   child: CustomOutlineButtonWidget(
                                     screenWidth: screenWidth,
-                                    color: AppColors.white,
+                                    color: Colors.transparent,
                                     foregroundcolor: AppColors.green,
                                     onpressed: () {},
                                     text: 'Canceled',
@@ -220,7 +216,6 @@ class TicketDetailsPageBody extends StatelessWidget {
                     ),
                   ),
                   Card(
-                    color: AppColors.white,
 
                     child: Container(
                       padding: EdgeInsets.all(20.0),
@@ -318,7 +313,6 @@ class TicketDetailsPageBody extends StatelessWidget {
                     ),
                   ),
                   Card(
-                    color: AppColors.white,
 
                     child: Container(
                       padding: EdgeInsets.all(20.0),
@@ -395,7 +389,6 @@ class TicketDetailsPageBody extends StatelessWidget {
                     ),
                   ),
                   Card(
-                    color: AppColors.white,
 
                     child: Container(
                       padding: EdgeInsets.all(20.0),
@@ -479,7 +472,6 @@ class TicketDetailsPageBody extends StatelessWidget {
                     ),
                   ),
                   Card(
-                    color: AppColors.white,
 
                     child: Container(
                       padding: EdgeInsets.all(20.0),
@@ -515,14 +507,12 @@ class TicketDetailsPageBody extends StatelessWidget {
               shrinkWrap: true,
               itemCount: 1,
               itemBuilder: (context, index) {
-                BigInt total = BigInt.zero;
 
                 return Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 4,
-                  color: AppColors.white,
                   margin: const EdgeInsets.all(12),
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
