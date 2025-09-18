@@ -27,7 +27,6 @@ class _HomePageBodyState extends State<HomePageBody> {
 
     return CustomScrollView(
       slivers: [
-        /// Header + Profile + Overview
         SliverToBoxAdapter(
           child: Stack(
             clipBehavior: Clip.none,

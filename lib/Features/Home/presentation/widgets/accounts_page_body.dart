@@ -1,13 +1,10 @@
-import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
-import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
+
 import 'package:efs_misr/Features/Home/presentation/pages/add_account_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/accounts_cubit.dart';
-import 'package:efs_misr/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
@@ -20,7 +17,6 @@ class AccountsPageBody extends StatefulWidget {
 }
 
 class _AccountsPageBodyState extends State<AccountsPageBody> {
-  final users = <Users>[].obs;
   @override
   void initState() {
     super.initState();
@@ -28,9 +24,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
   }
 
   Future<void> loadAccounts() async {
-    supabaseClient.users.stream(primaryKey: ['id']).listen((u) {
-      users.value = Users.converter(u);
-    },);
+    await context.read<AccountsCubit>().getAccounts();
   }
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -66,7 +60,9 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: CustomInputWidget(
-                        onChanged: (value) {},
+                        onChanged: (value) {
+                          return null;
+                        },
                         inbutIcon: 'assets/images/search.svg',
                         inbutHintText: 'Search'.tr,
                         changeToPass: false,
@@ -117,7 +113,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                       ),
                     ),
                     onPressed: () {
-                      Get.to(AddAccountPage());
+                      Get.to(() => AddAccountPage());
                     },
                     child: Row(
                       spacing: 10,
@@ -137,106 +133,125 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
             ),
           ),
           SliverFillRemaining(
-            child: Obx(() => ListView.builder(
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                BigInt total = BigInt.zero;
-                return GestureDetector(
-                  onTap: () {},
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 4,
-                    color: AppColors.white,
-                    margin: const EdgeInsets.all(12),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 20,
-                        horizontal: 20,
-                      ),
-                      child: Row(
-                        spacing: 15,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: screenWidth * 0.15,
-                            height: screenWidth * 0.15,
+            child: BlocBuilder<AccountsCubit, AccountsState>(
 
-                            decoration: BoxDecoration(
-                              color: AppColors.lightGreen.withOpacity(0.25),
-                              borderRadius: BorderRadius.circular(60),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.black.withAlpha(25),
-                                  blurRadius: 10,
-                                ),
-                              ],
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: ClipRRect(
-                              child: Image.asset(
-                                width: screenWidth,
-                                'assets/images/user.png',
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+              builder: (context, state) {
+                if (state is GetAccountsLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (state is GetAccountsFailed) {
+                  return Center(
+                    child: Text(state.errorMsg),
+                  );
+                }
+                if (state is GetAccountsSuccess) {
+                  final users = state.accounts;
+                  return ListView.builder(
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {},
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                          SizedBox(
-                            width: screenWidth * 0.3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Text("${users[index].name}".tr),
-                                    Text(users[index].position?.name ?? "No Position"),
-                                  ],
-                                ),
-                                Text(
-                                  (users[index].company ?? '').tr,
-                                  style: AppTextStyle.latoRegular16(
-                                    context,
-                                  ).copyWith(color: AppColors.green),
-                                ),
-                                Text(
-                                  (users[index].email ?? '').tr,
-                                  style: AppTextStyle.latoRegular16(context)
-                                      .copyWith(
-                                    color: AppColors.gray,
-                                    overflow: TextOverflow.clip,
-                                  ),
-                                ),
-                              ],
+                          elevation: 4,
+                          color: AppColors.white,
+                          margin: const EdgeInsets.all(12),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 20,
+                              horizontal: 20,
                             ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              spacing: 10,
+                            child: Row(
+                              spacing: 15,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Text("${users[index].status ?? ''}".tr),
                                 Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: screenHeight * 0.01,
-                                    horizontal: screenWidth * 0.04,
-                                  ),
+                                  width: screenWidth * 0.15,
+                                  height: screenWidth * 0.15,
                                   decoration: BoxDecoration(
-                                    color: Color(0xff8FCFAD),
-                                    borderRadius: BorderRadius.circular(50),
+                                    color: AppColors.lightGreen.withOpacity(0.25),
+                                    borderRadius: BorderRadius.circular(60),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.black.withAlpha(25),
+                                        blurRadius: 10,
+                                      ),
+                                    ],
                                   ),
-                                  child: Row(
-                                    spacing: 4,
-                                    mainAxisSize: MainAxisSize.min,
+                                  clipBehavior: Clip.antiAlias,
+                                  child: ClipRRect(
+                                    child: Image.asset(
+                                      width: screenWidth,
+                                      'assets/images/user.png',
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: screenWidth * 0.3,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text("${users[index].name}".tr),
+                                          Text(
+                                            users[index].position?.name ??
+                                                "No Position",
+                                          ),
+                                        ],
+                                      ),
                                       Text(
-                                        "Active",
-                                        style: AppTextStyle.latoBold16(
+                                        (users[index].company ?? '').tr,
+                                        style: AppTextStyle.latoRegular16(
                                           context,
-                                        ).copyWith(color: AppColors.white),
-                                        textAlign: TextAlign.center,
+                                        ).copyWith(color: AppColors.green),
+                                      ),
+                                      Text(
+                                        (users[index].email ?? '').tr,
+                                        style: AppTextStyle.latoRegular16(context)
+                                            .copyWith(
+                                          color: AppColors.gray,
+                                          overflow: TextOverflow.clip,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    spacing: 10,
+                                    children: [
+                                      Text("${users[index].status ?? ''}".tr),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: screenHeight * 0.01,
+                                          horizontal: screenWidth * 0.04,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xff8FCFAD),
+                                          borderRadius: BorderRadius.circular(50),
+                                        ),
+                                        child: Row(
+                                          spacing: 4,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              "Active",
+                                              style: AppTextStyle.latoBold16(
+                                                context,
+                                              ).copyWith(color: AppColors.white),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -244,13 +259,14 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                               ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
+                        ),
+                      );
+                    },
+                  );
+                }
+return Text('No Accounts');
               },
-            ),)
+            ),
           ),
         ],
       ),

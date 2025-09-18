@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:efs_misr/supabase_functions.dart';
 import '../../../../constants/constants.dart';
 import '../../../../core/Errors/failure.dart';
 import '../../../Home/data/models/user.dart';
@@ -33,11 +33,7 @@ class AuthRepoImpl extends AuthRepo {
       {required String password, required String email}
   ) async {
     try {
-      final signUp = await supabaseClient.auth.signUp(
-        password: password,
-        email: email,
-      );
-      final userId = signUp.user?.id;
+      final userId = await SupabaseFunctions.createUser(email: email, password: password);
       if (userId==null) {
         return Left(GeneralFailure('Login failed: user missing'));
       }
@@ -46,6 +42,7 @@ class AuthRepoImpl extends AuthRepo {
       }
     } catch (e) {
       final failure = Failure.fromException(e);
+      print(failure.message);
       return Left(failure);
     }
   }
@@ -63,7 +60,6 @@ class AuthRepoImpl extends AuthRepo {
     required BigInt position,
     required String role,
     required int status,
-    required int userStatus,
 }) async {
     try {
       await supabaseClient.users.insert(
@@ -77,9 +73,9 @@ class AuthRepoImpl extends AuthRepo {
           name: userName,
           positionID:position,
           companyEmail: companyEmail,
+          company: company,
           role: role,
           password: password,
-          user_status: userStatus
         ),
       );
       return Right(userID);

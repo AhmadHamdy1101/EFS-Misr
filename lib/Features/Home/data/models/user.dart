@@ -20,7 +20,7 @@ class Users implements SupadartClass<Users> {
   final Positions? position;
   final String? companyEmail;
   final String? company;
-  final int? user_status;
+
 
   const Users({
     required this.id,
@@ -36,7 +36,7 @@ class Users implements SupadartClass<Users> {
     required this.createdAt,
     this.position,
     this.companyEmail,
-    this.user_status,
+
     this.company,
   });
 
@@ -53,7 +53,7 @@ class Users implements SupadartClass<Users> {
   static String get c_status => 'status';
   static String get c_createdAt => 'created_at';
   static String get c_companyEmail => 'company_email';
-  static String get c_user_status => 'user_status';
+
   static String get c_company => 'Company';
 
   static List<Users> converter(List<Map<String, dynamic>> data) {
@@ -78,7 +78,7 @@ class Users implements SupadartClass<Users> {
     DateTime? createdAt,
     String? companyEmail,
     String? company,
-    int? user_status,
+
   }) {
     return {
       if (id != null) 'id': id.toString(),
@@ -93,7 +93,7 @@ class Users implements SupadartClass<Users> {
       if (status != null) 'status': status,
       if (createdAt != null) 'created_at': createdAt.toUtc().toIso8601String(),
       if (companyEmail != null) 'company_email': companyEmail,
-      if (user_status != null) 'user_status': user_status,
+
       if (company != null) 'Company': company,
     };
   }
@@ -111,7 +111,7 @@ class Users implements SupadartClass<Users> {
     int? status,
     DateTime? createdAt,
     String? companyEmail,
-    int? user_status,
+
     String? company,
   }) {
     return _generateMap(
@@ -127,7 +127,7 @@ class Users implements SupadartClass<Users> {
       status: status,
       createdAt: createdAt,
       companyEmail: companyEmail,
-      user_status: user_status,
+
       company: company,
     );
   }
@@ -145,7 +145,7 @@ class Users implements SupadartClass<Users> {
     int? status,
     DateTime? createdAt,
     String? companyEmail,
-    int? user_status,
+
     String? company,
   }) {
     return _generateMap(
@@ -161,7 +161,7 @@ class Users implements SupadartClass<Users> {
       status: status,
       createdAt: createdAt,
       companyEmail: companyEmail,
-      user_status: user_status,
+
       company: company,
     );
   }
@@ -207,7 +207,7 @@ class Users implements SupadartClass<Users> {
     int? status,
     DateTime? createdAt,
     String? companyEmail,
-    int? user_status,
+
     String? company,
   }) {
     return {
@@ -223,7 +223,6 @@ class Users implements SupadartClass<Users> {
       if (status != null) 'status': status,
       if (createdAt != null) 'created_at': createdAt,
       if (companyEmail != null) 'company_email': companyEmail,
-      if (user_status != null) 'user_status': user_status,
       if (company != null) 'Company': company,
     };
   }
@@ -242,7 +241,7 @@ class Users implements SupadartClass<Users> {
       status: status,
       createdAt: createdAt,
       companyEmail: companyEmail,
-      user_status: user_status,
+
       company: company,
     );
   }
@@ -261,7 +260,6 @@ class Users implements SupadartClass<Users> {
     Object? status = _unset,
     Object? createdAt = _unset,
     Object? companyEmail = _unset,
-    Object? user_status = _unset,
     Object? company = _unset,
   }) {
     return Users(
@@ -277,7 +275,6 @@ class Users implements SupadartClass<Users> {
       status: status == _unset ? this.status : status as int?,
       createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
       companyEmail: companyEmail == _unset ? this.companyEmail : companyEmail as String?,
-      user_status: user_status == _unset ? this.user_status : user_status as int?,
       company: company == _unset ? this.company : company as String?,
     );
   }

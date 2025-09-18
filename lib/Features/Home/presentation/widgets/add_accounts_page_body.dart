@@ -181,7 +181,6 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                           position: selectedPositionValue.value,
                           role: Role.text,
                           status: selectedStatusValue.value,
-                          userStatus: selectedUserStatusValue.value,
                         );
                       },
                       child: BlocConsumer<AuthCubit, AuthCubitState>(

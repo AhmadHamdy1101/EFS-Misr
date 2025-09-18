@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
@@ -8,6 +6,7 @@ import 'package:efs_misr/constants/constants.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
@@ -153,7 +152,7 @@ class TicketsCubit extends Cubit<TicketsState> {
       }
 
     } catch (e) {
-
+Get.snackbar('Error', e.toString());
 
     }
   }}

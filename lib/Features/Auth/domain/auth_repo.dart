@@ -14,7 +14,6 @@ abstract class AuthRepo {
     required BigInt position,
     required int status,
     required String role,
-    required int userStatus,
     required String companyEmail,
     required String company,
     required String email,

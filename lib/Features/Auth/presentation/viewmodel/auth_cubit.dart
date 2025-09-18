@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'package:efs_misr/core/utils/app_colors.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../constants/constants.dart';
 import '../../../Home/data/models/user.dart';
@@ -26,7 +29,6 @@ class AuthCubit extends Cubit<AuthCubitState> {
        final user =  await authRepo.getUserData(userId: userId);
         user.fold(
               (l) {
-                print(l.message);
             emit(LoginFailure(errorMsg:l.message));
           },
               (user) {
@@ -87,10 +89,8 @@ class AuthCubit extends Cubit<AuthCubitState> {
     required BigInt position,
     required String role,
     required int status,
-    required int userStatus,
   }) async
   {
-    emit(RegisterLoading());
     final result = await authRepo.addAccount(email: email,password: password);
     result.fold(
       (l) {
@@ -109,14 +109,13 @@ class AuthCubit extends Cubit<AuthCubitState> {
           status: status,
           userID: userId,
           userName: userName,
-          userStatus: userStatus
         );
         savingData.fold(
           (l) {
-            emit(RegisterFailure(errorMsg: l.message));
+            Get.snackbar("Error", l.message,backgroundColor: Colors.red,colorText: AppColors.white);
           },
           (r) {
-            emit(RegisterSuccess());
+            Get.snackbar("Success", 'Account created successfully',backgroundColor: AppColors.green,colorText: AppColors.white);
           },
         );
       },

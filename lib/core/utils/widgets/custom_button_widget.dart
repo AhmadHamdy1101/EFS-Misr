@@ -1,21 +1,19 @@
-import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
-import '../app_text_styles.dart';
 
 class CustomButtonWidget extends StatelessWidget {
   const CustomButtonWidget({
     super.key,
-    required this.screenWidth, this.text, this.color, this.foregroundcolor, this.onpressed, this.toppadding, this.textstyle,
+    required this.screenWidth, this.text, this.color, this.foregroundcolor, this.onpressed, required this.toppadding, required this.textstyle,
   });
 
-  final screenWidth;
-  final text;
-  final color;
-  final foregroundcolor;
-  final onpressed;
-  final toppadding;
-  final textstyle;
+  final double screenWidth;
+  final String? text;
+  final Color? color;
+  final Color? foregroundcolor;
+  final VoidCallback? onpressed;
+  final double toppadding;
+  final TextStyle textstyle;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +31,7 @@ class CustomButtonWidget extends StatelessWidget {
       ),
       onPressed: onpressed,
       child: Text(
-        text,
+        text!,
         style: textstyle,
       ),
     );
