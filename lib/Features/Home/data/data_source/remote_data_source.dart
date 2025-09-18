@@ -29,8 +29,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
     final assets = await supabaseClient.assets
         .select('''
       *,
-      Branch(*),
-      tickets(*)
+      branch(*)
     ''')
         .withConverter(Assets.converter);
 

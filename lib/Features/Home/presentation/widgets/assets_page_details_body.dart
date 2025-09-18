@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
-import '../../data/models/tickets.dart';
 
 class AssetsDetailsPageBody extends StatefulWidget {
   const AssetsDetailsPageBody({super.key, required this.assets});
@@ -17,23 +16,23 @@ class AssetsDetailsPageBody extends StatefulWidget {
 }
 
 class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
-   BigInt totalAmount = BigInt.zero;
+   // BigInt totalAmount = BigInt.zero;
 
    @override
    void initState() {
      super.initState();
-     totalAmount = calculateTotalAmount(widget.assets.tickets!);
+     // totalAmount = calculateTotalAmount(widget.assets.tickets!);
    }
-   BigInt calculateTotalAmount(List<Tickets> tickets) {
-     BigInt total = BigInt.zero;
-     for (final ticket in tickets) {
-       if (ticket.amount != null) {
-         total += ticket.amount!;
-       }
-     }
-
-     return total;
-   }
+   // BigInt calculateTotalAmount(List<Tickets> tickets) {
+   //   BigInt total = BigInt.zero;
+   //   for (final ticket in tickets) {
+   //     if (ticket.amount != null) {
+   //       total += ticket.amount!;
+   //     }
+   //   }
+   //
+   //   return total;
+   // }
 
    @override
   Widget build(BuildContext context) {
@@ -112,7 +111,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    "$totalAmount",
+                                    "0",
                                     style: AppTextStyle.latoBold16(
                                       context,
                                     ).copyWith(color: AppColors.white),
@@ -168,103 +167,103 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
             ),
           ),
         ),
-        SliverFillRemaining(
-          child: ListView.builder(
-            itemCount: widget.assets.tickets?.length,
-            itemBuilder:  (context, index) {
-              print(widget.assets.tickets?.length);
-              return Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 4,
-                color: AppColors.white,
-                margin: const EdgeInsets.all(12),
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                  child: Column(
-                    spacing: 10,
-                    children: [
-                      Row(
-                        spacing: 15,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: screenWidth * 0.03,
-                              vertical: screenHeight * 0.01,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.white,
-                              borderRadius: BorderRadius.circular(60),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.black.withAlpha(30),
-                                  spreadRadius: 0,
-                                  blurRadius: 11.2,
-                                ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              child: SvgPicture.asset(
-                                'assets/images/deductions.svg',
-                                color: AppColors.green,
-                                width: screenWidth * 0.09,
-                                height: screenWidth * 0.09,
-                              ),
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 5,
-                                  horizontal: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.green,
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: Text(
-                                  '${widget.assets.tickets![index].variation}',
-                                  style: AppTextStyle.latoRegular15(
-                                    context,
-                                  ).copyWith(color: AppColors.white),
-                                ),
-                              ),
-                              Text(
-                                '${widget.assets.tickets![index].repairDate}',
-                                style: AppTextStyle.latoBold16(context),
-                              ),
-                              Text(
-                                '${widget.assets.tickets![index].comment}',
-                                style: AppTextStyle.latoRegular16(
-                                  context,
-                                ).copyWith(color: AppColors.gray),
-                              ),
-                            ],
-                          ),
-                          Expanded(
-                            child: Text(
-                              "${widget.assets.tickets![index].amount}",
-                              style: AppTextStyle.latoBold26(
-                                context,
-                              ).copyWith(color: AppColors.green),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
+        // SliverFillRemaining(
+        //   child: ListView.builder(
+        //     itemCount: widget.assets.tickets?.length,
+        //     itemBuilder:  (context, index) {
+        //       print(widget.assets.tickets?.length);
+        //       return Card(
+        //         shape: RoundedRectangleBorder(
+        //           borderRadius: BorderRadius.circular(16),
+        //         ),
+        //         elevation: 4,
+        //         color: AppColors.white,
+        //         margin: const EdgeInsets.all(12),
+        //         child: Container(
+        //           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        //           child: Column(
+        //             spacing: 10,
+        //             children: [
+        //               Row(
+        //                 spacing: 15,
+        //                 crossAxisAlignment: CrossAxisAlignment.center,
+        //                 mainAxisAlignment: MainAxisAlignment.start,
+        //                 children: [
+        //                   Container(
+        //                     padding: EdgeInsets.symmetric(
+        //                       horizontal: screenWidth * 0.03,
+        //                       vertical: screenHeight * 0.01,
+        //                     ),
+        //                     decoration: BoxDecoration(
+        //                       color: AppColors.white,
+        //                       borderRadius: BorderRadius.circular(60),
+        //                       boxShadow: [
+        //                         BoxShadow(
+        //                           color: AppColors.black.withAlpha(30),
+        //                           spreadRadius: 0,
+        //                           blurRadius: 11.2,
+        //                         ),
+        //                       ],
+        //                     ),
+        //                     child: ClipRRect(
+        //                       child: SvgPicture.asset(
+        //                         'assets/images/deductions.svg',
+        //                         color: AppColors.green,
+        //                         width: screenWidth * 0.09,
+        //                         height: screenWidth * 0.09,
+        //                       ),
+        //                     ),
+        //                   ),
+        //                   Column(
+        //                     crossAxisAlignment: CrossAxisAlignment.start,
+        //                     children: [
+        //                       Container(
+        //                         padding: EdgeInsets.symmetric(
+        //                           vertical: 5,
+        //                           horizontal: 10,
+        //                         ),
+        //                         decoration: BoxDecoration(
+        //                           color: AppColors.green,
+        //                           borderRadius: BorderRadius.circular(50),
+        //                         ),
+        //                         child: Text(
+        //                           '${widget.assets.tickets![index].variation}',
+        //                           style: AppTextStyle.latoRegular15(
+        //                             context,
+        //                           ).copyWith(color: AppColors.white),
+        //                         ),
+        //                       ),
+        //                       Text(
+        //                         '${widget.assets.tickets![index].repairDate}',
+        //                         style: AppTextStyle.latoBold16(context),
+        //                       ),
+        //                       Text(
+        //                         '${widget.assets.tickets![index].comment}',
+        //                         style: AppTextStyle.latoRegular16(
+        //                           context,
+        //                         ).copyWith(color: AppColors.gray),
+        //                       ),
+        //                     ],
+        //                   ),
+        //                   Expanded(
+        //                     child: Text(
+        //                       "${widget.assets.tickets![index].amount}",
+        //                       style: AppTextStyle.latoBold26(
+        //                         context,
+        //                       ).copyWith(color: AppColors.green),
+        //                       textAlign: TextAlign.center,
+        //                     ),
+        //                   ),
+        //                 ],
+        //               ),
+        //             ],
+        //
+        //           ),
+        //         ),
+        //       );
+        //     },
+        //   ),
+        // ),
 
       ],
     );

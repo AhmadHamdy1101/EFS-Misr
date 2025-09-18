@@ -39,6 +39,7 @@ extension SupadartClient on SupabaseClient {
   SupabaseQueryBuilder get positions => from('positions');
   SupabaseQueryBuilder get branch => from('branch');
   SupabaseQueryBuilder get users => from('users');
+  SupabaseQueryBuilder get assetsAndTickets => from('assets_tickets_details');
 }
 
 // Supabase Storage Client Extension

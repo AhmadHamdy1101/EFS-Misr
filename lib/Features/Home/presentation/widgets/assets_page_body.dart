@@ -116,12 +116,12 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                   child: ListView.builder(
                     itemCount: state.assets.length,
                     itemBuilder: (context, index) {
-                      BigInt total = BigInt.zero;
-                      for (final ticket in assets[index].tickets!) {
-                        if (ticket.amount != null) {
-                          total += ticket.amount!;
-                        }
-                      }
+                      // BigInt total = BigInt.zero;
+                      // for (final ticket in assets[index].tickets!) {
+                      //   if (ticket.amount != null) {
+                      //     total += ticket.amount!;
+                      //   }
+                      // }
 
                       return GestureDetector(
                         onTap: () {
@@ -208,7 +208,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
-                                              "$total ",
+                                              "0",
                                               style:
                                                   AppTextStyle.latoBold16(
                                                     context,

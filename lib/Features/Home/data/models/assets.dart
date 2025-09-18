@@ -16,7 +16,7 @@ class Assets implements SupadartClass<Assets> {
   final String? area;
   final String? type;
   final Branch? branchObject;
-  final List<Tickets>? tickets;
+
 
   const Assets({
     required this.id,
@@ -29,7 +29,6 @@ class Assets implements SupadartClass<Assets> {
     this.area,
     this.type,
     this.branchObject,
-    this.tickets,
   });
 
   static String get table_name => 'assets';
@@ -146,14 +145,9 @@ class Assets implements SupadartClass<Assets> {
           : DateTime.fromMillisecondsSinceEpoch(0),
       area: jsonn['area'] != null ? jsonn['area'].toString() : null,
       type: jsonn['type'] != null ? jsonn['type'].toString() : null,
-      branchObject: jsonn['Branch'] is Map<String, dynamic>
-          ? Branch.fromJson(jsonn['Branch'])
+      branchObject: jsonn['branch'] is Map<String, dynamic>
+          ? Branch.fromJson(jsonn['branch'])
           : null,
-      tickets: jsonn['tickets'] != null
-          ? (jsonn['tickets'] as List)
-                .map((e) => Tickets.fromJson(e as Map<String, dynamic>))
-                .toList()
-          : [],
     );
   }
 

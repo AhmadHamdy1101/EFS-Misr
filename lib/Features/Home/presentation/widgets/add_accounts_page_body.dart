@@ -50,8 +50,8 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
   final TextEditingController phone = TextEditingController();
   final TextEditingController Status = TextEditingController();
   final TextEditingController Postition = TextEditingController();
-  final  companyTxt = ''.obs;
-  final  roleTxt = ''.obs;
+  final companyTxt = ''.obs;
+  final roleTxt = ''.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +133,9 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                             selectedValue: selectedValue,
                             Data: positions,
                             onChanged: (value) {
-                              selectedPositionValue.value = BigInt.tryParse(value!)!;
+                              selectedPositionValue.value = BigInt.tryParse(
+                                value!,
+                              )!;
                             },
                           ),
                           CustomDropdownWidget(
@@ -141,7 +143,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                             inbutHintText: 'Company',
                             selectedValue: selectedValue,
                             onChanged: (value) {
-                              companyTxt.value=value!;
+                              companyTxt.value = value!;
                             },
                             Data: company,
                           ),
@@ -150,7 +152,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                             inbutHintText: 'Role',
                             selectedValue: selectedValue,
                             onChanged: (value) {
-                              roleTxt.value=value!;
+                              roleTxt.value = value!;
                             },
                             Data: role,
                           ),
@@ -173,7 +175,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                         ),
                       ),
                       onPressed: () {
-                        addAccountLoading.value=true;
+                        addAccountLoading.value = true;
                         context.read<AuthCubit>().addAccount(
                           email: email.text,
                           userName: username.text,
@@ -186,19 +188,23 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                           role: roleTxt.value,
                           status: selectedStatusValue.value,
                         );
-                        addAccountLoading.value=false;
+                        addAccountLoading.value = false;
                       },
-                      child: Obx(() => addAccountLoading.value?SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: AppColors.white,
-                          strokeWidth: 2,
-                        ),
-                      ):Text(
-                        'Add',
-                        style: AppTextStyle.latoBold26(context),
-                      ),)
+                      child: Obx(
+                        () => addAccountLoading.value
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: AppColors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(
+                                'Add',
+                                style: AppTextStyle.latoBold26(context),
+                              ),
+                      ),
                     ),
                   ),
                 ],

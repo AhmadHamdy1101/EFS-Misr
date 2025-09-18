@@ -5,3 +5,4 @@ export 'tickets.dart';
 export 'positions.dart';
 export 'branch.dart';
 export 'user.dart';
+export 'assets_and_tickets.dart';
