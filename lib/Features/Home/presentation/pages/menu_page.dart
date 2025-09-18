@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-import '../../../../core/utils/app_colors.dart';
 import '../../data/models/user.dart';
 import '../widgets/menu_page_body.dart';
 

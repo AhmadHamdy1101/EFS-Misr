@@ -20,6 +20,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
   final selectedPositionValue = BigInt.zero.obs;
   final selectedStatusValue = 0.obs;
   final selectedUserStatusValue = 0.obs;
+  final addAccountLoading = false.obs;
   final company = [
     {'name': 'EFS', 'value': 'EFS'},
     {'name': 'Bank Misr', 'value': 'Bank Misr'},
@@ -49,8 +50,8 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
   final TextEditingController phone = TextEditingController();
   final TextEditingController Status = TextEditingController();
   final TextEditingController Postition = TextEditingController();
-  final TextEditingController Company = TextEditingController();
-  final TextEditingController Role = TextEditingController();
+  final  companyTxt = ''.obs;
+  final  roleTxt = ''.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -138,15 +139,19 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                           CustomDropdownWidget(
                             inbutIcon: 'assets/images/company.svg',
                             inbutHintText: 'Company',
-                            textEditingController: Company,
                             selectedValue: selectedValue,
+                            onChanged: (value) {
+                              companyTxt.value=value!;
+                            },
                             Data: company,
                           ),
                           CustomDropdownWidget(
                             inbutIcon: 'assets/images/role.svg',
                             inbutHintText: 'Role',
-                            textEditingController: Role,
                             selectedValue: selectedValue,
+                            onChanged: (value) {
+                              roleTxt.value=value!;
+                            },
                             Data: role,
                           ),
                         ],
@@ -168,6 +173,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                         ),
                       ),
                       onPressed: () {
+                        addAccountLoading.value=true;
                         context.read<AuthCubit>().addAccount(
                           email: email.text,
                           userName: username.text,
@@ -175,51 +181,24 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                           phone: phone.text,
                           address: address.text,
                           companyEmail: companyEmail.text,
-                          company: Company.text,
+                          company: companyTxt.value,
                           position: selectedPositionValue.value,
-                          role: Role.text,
+                          role: roleTxt.value,
                           status: selectedStatusValue.value,
                         );
+                        addAccountLoading.value=false;
                       },
-                      child: BlocConsumer<AuthCubit, AuthCubitState>(
-                        buildWhen: (previous, current) =>
-                            current is RegisterLoading ||
-                            current is RegisterSuccess ||
-                            current is RegisterFailure,
-                        listener: (context, state) {
-                          if (state is RegisterFailure) {
-                            Get.snackbar(
-                              "Add Account Failed",
-                              state.errorMsg,
-                              backgroundColor: Colors.red,
-                              colorText: AppColors.white,
-                            );
-                          }
-                          if (state is RegisterSuccess) {
-                            Get.snackbar(
-                              "Success",
-                              'Account added successfully',
-                              backgroundColor: Colors.green,
-                              colorText: AppColors.white,
-                            );
-                          }
-                        },
-                        builder: (context, state) {
-                          if (state is RegisterLoading) {
-                            return SizedBox(
-                              width: 15,
-                              height: 15,
-                              child: CircularProgressIndicator(
-                                color: AppColors.white,
-                              ),
-                            );
-                          }
-                          return Text(
-                            'Add',
-                            style: AppTextStyle.latoBold26(context),
-                          );
-                        },
-                      ),
+                      child: Obx(() => addAccountLoading.value?SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: AppColors.white,
+                          strokeWidth: 2,
+                        ),
+                      ):Text(
+                        'Add',
+                        style: AppTextStyle.latoBold26(context),
+                      ),)
                     ),
                   ),
                 ],

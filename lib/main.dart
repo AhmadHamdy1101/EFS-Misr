@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'constants/constants.dart';
 import 'core/utils/singelton.dart';
 import 'main_app.dart';
@@ -57,7 +56,6 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(
           brightness: Brightness.light,
           primaryColor: AppColors.white,
-
           scaffoldBackgroundColor: AppColors.appBackground,
           cardColor: AppColors.white,
           appBarTheme: AppBarTheme(backgroundColor: Colors.transparent),

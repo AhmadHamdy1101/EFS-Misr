@@ -33,17 +33,23 @@ class AuthRepoImpl extends AuthRepo {
       {required String password, required String email}
   ) async {
     try {
-      final userId = await SupabaseFunctions.createUser(email: email, password: password);
-      if (userId==null) {
-        return Left(GeneralFailure('Login failed: user missing'));
+      final result = await SupabaseFunctions.createUser(
+        email: email,
+        password: password,
+      );
+
+      if (result == null) {
+        return Left(GeneralFailure("Unknown error"));
       }
-      else {
-        return Right(userId);
+
+      // لو رجع id
+      if (result.length == 36) { // طول UUID دايمًا 36
+        return Right(result);
       }
+print(result);
+      return Left(GeneralFailure(result));
     } catch (e) {
-      final failure = Failure.fromException(e);
-      print(failure.message);
-      return Left(failure);
+      return Left(Failure.fromException(e));
     }
   }
 

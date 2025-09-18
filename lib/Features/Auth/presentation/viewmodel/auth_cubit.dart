@@ -94,7 +94,7 @@ class AuthCubit extends Cubit<AuthCubitState> {
     final result = await authRepo.addAccount(email: email,password: password);
     result.fold(
       (l) {
-        emit(RegisterFailure(errorMsg: l.message));
+        Get.snackbar("Error", l.message,backgroundColor: Colors.red,colorText: AppColors.white);
       },
       (userId) async {
         final savingData = await authRepo.saveUsersData(

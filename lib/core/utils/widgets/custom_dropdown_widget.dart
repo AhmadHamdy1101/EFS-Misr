@@ -9,7 +9,7 @@ class CustomDropdownWidget extends StatefulWidget {
     super.key,
     required this.inbutIcon,
     required this.inbutHintText,
-    required this.textEditingController,
+    this.textEditingController,
     this.textInputType,
     this.validator,
     this.onChanged,
@@ -20,7 +20,7 @@ class CustomDropdownWidget extends StatefulWidget {
   final String inbutHintText;
   final String? selectedValue;
   final List<Map<String, dynamic>> Data;
-  final TextEditingController textEditingController;
+  final TextEditingController? textEditingController;
   final TextInputType? textInputType;
   final String? Function(String?)? validator;
   final void Function(String?)? onChanged;

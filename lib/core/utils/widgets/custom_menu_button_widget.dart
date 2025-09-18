@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../app_colors.dart';
 import '../app_text_styles.dart';
 
 class CustomMenuButtonWidget extends StatelessWidget {
@@ -16,10 +15,10 @@ class CustomMenuButtonWidget extends StatelessWidget {
     return ExpansionTile(
       leading: Icon(icon),
       title: Text(title, style: AppTextStyle.latoBold23(context).copyWith(color: Theme.of(context).colorScheme.primary),),
-      children: children,
       iconColor:  Theme.of(context).colorScheme.primary,
       collapsedIconColor: Theme.of(context).colorScheme.primary,
       shape: RoundedRectangleBorder(side: BorderSide.none),
+      children: children,
     );
   }
 }
