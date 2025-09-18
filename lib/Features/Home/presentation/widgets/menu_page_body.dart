@@ -125,7 +125,7 @@ class _MenuPageBodyState extends State<MenuPageBody> {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 15,
               children: [
-                Text('General',style: AppTextStyle.latoBold16(context).copyWith(color: AppColors.gray),),
+                Text('General',style: AppTextStyle.latoBold26(context).copyWith(color: AppColors.gray),),
                 Container(
                   padding: EdgeInsets.zero,
                   width: screenWidth,
@@ -135,16 +135,18 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     elevation: 4,
-                    color: AppColors.white,
                     child: Column(
                       children: [
                         CustomMenuButtonWidget(title: 'Language'.tr, icon:Icons.language,children: [
-                          ListTile(title: Text("English",style: AppTextStyle.latoBold23(context),), onTap: () { Get.updateLocale(Locale('en'));}),
-                          ListTile(title: Text("العربية",style: AppTextStyle.latoBold23(context),), onTap: () { Get.updateLocale(Locale('ar'));}),
+                          ListTile(title: Text("English",style: AppTextStyle.latoBold23(context).copyWith(color: Theme.of(context).colorScheme.primary),), onTap: () { Get.updateLocale(Locale('en'));}),
+                          ListTile(title: Text("العربية",style: AppTextStyle.latoBold23(context).copyWith(color: Theme.of(context).colorScheme.primary),), onTap: () { Get.updateLocale(Locale('ar'));}),
                         ],),
                         CustomMenuButtonWidget(title: 'Dark mode'.tr, icon:Icons.dark_mode,children: [
-                          ListTile(title: Text('Light'.tr,style: AppTextStyle.latoBold23(context),), onTap: () {},),
-                          ListTile(title: Text('Dark'.tr,style: AppTextStyle.latoBold23(context),), onTap: () {},)
+                          ListTile(title: Text('Light'.tr,style: AppTextStyle.latoBold23(context).copyWith(color: Theme.of(context).colorScheme.primary),), onTap: () => {Get.changeThemeMode(ThemeMode.light)},),
+                          ListTile(title: Text('Dark'.tr,style: AppTextStyle.latoBold23(context).copyWith(color: Theme.of(context).colorScheme.primary),), onTap: () =>
+                          {
+                            Get.changeThemeMode(ThemeMode.dark),
+                          },)
                         ],),
                       ],
                     ),
@@ -159,7 +161,6 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     elevation: 4,
-                    color: AppColors.white,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 0),
                       child: ElevatedButton(
@@ -168,7 +169,7 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                             Colors.transparent,
                           ),
                           foregroundColor: WidgetStatePropertyAll(
-                            AppColors.black,
+                            Theme.of(context).colorScheme.primary,
                           ),
                           elevation: WidgetStatePropertyAll(0),
                         ),
@@ -183,7 +184,7 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                                 Icon(Icons.exit_to_app,size: 25,),
                                 Text(
                                   "Log Out",
-                                  style: AppTextStyle.latoBold23(context),
+                                  style: AppTextStyle.latoBold23(context).copyWith(color: Theme.of(context).colorScheme.primary),
                                 ),
                               ],
                             ),

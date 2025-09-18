@@ -27,7 +27,6 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
         leading: SizedBox(),
         centerTitle: true,
         title: Text(
@@ -37,7 +36,6 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
           ).copyWith(color: AppColors.green),
         ),
       ),
-      backgroundColor: AppColors.appBackground,
       body: BlocBuilder<AssetsCubit, AssetsState>(
         buildWhen: (previous, current) =>
             current is GetAssetsLoading ||
@@ -89,7 +87,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                       children: [
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.white,
+                            backgroundColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),
@@ -136,7 +134,6 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                           elevation: 4,
-                          color: AppColors.white,
                           margin: const EdgeInsets.all(12),
                           child: Container(
                             padding: EdgeInsets.symmetric(

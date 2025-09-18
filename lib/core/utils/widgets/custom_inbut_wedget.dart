@@ -25,9 +25,9 @@ class CustomInputWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-
+      clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).buttonTheme.colorScheme?.primary,
         borderRadius: BorderRadius.circular(40), // pill shape
         boxShadow: [
           BoxShadow(
@@ -39,6 +39,7 @@ class CustomInputWidget extends StatelessWidget {
         ],
       ),
       child: TextFormField(
+
         onChanged: onChanged,
         validator: validator,
         cursorColor: AppColors.black,
@@ -46,7 +47,9 @@ class CustomInputWidget extends StatelessWidget {
         controller: textEditingController,
         obscureText: changeToPass,
         decoration: InputDecoration(
-          hintStyle: AppTextStyle.latoRegular16(context),
+          filled: true,
+          fillColor: Theme.of(context).buttonTheme.colorScheme?.primary,
+          hintStyle: AppTextStyle.latoRegular16(context).copyWith(color: Theme.of(context).colorScheme.primary),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(9.0),
             child: SvgPicture.asset(inbutIcon),

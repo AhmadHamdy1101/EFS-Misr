@@ -41,10 +41,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
     final TextEditingController Priority = TextEditingController();
     final TextEditingController comment = TextEditingController();
     final TextEditingController engineer = TextEditingController();
-    final TextEditingController Status = TextEditingController();
-    final TextEditingController Postition = TextEditingController();
-    final TextEditingController Company = TextEditingController();
-    final TextEditingController Role = TextEditingController();
+
     return Scaffold(
       backgroundColor: AppColors.appBackground,
       appBar: AppBar(

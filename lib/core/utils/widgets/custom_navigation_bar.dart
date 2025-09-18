@@ -22,7 +22,7 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
     return Container(
       height: 65,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).primaryColor,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
@@ -38,9 +38,8 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
             icon: SvgPicture.asset(
               widget.icons[index],
               color: widget.selectedIndex == index
-                  ? Colors
-                        .green // أو AppColors.green
-                  : Colors.black, // أو AppColors.black
+                  ? Theme.of(context).colorScheme.secondary // أو AppColors.green
+                  : Theme.of(context).colorScheme.primary, // أو AppColors.black
             ),
             onPressed: () => widget.onPressed(index),
           );

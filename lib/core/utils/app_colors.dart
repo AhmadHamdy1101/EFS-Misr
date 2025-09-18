@@ -10,4 +10,6 @@ class AppColors {
   static const Color lightGray = Color(0xffF7F7F7);
   static const Color successGreen = Color(0xff008C43);
   static const Color danger = Color(0xffDBA0A0);
+  static const Color scafolddark = Color(0xff161e2b);
+  static const Color buttondark = Color(0xff1f2a3b);
 }
