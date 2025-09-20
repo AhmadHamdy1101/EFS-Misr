@@ -46,7 +46,6 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
               borderRadius: BorderRadius.circular(16),
             ),
             elevation: 4,
-            color: AppColors.white,
             margin: const EdgeInsets.all(12),
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
@@ -135,7 +134,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                     width: screenWidth,
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: AppColors.lightGray,
+                      color: Theme.of(context).colorScheme.tertiary,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Column(

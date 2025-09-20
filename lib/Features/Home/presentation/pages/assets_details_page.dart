@@ -16,7 +16,6 @@ final Assets assets;
 
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
 
           centerTitle: true,
           title: Text(
@@ -26,6 +25,6 @@ final Assets assets;
             ).copyWith(color: AppColors.green),
           ),
         ),
-        backgroundColor: AppColors.appBackground,body: AssetsDetailsPageBody(assets: assets,)) ;
+        body: AssetsDetailsPageBody(assets: assets,)) ;
   }
 }

@@ -1,10 +1,13 @@
 
+import 'dart:ffi';
+
 import 'package:efs_misr/Features/Home/presentation/pages/add_account_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/accounts_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
@@ -23,6 +26,20 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
     loadAccounts();
   }
 
+  String checkStatus(int? status) {
+    switch (status) {
+      case 1:
+        return 'Active';
+      case 2:
+        return 'Internship';
+      case 3:
+        return 'Terminated';
+      case 4:
+        return 'Suspended';
+      default:
+        return 'Unknown';
+    }
+  }
   Future<void> loadAccounts() async {
     await context.read<AccountsCubit>().getAccounts();
   }
@@ -36,7 +53,6 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
         leading: SizedBox(),
         centerTitle: true,
         title: Text(
@@ -46,7 +62,6 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
           ).copyWith(color: AppColors.green),
         ),
       ),
-      backgroundColor: AppColors.appBackground,
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -86,7 +101,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.white,
+                      backgroundColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -107,7 +122,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.white,
+                      backgroundColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -158,7 +173,6 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                           elevation: 4,
-                          color: AppColors.white,
                           margin: const EdgeInsets.all(12),
                           child: Container(
                             padding: EdgeInsets.symmetric(
@@ -229,7 +243,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                   child: Column(
                                     spacing: 10,
                                     children: [
-                                      Text("${users[index].status ?? ''}".tr),
+                                      Text('Status'.tr),
                                       Container(
                                         padding: EdgeInsets.symmetric(
                                           vertical: screenHeight * 0.01,
@@ -244,7 +258,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
-                                              "Active",
+                                              checkStatus(users[index].status).tr,
                                               style: AppTextStyle.latoBold16(
                                                 context,
                                               ).copyWith(color: AppColors.white),

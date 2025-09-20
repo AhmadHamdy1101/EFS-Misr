@@ -43,10 +43,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
     final TextEditingController engineer = TextEditingController();
 
     return Scaffold(
-      backgroundColor: AppColors.appBackground,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-
         centerTitle: true,
         title: Text(
           'Add Ticket'.tr,
@@ -107,8 +104,17 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                     Data: status,
                   ),
                   SizedBox(
-                      width: screenWidth,
-                      child: CustomButtonWidget(screenWidth: screenWidth,color: AppColors.green,text: 'Add Ticket',onpressed: (){},foregroundcolor: AppColors.white,textstyle: AppTextStyle.latoBold26(context),toppadding: 20,)),
+                    width: screenWidth,
+                    child: CustomButtonWidget(
+                      screenWidth: screenWidth,
+                      color: AppColors.green,
+                      text: 'Add Ticket',
+                      onpressed: () {},
+                      foregroundcolor: AppColors.white,
+                      textstyle: AppTextStyle.latoBold26(context),
+                      toppadding: 15,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -118,5 +124,3 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
     );
   }
 }
-
-
