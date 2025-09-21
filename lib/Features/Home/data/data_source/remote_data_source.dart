@@ -39,7 +39,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
   @override
   Future<Assets> getAssetsByQrCode(String qrCode) async {
     final asset = await supabaseClient.assets
-        .select('*,Branch(*),tickets(*)')
+        .select('*,branch(*)')
         .eq('barcode', qrCode)
         .withConverter(Assets.converter);
     return asset[0];
