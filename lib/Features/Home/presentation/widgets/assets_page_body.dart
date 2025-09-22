@@ -155,7 +155,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                   ),
                                   child: ClipRRect(
                                     child: SvgPicture.asset(
-                                      'assets/images/Chair.svg',
+                                      'assets/images/${assets[index].type}.svg',
                                       color: AppColors.green,
                                       width: screenWidth * 0.1,
                                       height: screenWidth * 0.1,

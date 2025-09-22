@@ -128,16 +128,18 @@ class AssetsCubit extends Cubit<AssetsState> {
           emit(ConvertAssetsToExcelFailed());
           return;
         }
-
-        final downloadsDir = Directory("/storage/emulated/0/Download");
-        if (!downloadsDir.existsSync()) {
-          downloadsDir.createSync(recursive: true);
+        if (await Permission.storage.request().isDenied) {
+          emit(ConvertAssetsToExcelFailed());
+          return;
         }
 
+        final downloadsDir = await getExternalStorageDirectory();
+        if (!downloadsDir!.existsSync()) {
+          downloadsDir.createSync(recursive: true);
+        }
         final filePath = "${downloadsDir.path}/$fileName";
         final file = File(filePath);
         await file.writeAsBytes(fileBytes);
-
         await OpenFilex.open(filePath);
         await SharePlus.instance.share(
           ShareParams(files: [XFile(file.path)], text: 'Assets Export'),
@@ -155,10 +157,10 @@ class AssetsCubit extends Cubit<AssetsState> {
           ShareParams(files: [XFile(file.path)], text: 'Assets Export'),
         );
       }
+      emit(ConvertAssetsToExcelSuccess());
 
-      // emit(ConvertAssetsToExcelSuccess());
     } catch (e) {
-      // emit(ConvertAssetsToExcelFailed());
+      emit(ConvertAssetsToExcelFailed());
     }
   }
 }

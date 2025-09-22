@@ -120,10 +120,12 @@ class TicketsCubit extends Cubit<TicketsState> {
 
         if (await Permission.storage.request().isDenied) {
           return;
+        }else {
+          print("Permission to manage storage denied");
         }
 
-        final downloadsDir = Directory("/storage/emulated/0/Download");
-        if (!downloadsDir.existsSync()) {
+        final downloadsDir = await getExternalStorageDirectory();
+        if (!downloadsDir!.existsSync()) {
           downloadsDir.createSync(recursive: true);
         }
 
@@ -150,9 +152,12 @@ class TicketsCubit extends Cubit<TicketsState> {
         );
 
       }
+      emit(ConvertTicketsToExcelSuccess());
 
     } catch (e) {
+      emit(ConvertTicketsToExcelFailed());
 Get.snackbar('Error', e.toString());
+print(e.toString());
 
     }
   }}
