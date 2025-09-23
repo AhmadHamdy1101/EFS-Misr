@@ -1,13 +1,10 @@
 
-import 'dart:ffi';
-
 import 'package:efs_misr/Features/Home/presentation/pages/add_account_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/accounts_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
@@ -76,17 +73,14 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: CustomInputWidget(
                         onChanged: (value) {
-                          return null;
+                         return context.read<AccountsCubit>().searchTickets(value);
                         },
                         inbutIcon: 'assets/images/search.svg',
                         inbutHintText: 'Search'.tr,
                         changeToPass: false,
                         textEditingController: search,
-                        textInputType: TextInputType.emailAddress,
                       ),
                     ),
-
-                    // Password Inbut
                     SizedBox(height: 1),
                   ],
                 ),
@@ -106,7 +100,9 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                         borderRadius: BorderRadius.circular(50),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      context.read<AccountsCubit>().convertAccountsToExcel();
+                    },
                     child: Row(
                       spacing: 10,
                       children: [
@@ -149,11 +145,10 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
           ),
           SliverFillRemaining(
             child: BlocBuilder<AccountsCubit, AccountsState>(
-
               builder: (context, state) {
                 if (state is GetAccountsLoading) {
                   return const Center(
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(color: Colors.green,),
                   );
                 }
                 if (state is GetAccountsFailed) {

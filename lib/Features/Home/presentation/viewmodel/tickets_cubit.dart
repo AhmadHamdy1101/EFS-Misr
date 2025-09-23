@@ -1,10 +1,13 @@
 import 'dart:io';
+
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
 import 'package:efs_misr/constants/constants.dart';
+import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -27,6 +30,8 @@ class TicketsCubit extends Cubit<TicketsState> {
 
   final List<Tickets> allTickets = [];
   final List<Tickets> searchedTickets = [];
+
+  final status = ''.obs;
 
   Future<void> getTickets() async {
     emit(GetTicketsLoading());
@@ -70,8 +75,6 @@ class TicketsCubit extends Cubit<TicketsState> {
     emit(GetTicketsSuccess(tickets: searchedTickets));
   }
 
-
-
   Future<void> convertTicketsToExcel() async {
     try {
       final data = await supabaseClient.tickets.select();
@@ -101,28 +104,24 @@ class TicketsCubit extends Cubit<TicketsState> {
       workbook.dispose();
       final Uint8List fileBytes = Uint8List.fromList(bytes);
 
-      final timestamp =
-          DateTime.now();
+      final timestamp = DateTime.now();
       DateFormat('d - MMM - yyyy').format(timestamp);
       final fileName = "Tickets_$timestamp.xlsx";
 
-
-      if (kIsWeb || Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-
+      if (kIsWeb ||
+          Platform.isWindows ||
+          Platform.isLinux ||
+          Platform.isMacOS) {
         await FileSaver.instance.saveFile(
           name: fileName,
           bytes: fileBytes,
           fileExtension: "xlsx",
           mimeType: MimeType.microsoftExcel,
         );
-
       } else if (Platform.isAndroid) {
-
         if (await Permission.storage.request().isDenied) {
           return;
-        }else {
-          print("Permission to manage storage denied");
-        }
+        } else {}
 
         final downloadsDir = await getExternalStorageDirectory();
         if (!downloadsDir!.existsSync()) {
@@ -137,9 +136,7 @@ class TicketsCubit extends Cubit<TicketsState> {
         await SharePlus.instance.share(
           ShareParams(files: [XFile(file.path)], text: 'Tickets Export'),
         );
-
       } else if (Platform.isIOS) {
-
         final dir = await getApplicationDocumentsDirectory();
         final filePath = "${dir.path}/$fileName";
 
@@ -150,14 +147,58 @@ class TicketsCubit extends Cubit<TicketsState> {
         await SharePlus.instance.share(
           ShareParams(files: [XFile(file.path)], text: 'Tickets Export'),
         );
-
       }
-      emit(ConvertTicketsToExcelSuccess());
-
     } catch (e) {
-      emit(ConvertTicketsToExcelFailed());
-Get.snackbar('Error', e.toString());
-print(e.toString());
-
+      Get.snackbar('Error', e.toString());
     }
-  }}
+  }
+
+  Future<void> updateTicketStatus(String ticketId, String newStatus) async {
+    final result = await homeRepo.updateTicketStatus(
+      ticketID: ticketId,
+      newStatus: newStatus,
+    );
+    result.fold((l) {}, (r) {
+      status.value = r.status!;
+    });
+  }
+
+  Future<void> addTicket({
+    required BigInt orecalID,
+    required String comment,
+    required BigInt branchID,
+    required String priority,
+    required DateTime requestDate,
+    required BigInt engineer,
+  }) async {
+    final result = await homeRepo.addTicket(
+      orecalID: orecalID,
+      comment: comment,
+      branchID: branchID,
+      priority: priority,
+      requestDate: requestDate,
+      engineer: engineer,
+    );
+    result.fold(
+      (l) {
+        Get.snackbar(
+          "Error",
+          l.message,
+          backgroundColor: Colors.red,
+          colorText: AppColors.white,
+        );
+      },
+      (tickets) {
+        Get.snackbar(
+          "Success",
+          "Ticket added successfully",
+          backgroundColor: Colors.green,
+          colorText: AppColors.white,
+        );
+        allTickets.clear();
+        allTickets.addAll(tickets);
+        emit(GetTicketsSuccess(tickets: allTickets));
+      },
+    );
+  }
+}

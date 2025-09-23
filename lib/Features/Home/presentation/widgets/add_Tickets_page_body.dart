@@ -1,11 +1,13 @@
 import 'package:efs_misr/core/utils/widgets/custom_dropdown_widget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_inbut_wedget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_button_widget.dart';
+import '../viewmodel/tickets_cubit.dart';
 
 class AddTicketsPageBody extends StatefulWidget {
   const AddTicketsPageBody({super.key});
@@ -29,10 +31,13 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
     ];
     final status = [
       {'name': 'Active', 'value': '1'},
-      {'name': 'Intership', 'value': '2'},
+      {'name': 'Internship', 'value': '2'},
       {'name': 'Terminated', 'value': '3'},
       {'name': 'Suspended', 'value': '4'},
     ];
+    final selectedBranchID = BigInt.zero.obs;
+    final selectedPriority = ''.obs;
+    final selectedStatus = BigInt.zero.obs;
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final TextEditingController oricalid = TextEditingController();
@@ -72,6 +77,11 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                     inbutHintText: 'Branch',
                     textEditingController: branch,
                     selectedValue: selectedValue,
+                    onChanged: (value) {
+                      selectedBranchID.value = BigInt.tryParse(
+                        value!,
+                      )!;
+                    },
                     Data: Branch,
                   ),
                   CustomDropdownWidget(
@@ -109,7 +119,16 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                       screenWidth: screenWidth,
                       color: AppColors.green,
                       text: 'Add Ticket',
-                      onpressed: () {},
+                      onpressed: () {
+                        context.read<TicketsCubit>().addTicket(
+                          branchID:selectedBranchID.value,
+                          comment: comment.text,
+                          orecalID: BigInt.parse(oricalid.text),
+                          priority: selectedPriority.value,
+                          requestDate: DateTime.timestamp(),
+                          engineer: BigInt.parse('3')
+                        );
+                      },
                       foregroundcolor: AppColors.white,
                       textstyle: AppTextStyle.latoBold26(context),
                       toppadding: 15,

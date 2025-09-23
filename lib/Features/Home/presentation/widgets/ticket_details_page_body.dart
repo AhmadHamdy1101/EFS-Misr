@@ -1,4 +1,5 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/widgets/QRViewTicket.dart';
 import 'package:efs_misr/core/Functions/GetDate_Function.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
@@ -6,6 +7,7 @@ import 'package:efs_misr/core/utils/widgets/custom_button_widget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_inbut_wedget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_outline_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
@@ -181,19 +183,25 @@ class TicketDetailsPageBody extends StatelessWidget {
                                   child: CustomOutlineButtonWidget(
                                     screenWidth: screenWidth,
                                     color: Colors.transparent,
-                                    foregroundcolor: AppColors.green,
-                                    onpressed: () {},
+                                    foregroundColor: AppColors.green,
+                                    onPressed: () {
+                                      context.read<TicketsCubit>().updateTicketStatus(ticket.id.toString()
+                                          , "Canceled");
+                                    },
                                     text: 'Canceled',
-                                    bordercolor: AppColors.green,
-                                    toppadding: 15.0,
-                                    textstyle: AppTextStyle.latoBold20(context),
+                                    borderColor: AppColors.green,
+                                    topPadding: 15.0,
+                                    textStyle: AppTextStyle.latoBold20(context),
                                   ),
                                 ),
                                 Expanded(
                                   child: CustomButtonWidget(
                                     screenWidth: screenWidth,
                                     text: 'Complete',
-                                    onpressed: () {},
+                                    onpressed: () {
+                                      context.read<TicketsCubit>().updateTicketStatus(ticket.id.toString()
+                                          , "Complete");
+                                    },
                                     foregroundcolor: AppColors.white,
                                     color: AppColors.green,
                                     toppadding: 15.0,

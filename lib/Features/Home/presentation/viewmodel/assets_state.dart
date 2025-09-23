@@ -13,6 +13,3 @@ final class GetAssetsSuccess extends AssetsState {
 }
 final class GetAssetsLoading extends AssetsState {}
 
-final class ConvertAssetsToExcelSuccess extends AssetsState {}
-final class ConvertAssetsToExcelLoading extends AssetsState {}
-final class ConvertAssetsToExcelFailed extends AssetsState {}

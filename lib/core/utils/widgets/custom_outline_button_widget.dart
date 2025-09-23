@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 class CustomOutlineButtonWidget extends StatelessWidget {
   const CustomOutlineButtonWidget({
     super.key,
-    required this.screenWidth, this.text, this.color, this.foregroundcolor, this.onpressed, this.bordercolor, this.toppadding, this.textstyle,
+    required this.screenWidth, this.text, this.color, this.foregroundColor, this.onPressed, required this.borderColor, required this.topPadding, this.textStyle,
   });
 
-  final screenWidth;
-  final text;
-  final color;
-  final foregroundcolor;
-  final onpressed;
-  final bordercolor;
-  final toppadding;
-  final textstyle;
+  final double? screenWidth;
+  final String? text;
+  final Color? color;
+  final Color? foregroundColor;
+  final VoidCallback? onPressed;
+  final Color borderColor;
+  final double topPadding;
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -23,23 +23,23 @@ class CustomOutlineButtonWidget extends StatelessWidget {
       style: ButtonStyle(
         
         padding: WidgetStatePropertyAll(
-          EdgeInsets.symmetric(vertical: toppadding),
+          EdgeInsets.symmetric(vertical: topPadding),
         ),
         backgroundColor: WidgetStatePropertyAll(
           color,
         ),
         foregroundColor: WidgetStatePropertyAll(
-          foregroundcolor,
+          foregroundColor,
         ),
-          side: WidgetStatePropertyAll(BorderSide(color: bordercolor, width: 3)),
+          side: WidgetStatePropertyAll(BorderSide(color: borderColor, width: 3)),
       ),
       
       
 
-      onPressed: onpressed,
+      onPressed: onPressed,
       child: Text(
-        text,
-        style: textstyle,
+        text??'',
+        style: textStyle,
       ),
     );
   }

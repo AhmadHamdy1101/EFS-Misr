@@ -46,7 +46,6 @@ class AuthRepoImpl extends AuthRepo {
       if (result.length == 36) { // طول UUID دايمًا 36
         return Right(result);
       }
-print(result);
       return Left(GeneralFailure(result));
     } catch (e) {
       return Left(Failure.fromException(e));

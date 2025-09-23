@@ -14,9 +14,6 @@ final class GetTicketsFailure extends TicketsState {
   GetTicketsFailure({required this.errMsg});
 }
 
-final class ConvertTicketsToExcelLoading extends TicketsState {}
-final class ConvertTicketsToExcelFailed extends TicketsState {}
-final class ConvertTicketsToExcelSuccess extends TicketsState {}
 
 
 

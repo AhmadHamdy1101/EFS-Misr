@@ -8,4 +8,18 @@ abstract class HomeRepo{
   Future<Either<Failure,List<Users>>> getUsers();
 
   Future<Either<Failure,Assets>> getAssetsByQrCode(String barcode);
+
+  Future<Either<Failure,Tickets>> updateTicketStatus({
+    required String ticketID,
+    required String newStatus,
+});
+
+  Future<Either<Failure,List<Tickets>>> addTicket({
+    required BigInt orecalID,
+    required String comment,
+    required BigInt branchID,
+    required String priority,
+    required DateTime requestDate,
+    required BigInt engineer,
+});
 }

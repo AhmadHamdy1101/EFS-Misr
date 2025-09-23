@@ -167,7 +167,7 @@ class TicketOverViewWidget extends StatelessWidget {
                     _buildInfoRow('Request Date'.tr, getDateFromTimestamp(ticketData.requestDate!),context),
                     _buildInfoRow(
                       'Response Date'.tr,
-                      getDateFromTimestamp(ticketData.responseDate!),context
+                      getDateFromTimestamp(ticketData.responseDate??DateTime.now()),context
                     ),
                     _buildInfoRow('Priority'.tr, '${ticketData.priority}',context),
                   ],
@@ -185,7 +185,7 @@ class TicketOverViewWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: 10,
                     children: [
-                      _buildInfoRow('Repair Date'.tr, getDateFromTimestamp(ticketData.repairDate!),context),
+                      _buildInfoRow('Repair Date'.tr, getDateFromTimestamp(ticketData.repairDate??DateTime.now()),context),
                       _buildInfoRow('Closed By'.tr, '${ticketData.closedBy?? '__'}',context),
                       _buildInfoRow('Engineer'.tr, '${ticketData.engineer?? '__'}',context),
                     ],

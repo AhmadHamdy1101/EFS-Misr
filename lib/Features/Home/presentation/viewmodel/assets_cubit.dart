@@ -63,7 +63,6 @@ class AssetsCubit extends Cubit<AssetsState> {
     try {
       final data = await supabaseClient.assets.select();
       if (data.isEmpty) {
-        emit(ConvertAssetsToExcelFailed());
         return;
       }
 
@@ -125,11 +124,9 @@ class AssetsCubit extends Cubit<AssetsState> {
 
       } else if (Platform.isAndroid) {
         if (await Permission.storage.request().isDenied) {
-          emit(ConvertAssetsToExcelFailed());
           return;
         }
         if (await Permission.storage.request().isDenied) {
-          emit(ConvertAssetsToExcelFailed());
           return;
         }
 
@@ -157,10 +154,9 @@ class AssetsCubit extends Cubit<AssetsState> {
           ShareParams(files: [XFile(file.path)], text: 'Assets Export'),
         );
       }
-      emit(ConvertAssetsToExcelSuccess());
 
     } catch (e) {
-      emit(ConvertAssetsToExcelFailed());
+
     }
   }
 }
