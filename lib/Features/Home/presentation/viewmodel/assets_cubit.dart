@@ -61,26 +61,41 @@ class AssetsCubit extends Cubit<AssetsState> {
 
   Future<void> convertAssetsToExcel() async {
     try {
-      final data = await supabaseClient.assets.select();
+      final data = await supabaseClient.assets.select('id,barcode,name,branch(name),floor,place,created_at,area,type,amount');
       if (data.isEmpty) {
         return;
       }
 
+      final combined = data.map((row) {
+        return {
+          'id': row['id'],
+          'barcode': row['barcode'],
+          'name': row['name'],
+          'branch': row['branch']?['name'] ?? '',
+          'floor': row['floor'],
+          'place': row['place'],
+          'created_at': row['created_at'],
+          'area': row['area'],
+          'type': row['type'],
+          'amount': row['amount'],
+
+        };
+      }).toList();
+
+
       final workbook = xlsio.Workbook();
       final sheet = workbook.worksheets[0];
 
-      final headers = data.first.keys.toList();
+      final headers = combined.first.keys.toList();
 
       final headerStyle = workbook.styles.add('HeaderStyle');
       headerStyle.bold = true;
       headerStyle.fontSize = 14;
       headerStyle.hAlign = xlsio.HAlignType.center;
-      headerStyle.backColor = '#D9E1F2';
-      headerStyle.fontColor = '#000000';
+      headerStyle.backColor = '#008C43';
+      headerStyle.fontColor = '#ffffff';
 
-      final dataStyle = workbook.styles.add('DataStyle');
-      dataStyle.fontSize = 12;
-      dataStyle.hAlign = xlsio.HAlignType.center;
+
 
       for (var i = 0; i < headers.length; i++) {
         final cell = sheet.getRangeByIndex(1, i + 1);
@@ -88,13 +103,12 @@ class AssetsCubit extends Cubit<AssetsState> {
         cell.cellStyle = headerStyle;
       }
 
-      for (var rowIndex = 0; rowIndex < data.length; rowIndex++) {
-        final row = data[rowIndex];
+      for (var rowIndex = 0; rowIndex < combined.length; rowIndex++) {
+        final row = combined[rowIndex];
         for (var colIndex = 0; colIndex < headers.length; colIndex++) {
           final value = row[headers[colIndex]]?.toString() ?? '';
           final cell = sheet.getRangeByIndex(rowIndex + 2, colIndex + 1);
           cell.setText(value);
-          cell.cellStyle = dataStyle;
         }
       }
 
@@ -156,6 +170,7 @@ class AssetsCubit extends Cubit<AssetsState> {
       }
 
     } catch (e) {
+      print(e);
 
     }
   }

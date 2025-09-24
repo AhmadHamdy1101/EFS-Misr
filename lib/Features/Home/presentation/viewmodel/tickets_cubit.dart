@@ -77,14 +77,40 @@ class TicketsCubit extends Cubit<TicketsState> {
 
   Future<void> convertTicketsToExcel() async {
     try {
-      final data = await supabaseClient.tickets.select();
+      final data = await supabaseClient.tickets.select('orecal_id,branch(name) ,comment, priority, request_date, repair_date,response_date,repair_duration,users!tickets_closed_by_fkey(name)as closed_by, users!tickets_engineer_fkey(name)as engineer,damage_description,status,created_at');
       if (data.isEmpty) {
         return;
       }
 
+      final combined = data.map((row) {
+        return {
+          'orecal_id': row['orecal_id'],
+          'branch': row['branch']?['name'] ?? '',
+          'comment': row['comment'],
+          'priority': row['priority'],
+          'request_date': row['request_date'],
+          'repair_date': row['repair_date'],
+          'response_date': row['response_date'],
+          'repair_duration': row['repair_duration'],
+          'closed_by': row['closed_by']?['name'] ?? '',
+          'engineer': row['engineer']?['name'] ?? '',
+          'damage_description': row['damage_description'],
+          'status': row['status'],
+          'created_at': row['created_at'],
+
+        };
+      }).toList();
+
       final workbook = xlsio.Workbook();
       final sheet = workbook.worksheets[0];
-      final headers = data.first.keys.toList();
+      final headers = combined.first.keys.toList();
+      final headerStyle = workbook.styles.add('HeaderStyle');
+      headerStyle.bold = true;
+      headerStyle.fontSize = 14;
+      headerStyle.hAlign = xlsio.HAlignType.center;
+      headerStyle.backColor = '#008C43';
+      headerStyle.fontColor = '#ffffff';
+
 
       //  headers
       for (var i = 0; i < headers.length; i++) {
@@ -92,8 +118,8 @@ class TicketsCubit extends Cubit<TicketsState> {
       }
 
       //  data
-      for (var rowIndex = 0; rowIndex < data.length; rowIndex++) {
-        final row = data[rowIndex];
+      for (var rowIndex = 0; rowIndex < combined.length; rowIndex++) {
+        final row = combined[rowIndex];
         for (var colIndex = 0; colIndex < headers.length; colIndex++) {
           final value = row[headers[colIndex]]?.toString() ?? '';
           sheet.getRangeByIndex(rowIndex + 2, colIndex + 1).setText(value);
@@ -149,6 +175,7 @@ class TicketsCubit extends Cubit<TicketsState> {
         );
       }
     } catch (e) {
+      print(e);
       Get.snackbar('Error', e.toString());
     }
   }

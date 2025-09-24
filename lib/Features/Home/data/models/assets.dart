@@ -16,9 +16,10 @@ class Assets implements SupadartClass<Assets> {
   final String? area;
   final String? type;
   final Branch? branchObject;
+  final num? amount;
 
 
-  const Assets({
+  const Assets( {
     required this.id,
     this.barcode,
     this.name,
@@ -29,6 +30,7 @@ class Assets implements SupadartClass<Assets> {
     this.area,
     this.type,
     this.branchObject,
+    this.amount,
   });
 
   static String get table_name => 'assets';
@@ -50,6 +52,7 @@ class Assets implements SupadartClass<Assets> {
   static String get c_area => 'area';
 
   static String get c_type => 'type';
+  static String get c_amount => 'amount';
 
   static List<Assets> converter(List<Map<String, dynamic>> data) {
     return data.map(Assets.fromJson).toList();
@@ -69,6 +72,7 @@ class Assets implements SupadartClass<Assets> {
     DateTime? createdAt,
     String? area,
     String? type,
+    num? amount,
   }) {
     return {
       if (id != null) 'id': id.toString(),
@@ -80,6 +84,7 @@ class Assets implements SupadartClass<Assets> {
       if (createdAt != null) 'created_at': createdAt.toUtc().toIso8601String(),
       if (area != null) 'area': area,
       if (type != null) 'type': type,
+      if (amount != null) 'amount': amount,
     };
   }
 
@@ -93,6 +98,7 @@ class Assets implements SupadartClass<Assets> {
     DateTime? createdAt,
     String? area,
     String? type,
+    num? amount,
   }) {
     return _generateMap(
       id: id,
@@ -104,6 +110,7 @@ class Assets implements SupadartClass<Assets> {
       createdAt: createdAt,
       area: area,
       type: type,
+      amount: amount,
     );
   }
 
@@ -117,6 +124,7 @@ class Assets implements SupadartClass<Assets> {
     DateTime? createdAt,
     String? area,
     String? type,
+    num? amount,
   }) {
     return _generateMap(
       id: id,
@@ -128,6 +136,7 @@ class Assets implements SupadartClass<Assets> {
       createdAt: createdAt,
       area: area,
       type: type,
+      amount: amount,
     );
   }
 
@@ -148,6 +157,9 @@ class Assets implements SupadartClass<Assets> {
       branchObject: jsonn['branch'] is Map<String, dynamic>
           ? Branch.fromJson(jsonn['branch'])
           : null,
+      amount: jsonn['amount'] != null
+          ? num.parse(jsonn['amount'].toString())
+          : null,
     );
   }
 
@@ -161,6 +173,7 @@ class Assets implements SupadartClass<Assets> {
     DateTime? createdAt,
     String? area,
     String? type,
+    num? amount,
   }) {
     return {
       if (id != null) 'id': id,
@@ -172,6 +185,7 @@ class Assets implements SupadartClass<Assets> {
       if (createdAt != null) 'created_at': createdAt,
       if (area != null) 'area': area,
       if (type != null) 'type': type,
+      if (amount != null) 'amount': amount,
     };
   }
 
@@ -186,6 +200,7 @@ class Assets implements SupadartClass<Assets> {
       createdAt: createdAt,
       area: area,
       type: type,
+      amount: amount,
     );
   }
 
@@ -201,6 +216,7 @@ class Assets implements SupadartClass<Assets> {
     Object? createdAt = _unset,
     Object? area = _unset,
     Object? type = _unset,
+    Object? amount = _unset,
   }) {
     return Assets(
       id: id == _unset ? this.id : id as BigInt,
@@ -212,6 +228,7 @@ class Assets implements SupadartClass<Assets> {
       createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
       area: area == _unset ? this.area : area as String?,
       type: type == _unset ? this.type : type as String?,
+      amount: amount == _unset ? this.amount : amount as num?,
     );
   }
 }
