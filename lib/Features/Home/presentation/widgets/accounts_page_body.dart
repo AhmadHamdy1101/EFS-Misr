@@ -136,7 +136,6 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                     child: Row(
                       spacing: 10,
                       children: [
-
                         Icon(Icons.add, color: AppColors.green),
                         Text(
                           'Add Account',
@@ -182,36 +181,18 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
 
                               children: [
                                 SlidableAction(
-
                                   onPressed: (context) async {
-                                    final confirm = await showDialog<bool>(
-                                      context: context,
-                                      builder: (ctx) => AlertDialog(
-                                        title: const Text('تأكيد الحذف'),
-                                        content: Text('هل تريد حذف ${users[index].name}?'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () => Navigator.of(ctx).pop(false),
-                                            child: const Text('إلغاء'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () => Navigator.of(ctx).pop(true),
-                                            child: const Text('حذف'),
-                                          ),
-                                        ],
+                                    context.read<AccountsCubit>().deleteAccount(
+                                      users[index].id,
+                                      users[index].userid,
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          '${users[index].name} تم حذفه',
+                                        ),
                                       ),
                                     );
-
-                                    if (confirm == true) {
-                                      // ناديل البلوك يحذف من Supabase
-                                      context.read<AccountsCubit>().deleteAccount(users[index].id, users[index].userid);
-
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('${users[index].name} تم حذفه'),
-                                        ),
-                                      );
-                                    }
                                   },
                                   backgroundColor: Colors.red,
                                   foregroundColor: Colors.white,
@@ -221,13 +202,12 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                               ],
                             ),
 
-
                             child: Container(
                               padding: EdgeInsets.symmetric(
                                 vertical: 20,
                                 horizontal: 20,
                               ),
-                              
+
                               child: Row(
                                 spacing: 15,
                                 crossAxisAlignment: CrossAxisAlignment.center,
