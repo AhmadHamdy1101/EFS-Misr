@@ -39,7 +39,6 @@ class TicketDetailsPageBody extends StatelessWidget {
         ),
       ),
       appBar: AppBar(
-
         centerTitle: true,
         title: Text(
           'Tickets Details'.tr,
@@ -185,8 +184,12 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     color: Colors.transparent,
                                     foregroundColor: AppColors.green,
                                     onPressed: () {
-                                      context.read<TicketsCubit>().updateTicketStatus(ticket.id.toString()
-                                          , "Canceled");
+                                      context
+                                          .read<TicketsCubit>()
+                                          .updateTicketStatus(
+                                            ticket.id.toString(),
+                                            "Canceled",
+                                          );
                                     },
                                     text: 'Canceled',
                                     borderColor: AppColors.green,
@@ -199,8 +202,12 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     screenWidth: screenWidth,
                                     text: 'Complete',
                                     onpressed: () {
-                                      context.read<TicketsCubit>().updateTicketStatus(ticket.id.toString()
-                                          , "Complete");
+                                      context
+                                          .read<TicketsCubit>()
+                                          .updateTicketStatus(
+                                            ticket.id.toString(),
+                                            "Complete",
+                                          );
                                     },
                                     foregroundcolor: AppColors.white,
                                     color: AppColors.green,
@@ -224,7 +231,6 @@ class TicketDetailsPageBody extends StatelessWidget {
                     ),
                   ),
                   Card(
-
                     child: Container(
                       padding: EdgeInsets.all(20.0),
                       child: Row(
@@ -260,7 +266,9 @@ class TicketDetailsPageBody extends StatelessWidget {
                                       ).copyWith(color: AppColors.green),
                                     ),
                                     Text(
-                                      getDateFromTimestamp(ticket.repairDate!),
+                                      getDateFromTimestamp(
+                                        ticket.repairDate ?? DateTime.now(),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -308,7 +316,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     ),
                                     Text(
                                       getDateFromTimestamp(
-                                        ticket.responseDate!,
+                                        ticket.responseDate ?? DateTime.now(),
                                       ),
                                     ),
                                   ],
@@ -321,7 +329,6 @@ class TicketDetailsPageBody extends StatelessWidget {
                     ),
                   ),
                   Card(
-
                     child: Container(
                       padding: EdgeInsets.all(20.0),
                       child: Row(
@@ -386,7 +393,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                         context,
                                       ).copyWith(color: AppColors.green),
                                     ),
-                                    Text("----"),
+                                    Text(ticket.user!.name!),
                                   ],
                                 ),
                               ],
@@ -397,7 +404,6 @@ class TicketDetailsPageBody extends StatelessWidget {
                     ),
                   ),
                   Card(
-
                     child: Container(
                       padding: EdgeInsets.all(20.0),
                       width: screenWidth,
@@ -422,36 +428,49 @@ class TicketDetailsPageBody extends StatelessWidget {
                                       return Dialog(
                                         backgroundColor: AppColors.white,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
-                                        child: SingleChildScrollView( // 👈 يضمن إن مفيش overflow
+                                        child: SingleChildScrollView(
+                                          // 👈 يضمن إن مفيش overflow
                                           child: Padding(
                                             padding: const EdgeInsets.all(16.0),
                                             child: Column(
                                               spacing: 10,
                                               mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment: CrossAxisAlignment.stretch, // 👈 بدل stretch
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment
+                                                      .stretch, // 👈 بدل stretch
                                               children: [
                                                 Row(
-                                                  mainAxisAlignment: MainAxisAlignment.end,
-                                                  children: [
-                                                    CloseButton(),
-                                                  ],
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [CloseButton()],
                                                 ),
 
                                                 CustomInputWidget(
-                                                  inbutIcon: "assets/images/comment.svg",
-                                                  inbutHintText: "Damage Description",
+                                                  inbutIcon:
+                                                      "assets/images/comment.svg",
+                                                  inbutHintText:
+                                                      "Damage Description",
                                                   changeToPass: false,
-                                                  textEditingController: DamagesComment,
+                                                  textEditingController:
+                                                      DamagesComment,
                                                 ),
                                                 CustomButtonWidget(
                                                   screenWidth: screenWidth,
                                                   toppadding: 10.0,
-                                                  textstyle: AppTextStyle.latoBold20(context),
-                                                  foregroundcolor: AppColors.white,
+                                                  textstyle:
+                                                      AppTextStyle.latoBold20(
+                                                        context,
+                                                      ),
+                                                  foregroundcolor:
+                                                      AppColors.white,
                                                   onpressed: () {
-                                                    Navigator.pop(context); // يقفل الـ Dialog بعد الضغط
+                                                    Navigator.pop(
+                                                      context,
+                                                    ); // يقفل الـ Dialog بعد الضغط
                                                   },
                                                   text: 'Submit',
                                                   color: AppColors.green,
@@ -463,7 +482,6 @@ class TicketDetailsPageBody extends StatelessWidget {
                                       );
                                     },
                                   );
-
                                 },
                                 child: Text(
                                   'Edit',
@@ -480,7 +498,6 @@ class TicketDetailsPageBody extends StatelessWidget {
                     ),
                   ),
                   Card(
-
                     child: Container(
                       padding: EdgeInsets.all(20.0),
                       width: screenWidth,
@@ -515,7 +532,6 @@ class TicketDetailsPageBody extends StatelessWidget {
               shrinkWrap: true,
               itemCount: 1,
               itemBuilder: (context, index) {
-
                 return Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),

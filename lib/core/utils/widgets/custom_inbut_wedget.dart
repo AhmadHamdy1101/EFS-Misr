@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -11,16 +10,24 @@ class CustomInputWidget extends StatelessWidget {
     required this.inbutIcon,
     required this.inbutHintText,
     required this.changeToPass,
-    required this.textEditingController,
-    this.textInputType, this.validator, this.onChanged,
+    this.textEditingController,
+    this.textInputType,
+    this.validator,
+    this.onChanged,
+    this.readOnly,
+    this.onTap,
   });
+
   final String inbutIcon;
   final String inbutHintText;
   final bool changeToPass;
-  final TextEditingController textEditingController;
+  final TextEditingController? textEditingController;
   final TextInputType? textInputType;
   final String? Function(String?)? validator;
   final String? Function(String?)? onChanged;
+  final bool? readOnly;
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -39,7 +46,8 @@ class CustomInputWidget extends StatelessWidget {
         ],
       ),
       child: TextFormField(
-
+        readOnly: readOnly ?? false,
+        onTap: onTap,
         onChanged: onChanged,
         validator: validator,
         cursorColor: AppColors.black,
@@ -49,7 +57,9 @@ class CustomInputWidget extends StatelessWidget {
         decoration: InputDecoration(
           filled: true,
           fillColor: Theme.of(context).buttonTheme.colorScheme?.primary,
-          hintStyle: AppTextStyle.latoRegular16(context).copyWith(color: Theme.of(context).colorScheme.primary),
+          hintStyle: AppTextStyle.latoRegular16(
+            context,
+          ).copyWith(color: Theme.of(context).colorScheme.primary),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(9.0),
             child: SvgPicture.asset(inbutIcon),

@@ -18,8 +18,10 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
     final tickets = await supabaseClient.tickets
         .select('''
       *,
-      branch(*)
+      branch(*),
+      engineer:users!tickets_engineer_fkey(*,positions(*))
     ''')
+        .order('created_at', ascending: false)
         .withConverter(Tickets.converter);
     return tickets;
   }
@@ -46,8 +48,10 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
   }
 
   @override
-  Future<List<Users>> getUsers()  async{
-   final users = await supabaseClient.users.select('*,positions(*)').withConverter(Users.converter);
-   return users;
+  Future<List<Users>> getUsers() async {
+    final users = await supabaseClient.users
+        .select('*,positions(*)')
+        .withConverter(Users.converter);
+    return users;
   }
 }

@@ -77,7 +77,9 @@ class TicketsCubit extends Cubit<TicketsState> {
 
   Future<void> convertTicketsToExcel() async {
     try {
-      final data = await supabaseClient.tickets.select('orecal_id,branch(name) ,comment, priority, request_date, repair_date,response_date,repair_duration,users!tickets_closed_by_fkey(name)as closed_by, users!tickets_engineer_fkey(name)as engineer,damage_description,status,created_at');
+      final data = await supabaseClient.tickets.select(
+        'orecal_id,branch(name) ,comment, priority, request_date, repair_date,response_date,repair_duration,users!tickets_closed_by_fkey(name)as closed_by, users!tickets_engineer_fkey(name)as engineer,damage_description,status,created_at',
+      );
       if (data.isEmpty) {
         return;
       }
@@ -97,7 +99,6 @@ class TicketsCubit extends Cubit<TicketsState> {
           'damage_description': row['damage_description'],
           'status': row['status'],
           'created_at': row['created_at'],
-
         };
       }).toList();
 
@@ -110,7 +111,6 @@ class TicketsCubit extends Cubit<TicketsState> {
       headerStyle.hAlign = xlsio.HAlignType.center;
       headerStyle.backColor = '#008C43';
       headerStyle.fontColor = '#ffffff';
-
 
       //  headers
       for (var i = 0; i < headers.length; i++) {
@@ -222,8 +222,7 @@ class TicketsCubit extends Cubit<TicketsState> {
           backgroundColor: Colors.green,
           colorText: AppColors.white,
         );
-        allTickets.clear();
-        allTickets.addAll(tickets);
+        getTickets();
         emit(GetTicketsSuccess(tickets: allTickets));
       },
     );
