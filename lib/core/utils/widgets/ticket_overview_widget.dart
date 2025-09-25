@@ -186,8 +186,8 @@ class TicketOverViewWidget extends StatelessWidget {
                     spacing: 10,
                     children: [
                       _buildInfoRow('Repair Date'.tr, getDateFromTimestamp(ticketData.repairDate??DateTime.now()),context),
-                      _buildInfoRow('Closed By'.tr, '${ticketData.closedBy?? '__'}',context),
-                      _buildInfoRow('Engineer'.tr, '${ticketData.engineer?? '__'}',context),
+                      _buildInfoRow('Closed By'.tr, ticketData.user?.name?? '__',context),
+                      _buildInfoRow('Engineer'.tr, ticketData.user?.name?? '__',context),
                     ],
                   ),
                 ),

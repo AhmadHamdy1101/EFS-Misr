@@ -46,7 +46,7 @@ class CustomInputWidget extends StatelessWidget {
         ],
       ),
       child: TextFormField(
-        readOnly: readOnly ?? false,
+        // readOnly: readOnly ?? false,
         onTap: onTap,
         onChanged: onChanged,
         validator: validator,

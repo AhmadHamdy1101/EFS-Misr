@@ -57,6 +57,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(

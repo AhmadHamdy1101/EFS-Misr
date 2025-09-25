@@ -362,7 +362,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                         context,
                                       ).copyWith(color: AppColors.green),
                                     ),
-                                    Text("----"),
+                                    Text('${ticket.user!.name}'),
                                   ],
                                 ),
                               ],

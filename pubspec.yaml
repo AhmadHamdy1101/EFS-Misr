@@ -57,6 +57,7 @@ dependencies:
   open_filex: ^4.7.0
   shared_preferences: ^2.5.3
   flutter_datetime_picker_plus: ^2.2.0
+  flutter_slidable: ^3.0.0
 
 
 

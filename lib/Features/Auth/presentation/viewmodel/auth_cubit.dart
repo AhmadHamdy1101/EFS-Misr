@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:efs_misr/Features/Home/presentation/pages/add_success_page.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -116,6 +117,7 @@ class AuthCubit extends Cubit<AuthCubitState> {
           },
           (r) {
             Get.snackbar("Success", 'Account created successfully',backgroundColor: AppColors.green,colorText: AppColors.white);
+            Get.to(AddSuccessPage(message: 'Account created successfully'));
           },
         );
       },

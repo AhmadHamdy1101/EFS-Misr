@@ -48,43 +48,47 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
       return {"name": br["name"], "value": br["id"].toString()};
     }).toList();
   }
+  String? selectedValue;
 
+  final priorityData = [
+    {'name': 'A', 'value': 'A'},
+    {'name': 'B', 'value': 'B'},
+    {'name': 'C', 'value': 'C'},
+    {'name': 'D', 'value': 'D'},
+  ];
+  final selectedBranchID = BigInt.zero.obs;
+  final selectedPriority = ''.obs;
+  final selectedEngineer = BigInt.zero.obs;
+
+  final TextEditingController oricalid = TextEditingController();
+  final TextEditingController branch = TextEditingController();
+  final Rx<DateTime> requestDate = DateTime.now().obs;
+  final TextEditingController requestDateText = TextEditingController();
+  final TextEditingController priority = TextEditingController();
+  final TextEditingController comment = TextEditingController();
+  final TextEditingController engineer = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    String? selectedValue;
-
-    final priorityData = [
-      {'name': 'A', 'value': 'A'},
-      {'name': 'B', 'value': 'B'},
-      {'name': 'C', 'value': 'C'},
-      {'name': 'D', 'value': 'D'},
-    ];
-    final selectedBranchID = BigInt.zero.obs;
-    final selectedPriority = ''.obs;
-    final selectedEngineer = BigInt.zero.obs;
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final TextEditingController oricalid = TextEditingController();
-    final TextEditingController branch = TextEditingController();
-    final Rx<DateTime> requestDate = DateTime.now().obs;
-    final TextEditingController requestDateText = TextEditingController();
-    final TextEditingController priority = TextEditingController();
-    final TextEditingController comment = TextEditingController();
-    final TextEditingController engineer = TextEditingController();
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          'Add Ticket'.tr,
-          style: AppTextStyle.latoBold26(
-            context,
-          ).copyWith(color: AppColors.green),
-        ),
-      ),
+      resizeToAvoidBottomInset: false,
+
+
       body: CustomScrollView(
+
         slivers: [
-          SliverFillRemaining(
+          SliverAppBar(
+            centerTitle: true,
+            title: Text(
+              'Add Ticket'.tr,
+              style: AppTextStyle.latoBold26(
+                context,
+              ).copyWith(color: AppColors.green),
+            ),
+          ),
+          SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -97,8 +101,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                     textEditingController: oricalid,
                     textInputType: TextInputType.number,
                   ),
-                  Obx(() {
-                    return CustomDropdownWidget(
+                  CustomDropdownWidget(
                       inbutIcon: 'assets/images/company.svg',
                       inbutHintText: 'Branch',
                       textEditingController: branch,
@@ -107,8 +110,8 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                         selectedBranchID.value = BigInt.tryParse(value!)!;
                       },
                       Data: branchesData.value,
-                    );
-                  }),
+                    ),
+
                   CustomDropdownWidget(
                     inbutIcon: 'assets/images/priority.svg',
                     inbutHintText: 'Priority',

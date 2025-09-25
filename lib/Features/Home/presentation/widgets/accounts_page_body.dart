@@ -1,8 +1,8 @@
-
 import 'package:efs_misr/Features/Home/presentation/pages/add_account_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/accounts_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/app_colors.dart';
@@ -37,6 +37,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
         return 'Unknown';
     }
   }
+
   Future<void> loadAccounts() async {
     await context.read<AccountsCubit>().getAccounts();
   }
@@ -73,7 +74,9 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: CustomInputWidget(
                         onChanged: (value) {
-                         return context.read<AccountsCubit>().searchTickets(value);
+                          return context.read<AccountsCubit>().searchTickets(
+                            value,
+                          );
                         },
                         inbutIcon: 'assets/images/search.svg',
                         inbutHintText: 'Search'.tr,
@@ -95,7 +98,9 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).buttonTheme.colorScheme?.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -118,7 +123,9 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).buttonTheme.colorScheme?.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -129,6 +136,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                     child: Row(
                       spacing: 10,
                       children: [
+
                         Icon(Icons.add, color: AppColors.green),
                         Text(
                           'Add Account',
@@ -148,13 +156,11 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
               builder: (context, state) {
                 if (state is GetAccountsLoading) {
                   return const Center(
-                    child: CircularProgressIndicator(color: Colors.green,),
+                    child: CircularProgressIndicator(color: Colors.green),
                   );
                 }
                 if (state is GetAccountsFailed) {
-                  return Center(
-                    child: Text(state.errorMsg),
-                  );
+                  return Center(child: Text(state.errorMsg));
                 }
                 if (state is GetAccountsSuccess) {
                   final users = state.accounts;
@@ -169,103 +175,164 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                           ),
                           elevation: 4,
                           margin: const EdgeInsets.all(12),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 20,
-                              horizontal: 20,
-                            ),
-                            child: Row(
-                              spacing: 15,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
+                          child: Slidable(
+                            key: ValueKey(users[index].id), // لازم key فريد
+                            endActionPane: ActionPane(
+                              motion: const DrawerMotion(),
+
                               children: [
-                                Container(
-                                  width: screenWidth * 0.15,
-                                  height: screenWidth * 0.15,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.lightGreen.withOpacity(0.25),
-                                    borderRadius: BorderRadius.circular(60),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.black.withAlpha(25),
-                                        blurRadius: 10,
-                                      ),
-                                    ],
-                                  ),
-                                  clipBehavior: Clip.antiAlias,
-                                  child: ClipRRect(
-                                    child: Image.asset(
-                                      width: screenWidth,
-                                      'assets/images/user.png',
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: screenWidth * 0.3,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        children: [
-                                          Text("${users[index].name}".tr),
-                                          Text(
-                                            users[index].position?.name ??
-                                                "No Position",
+                                SlidableAction(
+
+                                  onPressed: (context) async {
+                                    final confirm = await showDialog<bool>(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        title: const Text('تأكيد الحذف'),
+                                        content: Text('هل تريد حذف ${users[index].name}?'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.of(ctx).pop(false),
+                                            child: const Text('إلغاء'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () => Navigator.of(ctx).pop(true),
+                                            child: const Text('حذف'),
                                           ),
                                         ],
                                       ),
-                                      Text(
-                                        (users[index].company ?? '').tr,
-                                        style: AppTextStyle.latoRegular16(
-                                          context,
-                                        ).copyWith(color: AppColors.green),
-                                      ),
-                                      Text(
-                                        (users[index].email ?? '').tr,
-                                        style: AppTextStyle.latoRegular16(context)
-                                            .copyWith(
-                                          color: AppColors.gray,
-                                          overflow: TextOverflow.clip,
+                                    );
+
+                                    if (confirm == true) {
+                                      // ناديل البلوك يحذف من Supabase
+                                      context.read<AccountsCubit>().deleteAccount(users[index].id, users[index].userid);
+
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('${users[index].name} تم حذفه'),
                                         ),
-                                      ),
-                                    ],
-                                  ),
+                                      );
+                                    }
+                                  },
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.delete,
+                                  label: 'Delete'.tr,
                                 ),
-                                Expanded(
-                                  child: Column(
-                                    spacing: 10,
-                                    children: [
-                                      Text('Status'.tr),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: screenHeight * 0.01,
-                                          horizontal: screenWidth * 0.04,
+                              ],
+                            ),
+
+
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 20,
+                                horizontal: 20,
+                              ),
+                              
+                              child: Row(
+                                spacing: 15,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: screenWidth * 0.15,
+                                    height: screenWidth * 0.15,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.lightGreen.withOpacity(
+                                        0.25,
+                                      ),
+                                      borderRadius: BorderRadius.circular(60),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppColors.black.withAlpha(25),
+                                          blurRadius: 10,
                                         ),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xff8FCFAD),
-                                          borderRadius: BorderRadius.circular(50),
-                                        ),
-                                        child: Row(
-                                          spacing: 4,
-                                          mainAxisSize: MainAxisSize.min,
+                                      ],
+                                    ),
+                                    clipBehavior: Clip.antiAlias,
+                                    child: ClipRRect(
+                                      child: Image.asset(
+                                        width: screenWidth,
+                                        'assets/images/user.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: screenWidth * 0.3,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
+                                            Text("${users[index].name}".tr),
                                             Text(
-                                              checkStatus(users[index].status).tr,
-                                              style: AppTextStyle.latoBold16(
-                                                context,
-                                              ).copyWith(color: AppColors.white),
-                                              textAlign: TextAlign.center,
+                                              users[index].position?.name ??
+                                                  "No Position",
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
+                                        Text(
+                                          (users[index].company ?? '').tr,
+                                          style: AppTextStyle.latoRegular16(
+                                            context,
+                                          ).copyWith(color: AppColors.green),
+                                        ),
+                                        Text(
+                                          (users[index].email ?? '').tr,
+                                          style:
+                                              AppTextStyle.latoRegular16(
+                                                context,
+                                              ).copyWith(
+                                                color: AppColors.gray,
+                                                overflow: TextOverflow.clip,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  Expanded(
+                                    child: Column(
+                                      spacing: 10,
+                                      children: [
+                                        Text('Status'.tr),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: screenHeight * 0.01,
+                                            horizontal: screenWidth * 0.04,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Color(0xff8FCFAD),
+                                            borderRadius: BorderRadius.circular(
+                                              50,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            spacing: 4,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                checkStatus(
+                                                  users[index].status,
+                                                ).tr,
+                                                style:
+                                                    AppTextStyle.latoBold16(
+                                                      context,
+                                                    ).copyWith(
+                                                      color: AppColors.white,
+                                                    ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -273,7 +340,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                     },
                   );
                 }
-return Text('No Accounts');
+                return Text('No Accounts');
               },
             ),
           ),
