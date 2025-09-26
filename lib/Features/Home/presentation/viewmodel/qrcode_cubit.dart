@@ -6,15 +6,20 @@ part 'qrcode_state.dart';
 
 class QrcodeCubit extends Cubit<QrcodeState> {
   HomeRepo homeRepo;
+
   QrcodeCubit(this.homeRepo) : super(QrcodeInitial());
 
   Future<void> getAssetsByQrCode(String barcode) async {
-emit(QrcodeLoading());
+    emit(QrcodeLoading());
     final result = await homeRepo.getAssetsByQrCode(barcode);
-    result.fold((failure) {
-      emit(QrcodeFailed(errMsg: failure.message));
-    }, (assets) {
-      emit(QrcodeSuccess(assets: assets));
-    },);
+    result.fold(
+      (failure) {
+        emit(QrcodeFailed(errMsg: failure.message));
+      },
+      (assets) {
+
+        emit(QrcodeSuccess(assets: assets));
+      },
+    );
   }
 }

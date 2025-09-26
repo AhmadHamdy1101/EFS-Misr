@@ -31,6 +31,7 @@ class TicketsCubit extends Cubit<TicketsState> {
 
   final List<Tickets> allTickets = [];
   final List<Tickets> searchedTickets = [];
+  final List<Users> engineers = [];
 
   final status = ''.obs;
 
@@ -229,4 +230,6 @@ class TicketsCubit extends Cubit<TicketsState> {
       },
     );
   }
+
+
 }

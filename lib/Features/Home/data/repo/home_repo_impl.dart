@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:efs_misr/Features/Home/data/data_source/remote_data_source.dart';
 import 'package:efs_misr/Features/Home/data/models/assets.dart';
+import 'package:efs_misr/Features/Home/data/models/assets_and_tickets.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/data/models/tickets.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
@@ -95,10 +96,39 @@ class HomeRepoImpl extends HomeRepo {
           )
           .select()
           .withConverter(Tickets.converter);
-      print(tickets);
       return Right(tickets);
     } catch (e) {
       return Left(Failure.fromException(e));
     }
+  }
+
+
+  @override
+  Future<Either<Failure, String>> addAssetsAndTickets({required BigInt assetsId, required BigInt ticketId}) async{
+    try{
+      final assetsAndTickets = await supabaseClient.assetsAndTickets
+          .insert(
+        AssetsAndTickets.insert(
+          assetsId: assetsId,
+          TicketsId: ticketId
+        ),
+      );
+      return Right('Success');
+    }
+        catch(e){
+      return Left(Failure.fromException(e));
+        }
+  }
+
+  @override
+  Future<Either<Failure, List<Assets>>> getAssetsAndTickets({required BigInt ticketId}) async{
+    try{
+      final assetsAndTickets = await homeRemoteDataSource.getAssetsAndTickets(ticketId: ticketId);
+      return Right(assetsAndTickets);
+    }
+        catch(e){
+      print(Failure.fromException(e));
+      return Left(Failure.fromException(e));
+        }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/widgets/QRViewTicket.dart';
 import 'package:efs_misr/core/Functions/GetDate_Function.dart';
@@ -31,7 +32,7 @@ class TicketDetailsPageBody extends StatelessWidget {
         foregroundColor: Colors.white,
         shape: const CircleBorder(),
         onPressed: () {
-          Get.to(QRScanTicketPage());
+          Get.to(QRScanTicketPage(ticketId: ticket.id));
         },
         child: SvgPicture.asset(
           'assets/images/Qr code scanner.svg',
@@ -527,68 +528,87 @@ class TicketDetailsPageBody extends StatelessWidget {
             ),
           ),
           SliverFillRemaining(
-            child: ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: 1,
-              itemBuilder: (context, index) {
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 4,
-                  margin: const EdgeInsets.all(12),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                    child: Row(
-                      spacing: 15,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(screenWidth * 0.03),
-                          decoration: BoxDecoration(
-                            color: AppColors.lightGreen.withOpacity(0.25),
-                            borderRadius: BorderRadius.circular(60),
+            child: BlocBuilder<AssetsTicketsCubit, AssetsTicketsState>(
+              builder: (context, state) {
+                if (state is GetAssetsTicketsFailure) {
+                  return Center(child: Text(state.message),);
+                }
+                if (state is GetAssetsTicketsLoading) {
+                  return Center(child: CircularProgressIndicator(color: AppColors.green,),);
+                }
+                if (state is GetAssetsTicketsSuccess) {
+                  final data = state.assetsAndTickets;
+                  return ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                        return Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 4,
+                        margin: const EdgeInsets.all(12),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 20,
+                            horizontal: 20,
                           ),
-                          child: ClipRRect(
-                            child: SvgPicture.asset(
-                              'assets/images/Chair.svg',
-                              color: AppColors.green,
-                              width: screenWidth * 0.1,
-                              height: screenWidth * 0.1,
-                            ),
+                          child: Row(
+                            spacing: 15,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(screenWidth * 0.03),
+                                decoration: BoxDecoration(
+                                  color: AppColors.lightGreen.withOpacity(0.25),
+                                  borderRadius: BorderRadius.circular(60),
+                                ),
+                                child: ClipRRect(
+                                  child: SvgPicture.asset(
+                                    'assets/images/Chair.svg',
+                                    color: AppColors.green,
+                                    width: screenWidth * 0.1,
+                                    height: screenWidth * 0.1,
+                                  ),
+                                ),
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text("${data[index].type}".tr),
+                                      Text('${data[index].barcode}'),
+                                    ],
+                                  ),
+                                  Text(
+                                    '${data[index].branchObject?.name}'.tr,
+                                    style: AppTextStyle.latoRegular16(
+                                      context,
+                                    ).copyWith(color: AppColors.green),
+                                  ),
+                                  Text(
+                                    '${data[index].branchObject?.area}'.tr,
+                                    style: AppTextStyle.latoRegular16(
+                                      context,
+                                    ).copyWith(color: AppColors.gray),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("type".tr),
-                                Text('557-01-01-02-01'),
-                              ],
-                            ),
-                            Text(
-                              'Sarayat el Maadi'.tr,
-                              style: AppTextStyle.latoRegular16(
-                                context,
-                              ).copyWith(color: AppColors.green),
-                            ),
-                            Text(
-                              'maadi'.tr,
-                              style: AppTextStyle.latoRegular16(
-                                context,
-                              ).copyWith(color: AppColors.gray),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                      );
+
+                    },
+                  );
+                }
+                return Text('No Assets Added Yet');
               },
+
             ),
           ),
         ],

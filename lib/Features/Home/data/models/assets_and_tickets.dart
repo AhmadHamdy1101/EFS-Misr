@@ -95,19 +95,15 @@ class AssetsAndTickets implements SupadartClass<AssetsAndTickets> {
       createdAt: jsonn['created_at'] != null
           ? DateTime.parse(jsonn['created_at'].toString())
           : DateTime.fromMillisecondsSinceEpoch(0),
-      assetsId: jsonn['assets_id'] != null
-          ? BigInt.parse(jsonn['assets_id'].toString())
-          : null,
-      TicketsId: jsonn['Tickets_id'] != null
-          ? BigInt.parse(jsonn['Tickets_id'].toString())
-          : null,
       Ammount: jsonn['Ammount'] != null
           ? num.parse(jsonn['Ammount'].toString())
           : null,
       assets: jsonn['assets'] != null
+          ? (jsonn['assets'] is List
           ? (jsonn['assets'] as List)
-              .map((e) => Assets.fromJson(e as Map<String, dynamic>))
-              .toList()
+          .map((e) => Assets.fromJson(e as Map<String, dynamic>))
+          .toList()
+          : [Assets.fromJson(jsonn['assets'] as Map<String, dynamic>)])
           : [],
       tickets: jsonn['tickets'] != null
           ? (jsonn['tickets'] as List)

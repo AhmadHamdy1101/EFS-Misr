@@ -1,4 +1,5 @@
 import 'package:efs_misr/Features/Home/presentation/pages/add_Tickets_page.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -141,9 +142,8 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        Get.to(
-                          TicketDetailsPage(tickets: state.tickets[index]),
-                        );
+                        context.read<AssetsTicketsCubit>().getAssetsAndTickets(ticketId: state.tickets[index].id);
+                        Get.to(()=>TicketDetailsPage(tickets: state.tickets[index]),);
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),

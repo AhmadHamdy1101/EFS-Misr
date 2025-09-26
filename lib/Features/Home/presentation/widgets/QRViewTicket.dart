@@ -1,3 +1,4 @@
+import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/qrcode_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,8 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import '../pages/assets_details_page.dart';
 
 class QRScanTicketPage extends StatefulWidget {
-  const QRScanTicketPage({super.key});
+  const QRScanTicketPage({super.key, required this.ticketId});
+  final BigInt ticketId;
 
   @override
   _QRScanTicketPageState createState() => _QRScanTicketPageState();
@@ -25,7 +27,9 @@ class _QRScanTicketPageState extends State<QRScanTicketPage> {
       body: BlocConsumer<QrcodeCubit, QrcodeState>(
         listener: (context, state) {
           if (state is QrcodeSuccess) {
-            Get.to(AssetsDetailsPage(assets: state.assets,));
+            // Get.to(AssetsDetailsPage(assets: state.assets,));
+            context.read<AssetsTicketsCubit>().addAssetsAndTickets(assetsId: state.assets.id, ticketId: widget.ticketId);
+            Get.back();
           }
           if (state is QrcodeFailed) {
             Get.snackbar('Error', state.errMsg,backgroundColor: Colors.red,colorText: Colors.white);

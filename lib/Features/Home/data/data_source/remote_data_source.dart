@@ -8,6 +8,9 @@ abstract class HomeRemoteDataSource {
   Future<List<Assets>> getAssets();
 
   Future<List<Users>> getUsers();
+  Future<List<Assets>> getAssetsAndTickets({
+    required BigInt ticketId
+});
 
   Future<Assets> getAssetsByQrCode(String qrCode);
 }
@@ -54,4 +57,12 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
         .withConverter(Users.converter);
     return users;
   }
+
+  @override
+  Future<List<Assets>> getAssetsAndTickets({required BigInt ticketId}) async{
+    final assetsAndTickets = await supabaseClient.assets.select('*,branch(*), assets_tickets_details!inner(*)')
+        .eq('assets_tickets_details.Tickets_id', ticketId).withConverter(Assets.converter);
+    return assetsAndTickets;
+  }
+  
 }

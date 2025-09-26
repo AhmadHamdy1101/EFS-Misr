@@ -1,14 +1,7 @@
-import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
-import 'package:efs_misr/Features/Home/presentation/pages/home_page.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
-import 'package:efs_misr/Features/Home/presentation/widgets/QRViewTicket.dart';
-import 'package:efs_misr/core/Functions/GetDate_Function.dart';
-import 'package:efs_misr/core/utils/app_colors.dart';
-import 'package:efs_misr/core/utils/widgets/custom_outline_button_widget.dart';
 
+import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
 
 import '../../../../core/utils/app_text_styles.dart';
 
