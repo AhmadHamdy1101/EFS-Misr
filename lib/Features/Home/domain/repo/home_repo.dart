@@ -6,7 +6,8 @@ abstract class HomeRepo{
   Future<Either<Failure,List<Tickets>>> getTickets();
   Future<Either<Failure,List<Assets>>> getAssets();
   Future<Either<Failure,List<Users>>> getUsers();
-  Future<Either<Failure,List<Assets>>> getAssetsAndTickets({required BigInt ticketId});
+  Future<Either<Failure,List<Assets>>> getAssetsWithTicketID({required BigInt ticketId});
+  Future<Either<Failure,List<Tickets>>> getTicketsWithAssetsID({required BigInt assetId});
 
   Future<Either<Failure,Assets>> getAssetsByQrCode(String barcode);
 

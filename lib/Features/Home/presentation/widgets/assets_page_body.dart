@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
+import '../viewmodel/assets_tickets_cubit.dart';
 
 class AssetsPageBody extends StatefulWidget {
   const AssetsPageBody({super.key});
@@ -124,7 +125,8 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                       // }
 
                       return GestureDetector(
-                        onTap: () {
+                        onTap: () async{
+                          await context.read<AssetsTicketsCubit>().getTicketsWithAssetsId(assetId: assets[index].id);
                           Get.to(
                             AssetsDetailsPage(assets: state.assets[index]),
                           );

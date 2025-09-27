@@ -142,7 +142,7 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        context.read<AssetsTicketsCubit>().getAssetsAndTickets(ticketId: state.tickets[index].id);
+                        context.read<AssetsTicketsCubit>().getAssetsWithTicketId(ticketId: state.tickets[index].id);
                         Get.to(()=>TicketDetailsPage(tickets: state.tickets[index]),);
                       },
                       child: Padding(

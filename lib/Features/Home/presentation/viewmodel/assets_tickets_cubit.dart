@@ -1,8 +1,6 @@
-import 'package:bloc/bloc.dart';
-import 'package:efs_misr/Features/Home/data/models/assets.dart';
+import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
-
-import '../../data/models/assets_and_tickets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'assets_tickets_state.dart';
 
@@ -12,6 +10,7 @@ class AssetsTicketsCubit extends Cubit<AssetsTicketsState> {
   AssetsTicketsCubit(this.homeRepo) : super(AddAssetsTicketsInitial());
 
   final List<Assets> assets = [];
+  final List<Tickets> tickets = [];
 
   Future<void> addAssetsAndTickets({
     required BigInt assetsId,
@@ -21,24 +20,43 @@ class AssetsTicketsCubit extends Cubit<AssetsTicketsState> {
       assetsId: assetsId,
       ticketId: ticketId,
     );
-    result.fold((l) {
-      print(l.message);
-    }, (r) {
-      getAssetsAndTickets(ticketId: ticketId);
-emit(GetAssetsTicketsSuccess(assetsAndTickets: assets));
-    });
+    result.fold(
+      (l) {
+        print(l.message);
+      },
+      (r) {
+        getAssetsWithTicketId(ticketId: ticketId);
+        emit(GetAssetsTicketsSuccess(assetsAndTickets: assets));
+      },
+    );
   }
 
-  Future<void> getAssetsAndTickets({required BigInt ticketId}) async {
+  Future<void> getAssetsWithTicketId({required BigInt ticketId}) async {
     emit(GetAssetsTicketsLoading());
-    final result = await homeRepo.getAssetsAndTickets(ticketId: ticketId);
-    result.fold((l) {
-      print(l.message);
-      emit(GetAssetsTicketsFailure(message: l.message));
-    }, (r) {
-      assets.clear();
-      assets.addAll(r);
-      emit(GetAssetsTicketsSuccess(assetsAndTickets: assets));
-    });
+    final result = await homeRepo.getAssetsWithTicketID(ticketId: ticketId);
+    result.fold(
+      (l) {
+        print(l.message);
+        emit(GetAssetsTicketsFailure(message: l.message));
+      },
+      (r) {
+        assets.clear();
+        assets.addAll(r);
+        emit(GetAssetsTicketsSuccess(assetsAndTickets: assets));
+      },
+    );
+  }
+  Future<void> getTicketsWithAssetsId({required BigInt assetId}) async {
+    emit(GetAssetsTicketsLoading());
+    final result = await homeRepo.getTicketsWithAssetsID(assetId: assetId);
+    result.fold(
+      (l) {
+        print(l.message);
+      },
+      (r) {
+       tickets.clear();
+       tickets.addAll(r);
+      },
+    );
   }
 }

@@ -121,14 +121,26 @@ class HomeRepoImpl extends HomeRepo {
   }
 
   @override
-  Future<Either<Failure, List<Assets>>> getAssetsAndTickets({required BigInt ticketId}) async{
+  Future<Either<Failure, List<Assets>>> getAssetsWithTicketID({required BigInt ticketId}) async{
     try{
-      final assetsAndTickets = await homeRemoteDataSource.getAssetsAndTickets(ticketId: ticketId);
+      final assetsAndTickets = await homeRemoteDataSource.getAssetsWithTicketID(ticketId: ticketId);
       return Right(assetsAndTickets);
     }
         catch(e){
       print(Failure.fromException(e));
       return Left(Failure.fromException(e));
         }
+  }
+
+  @override
+  Future<Either<Failure, List<Tickets>>> getTicketsWithAssetsID({required BigInt assetId}) async{
+    try{
+      final assetsAndTickets = await homeRemoteDataSource.getTicketsWithAssetsID(assetId: assetId);
+      return Right(assetsAndTickets);
+    }
+    catch(e){
+      print(Failure.fromException(e));
+      return Left(Failure.fromException(e));
+    }
   }
 }

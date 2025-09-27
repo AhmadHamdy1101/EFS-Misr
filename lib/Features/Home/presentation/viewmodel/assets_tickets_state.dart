@@ -15,3 +15,4 @@ final class GetAssetsTicketsFailure extends AssetsTicketsState {
   final String message;
   GetAssetsTicketsFailure({required this.message});
 }
+

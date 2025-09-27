@@ -257,9 +257,7 @@ class Tickets implements SupadartClass<Tickets> {
       user: jsonn['engineer'] is Map<String, dynamic>
           ? Users.fromJson(jsonn['engineer'])
           : null,
-      engineer: jsonn['engineer'] is int || jsonn['engineer'] is String
-          ? BigInt.tryParse(jsonn['engineer'].toString())
-          : null,
+
     );
   }
 

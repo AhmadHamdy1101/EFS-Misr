@@ -16,7 +16,6 @@ final Assets assets;
 
     return Scaffold(
         appBar: AppBar(
-
           centerTitle: true,
           title: Text(
             'Assets Details'.tr,

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import '../pages/assets_details_page.dart';
 
 class QRScanTicketPage extends StatefulWidget {
   const QRScanTicketPage({super.key, required this.ticketId});
