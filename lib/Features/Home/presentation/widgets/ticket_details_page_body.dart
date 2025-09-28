@@ -14,15 +14,20 @@ import 'package:get/get.dart';
 
 import '../../../../core/utils/app_text_styles.dart';
 
-class TicketDetailsPageBody extends StatelessWidget {
+class TicketDetailsPageBody extends StatefulWidget {
   final Tickets ticket;
 
   const TicketDetailsPageBody({super.key, required this.ticket});
 
-  // design here
+  @override
+  State<TicketDetailsPageBody> createState() => _TicketDetailsPageBodyState();
+}
+
+class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
+  final TextEditingController damageComment = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    final TextEditingController DamagesComment = TextEditingController();
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -32,7 +37,7 @@ class TicketDetailsPageBody extends StatelessWidget {
         foregroundColor: Colors.white,
         shape: const CircleBorder(),
         onPressed: () {
-          Get.to(QRScanTicketPage(ticketId: ticket.id));
+          Get.to(QRScanTicketPage(ticketId: widget.ticket.id));
         },
         child: SvgPicture.asset(
           'assets/images/Qr code scanner.svg',
@@ -73,7 +78,9 @@ class TicketDetailsPageBody extends StatelessWidget {
                               Container(
                                 padding: EdgeInsets.all(screenWidth * 0.03),
                                 decoration: BoxDecoration(
-                                  color: AppColors.lightGreen.withOpacity(0.25),
+                                  color: AppColors.lightGreen.withOpacity(
+                                    0.25,
+                                  ),
                                   borderRadius: BorderRadius.circular(60),
                                 ),
                                 child: ClipRRect(
@@ -86,21 +93,26 @@ class TicketDetailsPageBody extends StatelessWidget {
                                 ),
                               ),
                               Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
                                 children: [
                                   Row(
                                     spacing: 5,
                                     children: [
                                       Text(
                                         "Ticket No.".tr,
-                                        style: AppTextStyle.latoBold20(context),
+                                        style: AppTextStyle.latoBold20(
+                                          context,
+                                        ),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 2,
                                         softWrap: false,
                                       ),
                                       Text(
-                                        "${ticket.orecalId}".tr,
-                                        style: AppTextStyle.latoBold20(context),
+                                        "${widget.ticket.orecalId}".tr,
+                                        style: AppTextStyle.latoBold20(
+                                          context,
+                                        ),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 2,
                                         softWrap: false,
@@ -111,7 +123,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     spacing: 4,
                                     children: [
                                       Text(
-                                        '${ticket.branchObject?.branchId}',
+                                        '${widget.ticket.branchObject?.branchId}',
                                         style: AppTextStyle.latoBold16(
                                           context,
                                         ).copyWith(color: AppColors.green),
@@ -121,13 +133,12 @@ class TicketDetailsPageBody extends StatelessWidget {
                                         height: screenHeight * 0.006,
                                         decoration: BoxDecoration(
                                           color: AppColors.green,
-                                          borderRadius: BorderRadius.circular(
-                                            50,
-                                          ),
+                                          borderRadius:
+                                          BorderRadius.circular(50),
                                         ),
                                       ),
                                       Text(
-                                        '${ticket.branchObject?.name}',
+                                        '${widget.ticket.branchObject?.name}',
                                         style: AppTextStyle.latoBold16(
                                           context,
                                         ).copyWith(color: AppColors.green),
@@ -135,8 +146,10 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     ],
                                   ),
                                   Text(
-                                    '${ticket.branchObject?.area}',
-                                    style: AppTextStyle.latoRegular19(context),
+                                    '${widget.ticket.branchObject?.area}',
+                                    style: AppTextStyle.latoRegular19(
+                                      context,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -155,15 +168,20 @@ class TicketDetailsPageBody extends StatelessWidget {
                                         horizontal: screenWidth * 0.04,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: '${ticket.status}' == 'Awaiting'
+                                        color:
+                                        '${widget.ticket.status}' ==
+                                            'Awaiting'
                                             ? const Color(0xffDFE699)
-                                            : '${ticket.status}' == 'Completed'
+                                            : '${widget.ticket.status}' ==
+                                            'Completed'
                                             ? const Color(0xff8FCFAD)
                                             : const Color(0xffDBA0A0),
-                                        borderRadius: BorderRadius.circular(50),
+                                        borderRadius: BorderRadius.circular(
+                                          50,
+                                        ),
                                       ),
                                       child: Text(
-                                        '${ticket.status}'.tr,
+                                        '${widget.ticket.status}'.tr,
                                         style: AppTextStyle.latoBold13(
                                           context,
                                         ).copyWith(color: AppColors.white),
@@ -174,8 +192,8 @@ class TicketDetailsPageBody extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Text('${ticket.comment}'.tr),
-                          if (ticket.status == 'Awaiting')
+                          Text('${widget.ticket.comment}'.tr),
+                          if (widget.ticket.status == 'Awaiting')
                             Row(
                               spacing: 10,
                               children: [
@@ -188,14 +206,16 @@ class TicketDetailsPageBody extends StatelessWidget {
                                       context
                                           .read<TicketsCubit>()
                                           .updateTicketStatus(
-                                            ticket.id.toString(),
-                                            "Canceled",
-                                          );
+                                        widget.ticket.id.toString(),
+                                        "Canceled",
+                                      );
                                     },
                                     text: 'Canceled',
                                     borderColor: AppColors.green,
                                     topPadding: 15.0,
-                                    textStyle: AppTextStyle.latoBold20(context),
+                                    textStyle: AppTextStyle.latoBold20(
+                                      context,
+                                    ),
                                   ),
                                 ),
                                 Expanded(
@@ -206,14 +226,16 @@ class TicketDetailsPageBody extends StatelessWidget {
                                       context
                                           .read<TicketsCubit>()
                                           .updateTicketStatus(
-                                            ticket.id.toString(),
-                                            "Complete",
-                                          );
+                                        widget.ticket.id.toString(),
+                                        "Completed",
+                                      );
                                     },
                                     foregroundcolor: AppColors.white,
                                     color: AppColors.green,
                                     toppadding: 15.0,
-                                    textstyle: AppTextStyle.latoBold20(context),
+                                    textstyle: AppTextStyle.latoBold20(
+                                      context,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -244,7 +266,8 @@ class TicketDetailsPageBody extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Request Date'.tr,
@@ -253,12 +276,15 @@ class TicketDetailsPageBody extends StatelessWidget {
                                       ).copyWith(color: AppColors.green),
                                     ),
                                     Text(
-                                      getDateFromTimestamp(ticket.requestDate!),
+                                      getDateFromTimestamp(
+                                        widget.ticket.requestDate!,
+                                      ),
                                     ),
                                   ],
                                 ),
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Repair Date:'.tr,
@@ -268,7 +294,8 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     ),
                                     Text(
                                       getDateFromTimestamp(
-                                        ticket.repairDate ?? DateTime.now(),
+                                        widget.ticket.repairDate ??
+                                            DateTime.now(),
                                       ),
                                     ),
                                   ],
@@ -293,7 +320,8 @@ class TicketDetailsPageBody extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Request Date:'.tr,
@@ -302,12 +330,15 @@ class TicketDetailsPageBody extends StatelessWidget {
                                       ).copyWith(color: AppColors.green),
                                     ),
                                     Text(
-                                      getDateFromTimestamp(ticket.requestDate!),
+                                      getDateFromTimestamp(
+                                        widget.ticket.requestDate!,
+                                      ),
                                     ),
                                   ],
                                 ),
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Response Date:'.tr,
@@ -317,7 +348,8 @@ class TicketDetailsPageBody extends StatelessWidget {
                                     ),
                                     Text(
                                       getDateFromTimestamp(
-                                        ticket.responseDate ?? DateTime.now(),
+                                        widget.ticket.responseDate ??
+                                            DateTime.now(),
                                       ),
                                     ),
                                   ],
@@ -343,7 +375,8 @@ class TicketDetailsPageBody extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Priority:'.tr,
@@ -351,11 +384,12 @@ class TicketDetailsPageBody extends StatelessWidget {
                                         context,
                                       ).copyWith(color: AppColors.green),
                                     ),
-                                    Text("${ticket.priority}"),
+                                    Text("${widget.ticket.priority}"),
                                   ],
                                 ),
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Closed By:'.tr,
@@ -363,7 +397,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                         context,
                                       ).copyWith(color: AppColors.green),
                                     ),
-                                    Text('${ticket.user!.name}'),
+                                    Text(widget.ticket.user?.name??''),
                                   ],
                                 ),
                               ],
@@ -386,7 +420,8 @@ class TicketDetailsPageBody extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Engineer:'.tr,
@@ -394,7 +429,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                                         context,
                                       ).copyWith(color: AppColors.green),
                                     ),
-                                    Text(ticket.user!.name!),
+                                    Text(widget.ticket.user?.name??''),
                                   ],
                                 ),
                               ],
@@ -412,7 +447,8 @@ class TicketDetailsPageBody extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 'Damage Description:'.tr,
@@ -429,45 +465,48 @@ class TicketDetailsPageBody extends StatelessWidget {
                                       return Dialog(
                                         backgroundColor: AppColors.white,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
+                                          borderRadius:
+                                          BorderRadius.circular(12),
                                         ),
                                         child: SingleChildScrollView(
                                           // 👈 يضمن إن مفيش overflow
                                           child: Padding(
-                                            padding: const EdgeInsets.all(16.0),
+                                            padding: const EdgeInsets.all(
+                                              16.0,
+                                            ),
                                             child: Column(
                                               spacing: 10,
-                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisSize:
+                                              MainAxisSize.min,
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment
-                                                      .stretch, // 👈 بدل stretch
+                                              CrossAxisAlignment
+                                                  .stretch,
+                                              // 👈 بدل stretch
                                               children: [
                                                 Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment.end,
+                                                  MainAxisAlignment.end,
                                                   children: [CloseButton()],
                                                 ),
 
                                                 CustomInputWidget(
                                                   inbutIcon:
-                                                      "assets/images/comment.svg",
+                                                  "assets/images/comment.svg",
                                                   inbutHintText:
-                                                      "Damage Description",
+                                                  "Damage Description",
                                                   changeToPass: false,
                                                   textEditingController:
-                                                      DamagesComment,
+                                                  damageComment,
                                                 ),
                                                 CustomButtonWidget(
                                                   screenWidth: screenWidth,
                                                   toppadding: 10.0,
                                                   textstyle:
-                                                      AppTextStyle.latoBold20(
-                                                        context,
-                                                      ),
+                                                  AppTextStyle.latoBold20(
+                                                    context,
+                                                  ),
                                                   foregroundcolor:
-                                                      AppColors.white,
+                                                  AppColors.white,
                                                   onpressed: () {
                                                     Navigator.pop(
                                                       context,
@@ -493,7 +532,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Text("${ticket.damageDescription}"),
+                          Text("${widget.ticket.damageDescription}"),
                         ],
                       ),
                     ),
@@ -511,7 +550,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                               context,
                             ).copyWith(color: AppColors.green),
                           ),
-                          Text("${ticket.attachment}"),
+                          Text("${widget.ticket.attachment}"),
                         ],
                       ),
                     ),
@@ -525,16 +564,18 @@ class TicketDetailsPageBody extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
+            )
           ),
           SliverFillRemaining(
             child: BlocBuilder<AssetsTicketsCubit, AssetsTicketsState>(
               builder: (context, state) {
                 if (state is GetAssetsTicketsFailure) {
-                  return Center(child: Text(state.message),);
+                  return Center(child: Text(state.message));
                 }
                 if (state is GetAssetsTicketsLoading) {
-                  return Center(child: CircularProgressIndicator(color: AppColors.green,),);
+                  return Center(
+                    child: CircularProgressIndicator(color: AppColors.green),
+                  );
                 }
                 if (state is GetAssetsTicketsSuccess) {
                   final data = state.assetsAndTickets;
@@ -543,7 +584,7 @@ class TicketDetailsPageBody extends StatelessWidget {
                     shrinkWrap: true,
                     itemCount: data.length,
                     itemBuilder: (context, index) {
-                        return Card(
+                      return Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -578,7 +619,8 @@ class TicketDetailsPageBody extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text("${data[index].type}".tr),
                                       Text('${data[index].barcode}'),
@@ -602,13 +644,11 @@ class TicketDetailsPageBody extends StatelessWidget {
                           ),
                         ),
                       );
-
                     },
                   );
                 }
                 return Text('No Assets Added Yet');
               },
-
             ),
           ),
         ],

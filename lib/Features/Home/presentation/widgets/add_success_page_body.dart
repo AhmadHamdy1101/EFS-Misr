@@ -2,6 +2,7 @@
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 import '../../../../core/utils/app_text_styles.dart';
 
@@ -43,24 +44,40 @@ class AddSuccessPageBody extends StatelessWidget {
                       ),
                       child: ElevatedButton(
                         onPressed: () {},
-                        child: Text(
-                          'Add Another Account',
-                          style: AppTextStyle.latoBold20(
-                            context,
-                          ).copyWith(color: AppColors.white),
-                        ),
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                             Colors.transparent,
                           ),
                           elevation: MaterialStateProperty.all<double>(0),
                         ),
+                        child: Text(
+                          'Add Another Account',
+                          style: AppTextStyle.latoBold20(
+                            context,
+                          ).copyWith(color: AppColors.white),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-
+              ElevatedButton(
+                onPressed: () {
+                  Get.back();
+                },
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all<Color>(
+                    Colors.transparent,
+                  ),
+                  elevation: WidgetStateProperty.all<double>(0),
+                ),
+                child: Text(
+                  'Back',
+                  style: AppTextStyle.latoBold20(
+                    context,
+                  ).copyWith(color: AppColors.white),
+                ),
+              ),
             ],
           ),
         ),

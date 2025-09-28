@@ -15,5 +15,11 @@ final class GetTicketsFailure extends TicketsState {
 }
 
 
+final class UpdateTicketStatusSuccess extends TicketsState{
+  final Tickets tickets;
+  UpdateTicketStatusSuccess({required this.tickets});
+
+}
+
 
 

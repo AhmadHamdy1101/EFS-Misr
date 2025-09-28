@@ -73,10 +73,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-
-
       body: CustomScrollView(
-
         slivers: [
           SliverAppBar(
             centerTitle: true,
@@ -100,7 +97,8 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                     textEditingController: oricalid,
                     textInputType: TextInputType.number,
                   ),
-                  CustomDropdownWidget(
+                  Obx(() {
+                    return CustomDropdownWidget(
                       inbutIcon: 'assets/images/company.svg',
                       inbutHintText: 'Branch',
                       textEditingController: branch,
@@ -109,8 +107,8 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                         selectedBranchID.value = BigInt.tryParse(value!)!;
                       },
                       Data: branchesData.value,
-                    ),
-
+                    );
+                  },),
                   CustomDropdownWidget(
                     inbutIcon: 'assets/images/priority.svg',
                     inbutHintText: 'Priority',

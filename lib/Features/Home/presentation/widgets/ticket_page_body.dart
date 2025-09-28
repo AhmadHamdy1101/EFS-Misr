@@ -33,117 +33,124 @@ class _TicketPageBodyState extends State<TicketPageBody> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    return BlocBuilder<TicketsCubit, TicketsState>(
-      buildWhen: (previous, current) =>
-          current is GetTicketsSuccess ||
-          current is GetTicketsLoading ||
-          current is GetTicketsFailure,
-      builder: (context, state) {
-        if (state is GetTicketsLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (state is GetTicketsFailure) {
-          return Center(child: Text(state.errMsg));
-        }
-        if (state is GetTicketsSuccess) {
-          return CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: SizedBox(
-                  width: MediaQuery.sizeOf(context).width * 0.8,
-                  child: Form(
-                    key: formKey,
-                    child: Column(
-                      spacing: 40,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: CustomInputWidget(
-                            inbutIcon: 'assets/images/search.svg',
-                            inbutHintText: 'Search'.tr,
-                            changeToPass: false,
-                            textEditingController: search,
-                            textInputType: TextInputType.text,
-                            onChanged: (search) {
-                              return context.read<TicketsCubit>().searchTickets(
-                                search,
-                              );
-                            },
-                          ),
-                        ),
-
-                        SizedBox(height: 1),
-                      ],
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: SizedBox(
+            width: MediaQuery.sizeOf(context).width * 0.8,
+            child: Form(
+              key: formKey,
+              child: Column(
+                spacing: 40,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: CustomInputWidget(
+                      inbutIcon: 'assets/images/search.svg',
+                      inbutHintText: 'Search'.tr,
+                      changeToPass: false,
+                      textEditingController: search,
+                      textInputType: TextInputType.text,
+                      onChanged: (search) {
+                        return context.read<TicketsCubit>().searchTickets(
+                          search,
+                        );
+                      },
                     ),
                   ),
-                ),
+
+                  SizedBox(height: 1),
+                ],
               ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              spacing: 10,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(
+                      context,
+                    ).buttonTheme.colorScheme?.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                  ),
+                  onPressed: () {
+                    context.read<TicketsCubit>().convertTicketsToExcel();
+                  },
                   child: Row(
                     spacing: 10,
                     children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).buttonTheme.colorScheme?.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                        ),
-                        onPressed: () {
-                          context.read<TicketsCubit>().convertTicketsToExcel();
-                        },
-                        child: Row(
-                          spacing: 10,
-                          children: [
-                            SvgPicture.asset('assets/images/Excel.svg'),
-                            Text(
-                              'Export',
-                              style: AppTextStyle.latoBold20(
-                                context,
-                              ).copyWith(color: AppColors.green),
-                            ),
-                          ],
-                        ),
+                      SvgPicture.asset('assets/images/Excel.svg'),
+                      Text(
+                        'Export',
+                        style: AppTextStyle.latoBold20(
+                          context,
+                        ).copyWith(color: AppColors.green),
                       ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).buttonTheme.colorScheme?.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                        ),
-                        onPressed: () {
-                          Get.to(AddTicketsPage());
-                        },
-                        child: Row(
-                          spacing: 10,
-                          children: [
-                            Icon(Icons.add, color: AppColors.green),
-                            Text(
-                              'Add Ticket',
-                              style: AppTextStyle.latoBold20(
-                                context,
-                              ).copyWith(color: AppColors.green),
-                            ),
-                          ],
-                        ),
-                      )
                     ],
                   ),
                 ),
-              ),
-              SliverFillRemaining(
-                child: ListView.builder(
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(
+                      context,
+                    ).buttonTheme.colorScheme?.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                  ),
+                  onPressed: () {
+                    Get.to(AddTicketsPage());
+                  },
+                  child: Row(
+                    spacing: 10,
+                    children: [
+                      Icon(Icons.add, color: AppColors.green),
+                      Text(
+                        'Add Ticket',
+                        style: AppTextStyle.latoBold20(
+                          context,
+                        ).copyWith(color: AppColors.green),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SliverFillRemaining(
+          child: BlocBuilder<TicketsCubit, TicketsState>(
+            builder: (context, state) {
+              if (state is GetTicketsLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is GetTicketsFailure) {
+                return Center(child: Text(state.errMsg));
+              }
+              if (state is GetTicketsSuccess) {
+                return ListView.builder(
                   padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   itemCount: state.tickets.length,
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        context.read<AssetsTicketsCubit>().getAssetsWithTicketId(ticketId: state.tickets[index].id);
-                        Get.to(()=>TicketDetailsPage(tickets: state.tickets[index]),);
+                        context
+                            .read<AssetsTicketsCubit>()
+                            .getAssetsWithTicketId(
+                              ticketId: state.tickets[index].id,
+                            );
+                        Get.to(
+                          () =>
+                              TicketDetailsPage(tickets: state.tickets[index]),
+                        );
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -160,13 +167,13 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                       ),
                     );
                   },
-                ),
-              ),
-            ],
-          );
-        }
-        return const Center(child: Text("No Tickets Found"));
-      },
+                );
+              }
+              return const Center(child: Text("No Tickets Found"));
+            },
+          ),
+        ),
+      ],
     );
   }
 }

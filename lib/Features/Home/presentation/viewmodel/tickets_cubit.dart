@@ -33,8 +33,6 @@ class TicketsCubit extends Cubit<TicketsState> {
   final List<Tickets> searchedTickets = [];
   final List<Users> engineers = [];
 
-  final status = ''.obs;
-
   Future<void> getTickets() async {
     emit(GetTicketsLoading());
     final result = await homeRepo.getTickets();
@@ -187,8 +185,10 @@ class TicketsCubit extends Cubit<TicketsState> {
       ticketID: ticketId,
       newStatus: newStatus,
     );
-    result.fold((l) {}, (r) {
-      status.value = r.status!;
+    result.fold((l) {}, (ticket) {
+      emit(UpdateTicketStatusSuccess(tickets: ticket));
+      getTickets();
+      emit(GetTicketsSuccess(tickets: allTickets));
     });
   }
 
@@ -230,6 +230,4 @@ class TicketsCubit extends Cubit<TicketsState> {
       },
     );
   }
-
-
 }
