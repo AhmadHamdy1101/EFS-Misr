@@ -15,9 +15,9 @@ class CustomInputWidget extends StatelessWidget {
     this.validator,
     this.onChanged,
     this.readOnly,
-    this.onTap,
+    this.onTap, this.iconColor,
   });
-
+  final iconColor;
   final String inbutIcon;
   final String inbutHintText;
   final bool changeToPass;
@@ -57,12 +57,12 @@ class CustomInputWidget extends StatelessWidget {
         decoration: InputDecoration(
           filled: true,
           fillColor: Theme.of(context).buttonTheme.colorScheme?.primary,
-          hintStyle: AppTextStyle.latoRegular16(
+          hintStyle: AppTextStyle.latoBold20(
             context,
           ).copyWith(color: Theme.of(context).colorScheme.primary),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(9.0),
-            child: SvgPicture.asset(inbutIcon),
+            child: SvgPicture.asset(inbutIcon,color: iconColor,),
           ),
           prefixIconConstraints: const BoxConstraints(
             minWidth: 30, // العرض المطلوب

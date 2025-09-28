@@ -1,5 +1,6 @@
 import 'package:efs_misr/Features/Home/presentation/pages/add_account_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/accounts_cubit.dart';
+import 'package:efs_misr/core/Functions/Capitalize_Function.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -173,6 +174,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                           elevation: 4,
+                          clipBehavior: Clip.hardEdge,
                           margin: const EdgeInsets.all(12),
                           child: Slidable(
                             key: ValueKey(users[index].id), // لازم key فريد
@@ -201,6 +203,31 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                 ),
                               ],
                             ),
+                            startActionPane: ActionPane(
+                              motion: const DrawerMotion(),
+
+                              children: [
+                                SlidableAction(
+                                  onPressed: (context) async {
+                                    context.read<AccountsCubit>().deleteAccount(
+                                      users[index].id,
+                                      users[index].userid,
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          '${users[index].name} تم حذفه',
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  backgroundColor: AppColors.green,
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.edit,
+                                  label: 'Edit'.tr,
+                                ),
+                              ],
+                            ),
 
                             child: Container(
                               padding: EdgeInsets.symmetric(
@@ -208,109 +235,140 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                 horizontal: 20,
                               ),
 
-                              child: Row(
-                                spacing: 15,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
+                              child: Column(
+                                spacing: 10,
                                 children: [
-                                  Container(
-                                    width: screenWidth * 0.15,
-                                    height: screenWidth * 0.15,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.lightGreen.withOpacity(
-                                        0.25,
-                                      ),
-                                      borderRadius: BorderRadius.circular(60),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: AppColors.black.withAlpha(25),
-                                          blurRadius: 10,
-                                        ),
-                                      ],
-                                    ),
-                                    clipBehavior: Clip.antiAlias,
-                                    child: ClipRRect(
-                                      child: Image.asset(
-                                        width: screenWidth,
-                                        'assets/images/user.png',
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: screenWidth * 0.3,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("${users[index].name}".tr),
-                                            Text(
-                                              users[index].position?.name ??
-                                                  "No Position",
+                                  Row(
+                                    spacing: 15,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        width: screenWidth * 0.15,
+                                        height: screenWidth * 0.15,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.lightGreen.withOpacity(
+                                            0.25,
+                                          ),
+                                          borderRadius: BorderRadius.circular(60),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: AppColors.black.withAlpha(25),
+                                              blurRadius: 10,
                                             ),
                                           ],
                                         ),
-                                        Text(
-                                          (users[index].company ?? '').tr,
-                                          style: AppTextStyle.latoRegular16(
-                                            context,
-                                          ).copyWith(color: AppColors.green),
-                                        ),
-                                        Text(
-                                          (users[index].email ?? '').tr,
-                                          style:
-                                              AppTextStyle.latoRegular16(
-                                                context,
-                                              ).copyWith(
-                                                color: AppColors.gray,
-                                                overflow: TextOverflow.clip,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      spacing: 10,
-                                      children: [
-                                        Text('Status'.tr),
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: screenHeight * 0.01,
-                                            horizontal: screenWidth * 0.04,
+                                        clipBehavior: Clip.antiAlias,
+                                        child: ClipRRect(
+                                          child: Image.asset(
+                                            width: screenWidth,
+                                            users[index].image ?? 'assets/images/user.png',
+                                            fit: BoxFit.cover,
                                           ),
-                                          decoration: BoxDecoration(
-                                            color: Color(0xff8FCFAD),
-                                            borderRadius: BorderRadius.circular(
-                                              50,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: screenWidth * 0.31,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          spacing: 5,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text("${users[index].name}".tr),
+                                                Text(
+                                                  capitalizeEachWord(users[index].position?.name ?? 'No Possition')
+                                                ),
+                                              ],
                                             ),
-                                          ),
-                                          child: Row(
-                                            spacing: 4,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                checkStatus(
-                                                  users[index].status,
-                                                ).tr,
-                                                style:
+                                            Text(
+                                              (users[index].company ?? '').tr,
+                                              style: AppTextStyle.latoBold20(
+                                                context,
+                                              ).copyWith(color: AppColors.green),
+                                            ),
+
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Column(
+                                          spacing: 10,
+                                          children: [
+                                            Text('Status'.tr),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: screenHeight * 0.01,
+                                                horizontal: screenWidth * 0.04,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: Color(0xff8FCFAD),
+                                                borderRadius: BorderRadius.circular(
+                                                  50,
+                                                ),
+                                              ),
+                                              child: Row(
+                                                spacing: 4,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                    checkStatus(
+                                                      users[index].status,
+                                                    ).tr,
+                                                    style:
                                                     AppTextStyle.latoBold16(
                                                       context,
                                                     ).copyWith(
                                                       color: AppColors.white,
                                                     ),
-                                                textAlign: TextAlign.center,
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    spacing: 10,
+                                    children: [
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        spacing: 10,
+                                        children: [
+                                        SvgPicture.asset('assets/images/Phone.svg',color: Theme.of(context).colorScheme.primary,),
+                                        Text(users[index].phone ?? capitalizeEachWord('no phone'))
+                                      ],),
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        spacing: 10,
+                                        children: [
+                                        SvgPicture.asset('assets/images/address.svg',color: Theme.of(context).colorScheme.primary,),
+                                        Text(capitalizeEachWord('${users[index].address }')?? capitalizeEachWord('no address')),
+                                      ],),
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        spacing: 10,
+                                        children: [
+                                          SvgPicture.asset('assets/images/Email.svg',color: Theme.of(context).colorScheme.primary,),
+                                          Text(users[index].email ?? capitalizeEachWord('no email')),
+                                        ],),
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        spacing: 10,
+                                        children: [
+                                          SvgPicture.asset('assets/images/Email.svg',color: Theme.of(context).colorScheme.primary,),
+                                          Text(users[index].companyEmail ?? capitalizeEachWord('no company email')),
+                                        ],),
+
+                                    ],
+                                  )
                                 ],
                               ),
                             ),

@@ -20,9 +20,11 @@ class Users implements SupadartClass<Users> {
   final Positions? position;
   final String? companyEmail;
   final String? company;
+  final String? image;
 
 
-  const Users({
+  const Users( {
+    this.image,
     required this.id,
     this.userid,
     this.name,
@@ -55,6 +57,7 @@ class Users implements SupadartClass<Users> {
   static String get c_companyEmail => 'company_email';
 
   static String get c_company => 'Company';
+  static String get c_image => 'Image';
 
   static List<Users> converter(List<Map<String, dynamic>> data) {
     return data.map(Users.fromJson).toList();
@@ -78,6 +81,7 @@ class Users implements SupadartClass<Users> {
     DateTime? createdAt,
     String? companyEmail,
     String? company,
+    String? image,
 
   }) {
     return {
@@ -95,6 +99,7 @@ class Users implements SupadartClass<Users> {
       if (companyEmail != null) 'company_email': companyEmail,
 
       if (company != null) 'Company': company,
+      if (image != null) 'Image': image,
     };
   }
 
@@ -113,6 +118,7 @@ class Users implements SupadartClass<Users> {
     String? companyEmail,
 
     String? company,
+    String? image,
   }) {
     return _generateMap(
       id: id,
@@ -129,6 +135,7 @@ class Users implements SupadartClass<Users> {
       companyEmail: companyEmail,
 
       company: company,
+      image: image,
     );
   }
 
@@ -147,6 +154,7 @@ class Users implements SupadartClass<Users> {
     String? companyEmail,
 
     String? company,
+    String? image,
   }) {
     return _generateMap(
       id: id,
@@ -161,8 +169,8 @@ class Users implements SupadartClass<Users> {
       status: status,
       createdAt: createdAt,
       companyEmail: companyEmail,
-
       company: company,
+      image: image,
     );
   }
 
@@ -191,6 +199,7 @@ class Users implements SupadartClass<Users> {
           ? jsonn['company_email'].toString()
           : null,
       company: jsonn['Company'] != null ? jsonn['Company'].toString() : null,
+      image: jsonn['Image'] != null ? jsonn['Image'].toString() : null,
     );
   }
 
@@ -209,6 +218,7 @@ class Users implements SupadartClass<Users> {
     String? companyEmail,
 
     String? company,
+    String? image,
   }) {
     return {
       if (id != null) 'id': id,
@@ -224,6 +234,7 @@ class Users implements SupadartClass<Users> {
       if (createdAt != null) 'created_at': createdAt,
       if (companyEmail != null) 'company_email': companyEmail,
       if (company != null) 'Company': company,
+      if (image != null) 'Image': image,
     };
   }
 
@@ -243,6 +254,7 @@ class Users implements SupadartClass<Users> {
       companyEmail: companyEmail,
 
       company: company,
+      image: image,
     );
   }
 
@@ -261,6 +273,7 @@ class Users implements SupadartClass<Users> {
     Object? createdAt = _unset,
     Object? companyEmail = _unset,
     Object? company = _unset,
+    Object? image = _unset,
   }) {
     return Users(
       id: id == _unset ? this.id : id as BigInt,
@@ -276,6 +289,8 @@ class Users implements SupadartClass<Users> {
       createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
       companyEmail: companyEmail == _unset ? this.companyEmail : companyEmail as String?,
       company: company == _unset ? this.company : company as String?,
+      image: image == _unset ? this.image : image as String?,
+
     );
   }
 }

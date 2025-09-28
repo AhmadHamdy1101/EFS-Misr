@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import '../../../../core/Functions/GetDate_Function.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../viewmodel/assets_tickets_cubit.dart';
@@ -69,8 +70,8 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                         ),
                         child: ClipRRect(
                           child: SvgPicture.asset(
-                            'assets/images/Chair.svg',
-                            colorFilter: ColorFilter.mode(AppColors.green, BlendMode.clear),
+                            'assets/images/${widget.assets.type}.svg',
+                            color: AppColors.green,
                             width: screenWidth * 0.1,
                             height: screenWidth * 0.1,
                           ),
@@ -182,7 +183,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                 color: AppColors.white,
                 margin: const EdgeInsets.all(12),
                 child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
                   child: Column(
                     spacing: 10,
                     children: [
@@ -210,52 +211,62 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                             child: ClipRRect(
                               child: SvgPicture.asset(
                                 'assets/images/deductions.svg',
-                                colorFilter:ColorFilter.mode(AppColors.green, BlendMode.clear),
+                                color: AppColors.green,
                                 width: screenWidth * 0.09,
                                 height: screenWidth * 0.09,
                               ),
                             ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 5,
-                                  horizontal: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.green,
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: Text(
-                                  tickets[index].variation??'No Type',
-                                  style: AppTextStyle.latoRegular15(
-                                    context,
-                                  ).copyWith(color: AppColors.white),
-                                ),
-                              ),
-                              Text(
-                                '${tickets[index].repairDate??DateTime.now()}',
-                                style: AppTextStyle.latoBold16(context),
-                              ),
-                              Text(
-                                '${tickets[index].comment}',
-                                style: AppTextStyle.latoRegular16(
-                                  context,
-                                ).copyWith(color: AppColors.gray),
-                              ),
-                            ],
-                          ),
                           Expanded(
-                            child: Text(
-                              "${tickets[index].amount??0}",
-                              style: AppTextStyle.latoBold26(
-                                context,
-                              ).copyWith(color: AppColors.green),
-                              textAlign: TextAlign.center,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 5,
+                                    horizontal: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.green,
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  child: Text(
+                                    tickets[index].variation??'No Type',
+                                    style: AppTextStyle.latoRegular15(
+                                   context,
+                                  ).copyWith(color: AppColors.white),
+                                  ),
+                                ),
+                                Text(
+                                  getDateFromTimestamp(tickets[index].requestDate!),
+                                  style: AppTextStyle.latoBold16(context),
+                                ),
+                                Text(
+                                  '${tickets[index].comment}',
+                                  style: AppTextStyle.latoRegular16(
+                                    context,
+                                  ).copyWith(color: AppColors.gray),
+                                ),
+                              ],
                             ),
                           ),
+                          Text(
+                            "${tickets[index].amount??0}",
+                            style: AppTextStyle.latoBold26(
+                              context,
+                            ).copyWith(color: AppColors.green),
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            "EGP".tr,
+                            style: AppTextStyle.latoBold26(
+                              context,
+                            ).copyWith(color: AppColors.green),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(
+                            width: screenWidth*0.01,
+                          )
                         ],
                       ),
                     ],

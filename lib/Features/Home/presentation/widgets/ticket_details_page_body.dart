@@ -5,6 +5,7 @@ import 'package:efs_misr/Features/Home/presentation/widgets/QRViewTicket.dart';
 import 'package:efs_misr/core/Functions/GetDate_Function.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:efs_misr/core/utils/widgets/custom_button_widget.dart';
+import 'package:efs_misr/core/utils/widgets/custom_dropdown_widget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_inbut_wedget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_outline_button_widget.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/Functions/Capitalize_Function.dart';
 import '../../../../core/utils/app_text_styles.dart';
 
 class TicketDetailsPageBody extends StatefulWidget {
@@ -25,6 +27,12 @@ class TicketDetailsPageBody extends StatefulWidget {
 
 class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
   final TextEditingController damageComment = TextEditingController();
+  final Data = [
+    {'name': 'Spare Parts', 'value': 'Spare Parts'},
+    {'name': 'No Spare Parts', 'value': 'No Spare Parts'},
+  ];
+  String? selectedValue;
+  final selectedRepairValue = ''.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +86,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                               Container(
                                 padding: EdgeInsets.all(screenWidth * 0.03),
                                 decoration: BoxDecoration(
-                                  color: AppColors.lightGreen.withOpacity(
-                                    0.25,
-                                  ),
+                                  color: AppColors.lightGreen.withOpacity(0.25),
                                   borderRadius: BorderRadius.circular(60),
                                 ),
                                 child: ClipRRect(
@@ -93,26 +99,21 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                 ),
                               ),
                               Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
                                     spacing: 5,
                                     children: [
                                       Text(
                                         "Ticket No.".tr,
-                                        style: AppTextStyle.latoBold20(
-                                          context,
-                                        ),
+                                        style: AppTextStyle.latoBold20(context),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 2,
                                         softWrap: false,
                                       ),
                                       Text(
                                         "${widget.ticket.orecalId}".tr,
-                                        style: AppTextStyle.latoBold20(
-                                          context,
-                                        ),
+                                        style: AppTextStyle.latoBold20(context),
                                         overflow: TextOverflow.ellipsis,
                                         maxLines: 2,
                                         softWrap: false,
@@ -133,8 +134,9 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                         height: screenHeight * 0.006,
                                         decoration: BoxDecoration(
                                           color: AppColors.green,
-                                          borderRadius:
-                                          BorderRadius.circular(50),
+                                          borderRadius: BorderRadius.circular(
+                                            50,
+                                          ),
                                         ),
                                       ),
                                       Text(
@@ -147,9 +149,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                   ),
                                   Text(
                                     '${widget.ticket.branchObject?.area}',
-                                    style: AppTextStyle.latoRegular19(
-                                      context,
-                                    ),
+                                    style: AppTextStyle.latoRegular19(context),
                                   ),
                                 ],
                               ),
@@ -169,16 +169,14 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                       ),
                                       decoration: BoxDecoration(
                                         color:
-                                        '${widget.ticket.status}' ==
-                                            'Awaiting'
+                                            '${widget.ticket.status}' ==
+                                                'Awaiting'
                                             ? const Color(0xffDFE699)
                                             : '${widget.ticket.status}' ==
-                                            'Completed'
+                                                  'Completed'
                                             ? const Color(0xff8FCFAD)
                                             : const Color(0xffDBA0A0),
-                                        borderRadius: BorderRadius.circular(
-                                          50,
-                                        ),
+                                        borderRadius: BorderRadius.circular(50),
                                       ),
                                       child: Text(
                                         '${widget.ticket.status}'.tr,
@@ -206,16 +204,14 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                       context
                                           .read<TicketsCubit>()
                                           .updateTicketStatus(
-                                        widget.ticket.id.toString(),
-                                        "Canceled",
-                                      );
+                                            widget.ticket.id.toString(),
+                                            "Canceled",
+                                          );
                                     },
                                     text: 'Canceled',
                                     borderColor: AppColors.green,
                                     topPadding: 15.0,
-                                    textStyle: AppTextStyle.latoBold20(
-                                      context,
-                                    ),
+                                    textStyle: AppTextStyle.latoBold20(context),
                                   ),
                                 ),
                                 Expanded(
@@ -226,16 +222,14 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                       context
                                           .read<TicketsCubit>()
                                           .updateTicketStatus(
-                                        widget.ticket.id.toString(),
-                                        "Completed",
-                                      );
+                                            widget.ticket.id.toString(),
+                                            "Completed",
+                                          );
                                     },
                                     foregroundcolor: AppColors.white,
                                     color: AppColors.green,
                                     toppadding: 15.0,
-                                    textstyle: AppTextStyle.latoBold20(
-                                      context,
-                                    ),
+                                    textstyle: AppTextStyle.latoBold20(context),
                                   ),
                                 ),
                               ],
@@ -266,8 +260,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Request Date'.tr,
@@ -283,8 +276,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                   ],
                                 ),
                                 Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Repair Date:'.tr,
@@ -320,8 +312,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Request Date:'.tr,
@@ -337,8 +328,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                   ],
                                 ),
                                 Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Response Date:'.tr,
@@ -375,8 +365,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Priority:'.tr,
@@ -388,8 +377,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                   ],
                                 ),
                                 Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Closed By:'.tr,
@@ -397,7 +385,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                         context,
                                       ).copyWith(color: AppColors.green),
                                     ),
-                                    Text(widget.ticket.user?.name??''),
+                                    Text(widget.ticket.user?.name ?? ''),
                                   ],
                                 ),
                               ],
@@ -420,8 +408,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       'Engineer:'.tr,
@@ -429,7 +416,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                         context,
                                       ).copyWith(color: AppColors.green),
                                     ),
-                                    Text(widget.ticket.user?.name??''),
+                                    Text(widget.ticket.user?.name ?? ''),
                                   ],
                                 ),
                               ],
@@ -447,8 +434,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 'Damage Description:'.tr,
@@ -465,48 +451,45 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                       return Dialog(
                                         backgroundColor: AppColors.white,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                          BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
                                         child: SingleChildScrollView(
                                           // 👈 يضمن إن مفيش overflow
                                           child: Padding(
-                                            padding: const EdgeInsets.all(
-                                              16.0,
-                                            ),
+                                            padding: const EdgeInsets.all(16.0),
                                             child: Column(
                                               spacing: 10,
-                                              mainAxisSize:
-                                              MainAxisSize.min,
+                                              mainAxisSize: MainAxisSize.min,
                                               crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .stretch,
+                                                  CrossAxisAlignment.stretch,
                                               // 👈 بدل stretch
                                               children: [
                                                 Row(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment.end,
+                                                      MainAxisAlignment.end,
                                                   children: [CloseButton()],
                                                 ),
 
                                                 CustomInputWidget(
                                                   inbutIcon:
-                                                  "assets/images/comment.svg",
+                                                      "assets/images/comment.svg",
                                                   inbutHintText:
-                                                  "Damage Description",
+                                                      "Damage Description",
                                                   changeToPass: false,
                                                   textEditingController:
-                                                  damageComment,
+                                                      damageComment,
                                                 ),
                                                 CustomButtonWidget(
                                                   screenWidth: screenWidth,
                                                   toppadding: 10.0,
                                                   textstyle:
-                                                  AppTextStyle.latoBold20(
-                                                    context,
-                                                  ),
+                                                      AppTextStyle.latoBold20(
+                                                        context,
+                                                      ),
                                                   foregroundcolor:
-                                                  AppColors.white,
+                                                      AppColors.white,
                                                   onpressed: () {
                                                     Navigator.pop(
                                                       context,
@@ -564,7 +547,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                   ),
                 ],
               ),
-            )
+            ),
           ),
           SliverFillRemaining(
             child: BlocBuilder<AssetsTicketsCubit, AssetsTicketsState>(
@@ -584,63 +567,127 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                     shrinkWrap: true,
                     itemCount: data.length,
                     itemBuilder: (context, index) {
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 4,
-                        margin: const EdgeInsets.all(12),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 20,
-                            horizontal: 20,
-                          ),
-                          child: Row(
-                            spacing: 15,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(screenWidth * 0.03),
-                                decoration: BoxDecoration(
-                                  color: AppColors.lightGreen.withOpacity(0.25),
-                                  borderRadius: BorderRadius.circular(60),
-                                ),
-                                child: ClipRRect(
-                                  child: SvgPicture.asset(
-                                    'assets/images/Chair.svg',
-                                    color: AppColors.green,
-                                    width: screenWidth * 0.1,
-                                    height: screenWidth * 0.1,
-                                  ),
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                      return GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Dialog(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    spacing: 20,
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Text("${data[index].type}".tr),
-                                      Text('${data[index].barcode}'),
+                                      SizedBox(height: 3,),
+
+                                      Text( capitalizeEachWord('add Cost'),style: AppTextStyle.latoBold26(context).copyWith(color: AppColors.green),),
+                                      CustomInputWidget(
+                                        inbutIcon: 'assets/images/id.svg',
+                                        iconColor: AppColors.green,
+                                        inbutHintText: 'Name',
+                                        changeToPass: false,
+                                      ),
+                                      CustomDropdownWidget(
+                                        inbutIcon: 'assets/images/repair.svg',
+                                        iconColor: AppColors.green,
+                                        inbutHintText: 'Repair Type',
+                                        selectedValue: selectedValue,
+                                        Data: Data,
+                                        onChanged: (value) {
+                                          selectedRepairValue.value = value!;
+                                        },
+                                      ),
+                                      CustomInputWidget(
+                                        inbutIcon:
+                                        'assets/images/deductions.svg',
+                                        iconColor: AppColors.green,
+                                        inbutHintText: 'Ammount',
+                                        changeToPass: false,
+                                      ),
+                                      Container(
+                                        width: screenWidth,
+                                        child: CustomButtonWidget(
+                                          screenWidth: screenWidth*0.5,
+                                          toppadding: 10,
+                                          onpressed: (){},
+                                          text: 'Add',
+                                          foregroundcolor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                                          color: Theme.of(
+                                            context,
+                                          ).buttonTheme.colorScheme?.secondary,
+                                          textstyle: AppTextStyle.latoBold20(
+                                            context,
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   ),
-                                  Text(
-                                    '${data[index].branchObject?.name}'.tr,
-                                    style: AppTextStyle.latoRegular16(
-                                      context,
-                                    ).copyWith(color: AppColors.green),
+                                ),
+                              );
+                            },
+                        );
+                        },
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 4,
+                          margin: const EdgeInsets.all(12),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 20,
+                              horizontal: 20,
+                            ),
+                            child: Row(
+                              spacing: 15,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(screenWidth * 0.03),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.lightGreen.withOpacity(
+                                      0.25,
+                                    ),
+                                    borderRadius: BorderRadius.circular(60),
                                   ),
-                                  Text(
-                                    '${data[index].branchObject?.area}'.tr,
-                                    style: AppTextStyle.latoRegular16(
-                                      context,
-                                    ).copyWith(color: AppColors.gray),
+                                  child: ClipRRect(
+                                    child: SvgPicture.asset(
+                                      'assets/images/${data[index].type}.svg',
+                                      color: AppColors.green,
+                                      width: screenWidth * 0.1,
+                                      height: screenWidth * 0.1,
+                                    ),
                                   ),
-                                ],
-                              ),
-                            ],
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text("${data[index].type}".tr),
+                                        Text('${data[index].barcode}'),
+                                      ],
+                                    ),
+                                    Text(
+                                      '${data[index].branchObject?.name}'.tr,
+                                      style: AppTextStyle.latoRegular16(
+                                        context,
+                                      ).copyWith(color: AppColors.green),
+                                    ),
+                                    Text(
+                                      '${data[index].branchObject?.area}'.tr,
+                                      style: AppTextStyle.latoRegular16(
+                                        context,
+                                      ).copyWith(color: AppColors.gray),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );

@@ -13,9 +13,9 @@ class CustomDropdownWidget extends StatefulWidget {
     this.textInputType,
     this.validator,
     this.onChanged,
-    required this.selectedValue, required this.Data,
+    required this.selectedValue, required this.Data, this.iconColor,
   });
-
+final iconColor;
   final String inbutIcon;
   final String inbutHintText;
   final String? selectedValue;
@@ -59,7 +59,7 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
         borderRadius: BorderRadius.circular(10),
         isExpanded: true,
         initialValue: _currentValue,
-        hint: Text(widget.inbutHintText, textAlign: TextAlign.center),
+        hint: Text(widget.inbutHintText, textAlign: TextAlign.center,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.black),),
         items: widget.Data.map((status) {
           return DropdownMenuItem<String>(
             value: status['value'],
@@ -81,7 +81,7 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
           ),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(9.0),
-            child: SvgPicture.asset(widget.inbutIcon,color: AppColors.gray,),
+            child: SvgPicture.asset(widget.inbutIcon,color: widget.iconColor,),
           ),
           border: InputBorder.none,
         ),

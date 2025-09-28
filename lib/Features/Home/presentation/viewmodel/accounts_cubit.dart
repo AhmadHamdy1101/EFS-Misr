@@ -138,8 +138,11 @@ class AccountsCubit extends Cubit<AccountsState> {
   }
   Future<void> deleteAccount(BigInt? id, String? userid) async {
     try {
-      await supabaseClient.users.delete().eq('id', id!);
-      await supabaseClient.auth.admin.deleteUser(userid!);
+      print(id);
+      print(userid);
+
+      // await supabaseClient.users.delete().eq('id', id!);
+     await supabaseClient.auth.admin.deleteUser(userid!);
 
       // بعد الحذف نعيد تحميل القائمة
 
