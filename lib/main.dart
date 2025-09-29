@@ -2,8 +2,8 @@ import 'package:efs_misr/Features/Auth/domain/auth_repo.dart';
 import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/accounts_cubit.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/qrcode_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
@@ -12,12 +12,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'constants/constants.dart';
 import 'core/utils/singelton.dart';
 import 'main_app.dart';
 
 Future<void> main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(url: supbaseUrl, anonKey: supbaseKey);
   setup();
@@ -48,9 +48,11 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider(create: (context) => QrcodeCubit(getIt.get<HomeRepo>())),
         BlocProvider(create: (context) => AccountsCubit(getIt.get<HomeRepo>())),
-        BlocProvider(create: (context) => AssetsTicketsCubit(getIt.get<HomeRepo>())),
+        BlocProvider(
+          create: (context) => AssetsTicketsCubit(getIt.get<HomeRepo>()),
+        ),
       ],
-      child:GetMaterialApp(
+      child: GetMaterialApp(
         translations: AppTranslations(),
         locale: Locale('en'),
         debugShowCheckedModeBanner: false,

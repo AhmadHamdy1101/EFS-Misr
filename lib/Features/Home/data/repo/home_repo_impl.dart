@@ -64,7 +64,11 @@ class HomeRepoImpl extends HomeRepo {
       final tickets = await supabaseClient.tickets
           .update(Tickets.update(status: newStatus))
           .eq('id', ticketID)
-          .select()
+          .select('''
+      *,
+      branch(*),
+      engineer:users!tickets_engineer_fkey(*,positions(*))
+    ''')
           .single()
           .withConverter(Tickets.converterSingle);
       return Right(tickets);
@@ -102,44 +106,68 @@ class HomeRepoImpl extends HomeRepo {
     }
   }
 
-
   @override
-  Future<Either<Failure, String>> addAssetsAndTickets({required BigInt assetsId, required BigInt ticketId}) async{
-    try{
-      final assetsAndTickets = await supabaseClient.assetsAndTickets
-          .insert(
-        AssetsAndTickets.insert(
-          assetsId: assetsId,
-          TicketsId: ticketId
-        ),
+  Future<Either<Failure, String>> addAssetsAndTickets({
+    required BigInt assetsId,
+    required BigInt ticketId,
+  }) async {
+    try {
+      final assetsAndTickets = await supabaseClient.assetsAndTickets.insert(
+        AssetsAndTickets.insert(assetsId: assetsId, TicketsId: ticketId),
       );
       return Right('Success');
-    }
-        catch(e){
+    } catch (e) {
       return Left(Failure.fromException(e));
-        }
+    }
   }
 
   @override
-  Future<Either<Failure, List<Assets>>> getAssetsWithTicketID({required BigInt ticketId}) async{
-    try{
-      final assetsAndTickets = await homeRemoteDataSource.getAssetsWithTicketID(ticketId: ticketId);
+  Future<Either<Failure, List<Assets>>> getAssetsWithTicketID({
+    required BigInt ticketId,
+  }) async {
+    try {
+      final assetsAndTickets = await homeRemoteDataSource.getAssetsWithTicketID(
+        ticketId: ticketId,
+      );
       return Right(assetsAndTickets);
-    }
-        catch(e){
+    } catch (e) {
       print(Failure.fromException(e));
       return Left(Failure.fromException(e));
-        }
+    }
   }
 
   @override
-  Future<Either<Failure, List<Tickets>>> getTicketsWithAssetsID({required BigInt assetId}) async{
-    try{
-      final assetsAndTickets = await homeRemoteDataSource.getTicketsWithAssetsID(assetId: assetId);
+  Future<Either<Failure, List<Tickets>>> getTicketsWithAssetsID({
+    required BigInt assetId,
+  }) async {
+    try {
+      final assetsAndTickets = await homeRemoteDataSource
+          .getTicketsWithAssetsID(assetId: assetId);
       return Right(assetsAndTickets);
-    }
-    catch(e){
+    } catch (e) {
       print(Failure.fromException(e));
+      return Left(Failure.fromException(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Tickets>> updateTicketComment({
+    required String ticketID,
+    required String newComment,
+  }) async {
+    try {
+      final tickets = await supabaseClient.tickets
+          .update(Tickets.update(damageDescription: newComment))
+          .eq('id', ticketID)
+          .select('''
+      *,
+      branch(*),
+      engineer:users!tickets_engineer_fkey(*,positions(*))
+    ''')
+          .single()
+          .withConverter(Tickets.converterSingle);
+      return Right(tickets);
+    } catch (e) {
       return Left(Failure.fromException(e));
     }
   }

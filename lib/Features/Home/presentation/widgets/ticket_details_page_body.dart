@@ -76,167 +76,378 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                   Card(
                     child: Container(
                       padding: EdgeInsets.all(20.0),
-                      child: Column(
-                        spacing: 10,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            spacing: 15,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(screenWidth * 0.03),
-                                decoration: BoxDecoration(
-                                  color: AppColors.lightGreen.withOpacity(0.25),
-                                  borderRadius: BorderRadius.circular(60),
-                                ),
-                                child: ClipRRect(
-                                  child: SvgPicture.asset(
-                                    'assets/images/ticket.svg',
-                                    color: AppColors.green,
-                                    width: screenWidth * 0.1,
-                                    height: screenWidth * 0.1,
-                                  ),
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    spacing: 5,
-                                    children: [
-                                      Text(
-                                        "Ticket No.".tr,
-                                        style: AppTextStyle.latoBold20(context),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 2,
-                                        softWrap: false,
-                                      ),
-                                      Text(
-                                        "${widget.ticket.orecalId}".tr,
-                                        style: AppTextStyle.latoBold20(context),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 2,
-                                        softWrap: false,
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    spacing: 4,
-                                    children: [
-                                      Text(
-                                        '${widget.ticket.branchObject?.branchId}',
-                                        style: AppTextStyle.latoBold16(
-                                          context,
-                                        ).copyWith(color: AppColors.green),
-                                      ),
-                                      Container(
-                                        width: screenWidth * 0.012,
-                                        height: screenHeight * 0.006,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.green,
-                                          borderRadius: BorderRadius.circular(
-                                            50,
-                                          ),
-                                        ),
-                                      ),
-                                      Text(
-                                        '${widget.ticket.branchObject?.name}',
-                                        style: AppTextStyle.latoBold16(
-                                          context,
-                                        ).copyWith(color: AppColors.green),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    '${widget.ticket.branchObject?.area}',
-                                    style: AppTextStyle.latoRegular19(context),
-                                  ),
-                                ],
-                              ),
-                              Expanded(
-                                child: Column(
+                      child: BlocBuilder<TicketsCubit, TicketsState>(
+                        builder: (context, state) {
+                          if (state is GetTicketsSuccess) {
+                            final currentTicket = state.tickets.firstWhere(
+                              (t) => t.id == widget.ticket.id,
+                              orElse: () => widget.ticket,
+                            );
+                            return Column(
+                              spacing: 10,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  spacing: 15,
                                   children: [
-                                    Text(
-                                      "Status".tr,
-                                      style: AppTextStyle.latoRegular16(
-                                        context,
-                                      ),
-                                    ),
                                     Container(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: screenHeight * 0.01,
-                                        horizontal: screenWidth * 0.04,
+                                      padding: EdgeInsets.all(
+                                        screenWidth * 0.03,
                                       ),
                                       decoration: BoxDecoration(
-                                        color:
-                                            '${widget.ticket.status}' ==
-                                                'Awaiting'
-                                            ? const Color(0xffDFE699)
-                                            : '${widget.ticket.status}' ==
-                                                  'Completed'
-                                            ? const Color(0xff8FCFAD)
-                                            : const Color(0xffDBA0A0),
-                                        borderRadius: BorderRadius.circular(50),
+                                        color: AppColors.lightGreen.withOpacity(
+                                          0.25,
+                                        ),
+                                        borderRadius: BorderRadius.circular(60),
                                       ),
-                                      child: Text(
-                                        '${widget.ticket.status}'.tr,
-                                        style: AppTextStyle.latoBold13(
-                                          context,
-                                        ).copyWith(color: AppColors.white),
+                                      child: ClipRRect(
+                                        child: SvgPicture.asset(
+                                          'assets/images/ticket.svg',
+                                          color: AppColors.green,
+                                          width: screenWidth * 0.1,
+                                          height: screenWidth * 0.1,
+                                        ),
+                                      ),
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          spacing: 5,
+                                          children: [
+                                            Text(
+                                              "Ticket No.".tr,
+                                              style: AppTextStyle.latoBold20(
+                                                context,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
+                                              softWrap: false,
+                                            ),
+                                            Text(
+                                              "${widget.ticket.orecalId}".tr,
+                                              style: AppTextStyle.latoBold20(
+                                                context,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
+                                              softWrap: false,
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          spacing: 4,
+                                          children: [
+                                            Text(
+                                              '${widget.ticket.branchObject?.branchId}',
+                                              style:
+                                                  AppTextStyle.latoBold16(
+                                                    context,
+                                                  ).copyWith(
+                                                    color: AppColors.green,
+                                                  ),
+                                            ),
+                                            Container(
+                                              width: screenWidth * 0.012,
+                                              height: screenHeight * 0.006,
+                                              decoration: BoxDecoration(
+                                                color: AppColors.green,
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                              ),
+                                            ),
+                                            Text(
+                                              '${widget.ticket.branchObject?.name}',
+                                              style:
+                                                  AppTextStyle.latoBold16(
+                                                    context,
+                                                  ).copyWith(
+                                                    color: AppColors.green,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          '${widget.ticket.branchObject?.area}',
+                                          style: AppTextStyle.latoRegular19(
+                                            context,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            "Status".tr,
+                                            style: AppTextStyle.latoRegular16(
+                                              context,
+                                            ),
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: screenHeight * 0.01,
+                                              horizontal: screenWidth * 0.04,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  '${currentTicket.status}' ==
+                                                      'Awaiting'
+                                                  ? const Color(0xffDFE699)
+                                                  : '${currentTicket.status}' ==
+                                                        'Completed'
+                                                  ? const Color(0xff8FCFAD)
+                                                  : const Color(0xffDBA0A0),
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                            ),
+                                            child: Text(
+                                              '${currentTicket.status}'.tr,
+                                              style:
+                                                  AppTextStyle.latoBold13(
+                                                    context,
+                                                  ).copyWith(
+                                                    color: AppColors.white,
+                                                  ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                          Text('${widget.ticket.comment}'.tr),
-                          if (widget.ticket.status == 'Awaiting')
-                            Row(
-                              spacing: 10,
-                              children: [
-                                Expanded(
-                                  child: CustomOutlineButtonWidget(
-                                    screenWidth: screenWidth,
-                                    color: Colors.transparent,
-                                    foregroundColor: AppColors.green,
-                                    onPressed: () {
-                                      context
-                                          .read<TicketsCubit>()
-                                          .updateTicketStatus(
-                                            widget.ticket.id.toString(),
-                                            "Canceled",
-                                          );
-                                    },
-                                    text: 'Canceled',
-                                    borderColor: AppColors.green,
-                                    topPadding: 15.0,
-                                    textStyle: AppTextStyle.latoBold20(context),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: CustomButtonWidget(
-                                    screenWidth: screenWidth,
-                                    text: 'Complete',
-                                    onpressed: () {
-                                      context
-                                          .read<TicketsCubit>()
-                                          .updateTicketStatus(
-                                            widget.ticket.id.toString(),
-                                            "Completed",
-                                          );
-                                    },
-                                    foregroundcolor: AppColors.white,
-                                    color: AppColors.green,
-                                    toppadding: 15.0,
-                                    textstyle: AppTextStyle.latoBold20(context),
-                                  ),
-                                ),
+                                Text('${widget.ticket.comment}'.tr),
+                                if (currentTicket.status == 'Awaiting')
+                                  Row(
+                                    spacing: 10,
+                                    children: [
+                                      Expanded(
+                                        child: CustomOutlineButtonWidget(
+                                          screenWidth: screenWidth,
+                                          color: Colors.transparent,
+                                          foregroundColor: AppColors.green,
+                                          onPressed: () {
+                                            context
+                                                .read<TicketsCubit>()
+                                                .updateTicketStatus(
+                                                  widget.ticket.id.toString(),
+                                                  "Canceled",
+                                                );
+                                          },
+                                          text: 'Cancel',
+                                          borderColor: AppColors.green,
+                                          topPadding: 15.0,
+                                          textStyle: AppTextStyle.latoBold20(
+                                            context,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: CustomButtonWidget(
+                                          screenWidth: screenWidth,
+                                          text: 'Complete',
+                                          onpressed: () {
+                                            context
+                                                .read<TicketsCubit>()
+                                                .updateTicketStatus(
+                                                  widget.ticket.id.toString(),
+                                                  "Completed",
+                                                );
+                                          },
+                                          foregroundcolor: AppColors.white,
+                                          color: AppColors.green,
+                                          toppadding: 15.0,
+                                          textstyle: AppTextStyle.latoBold20(
+                                            context,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                else
+                                  Row(),
                               ],
-                            )
-                          else
-                            Row(),
-                        ],
+                            );
+                          }
+                          return Column(
+                            spacing: 10,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                spacing: 15,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(screenWidth * 0.03),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.lightGreen.withOpacity(
+                                        0.25,
+                                      ),
+                                      borderRadius: BorderRadius.circular(60),
+                                    ),
+                                    child: ClipRRect(
+                                      child: SvgPicture.asset(
+                                        'assets/images/ticket.svg',
+                                        color: AppColors.green,
+                                        width: screenWidth * 0.1,
+                                        height: screenWidth * 0.1,
+                                      ),
+                                    ),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        spacing: 5,
+                                        children: [
+                                          Text(
+                                            "Ticket No.".tr,
+                                            style: AppTextStyle.latoBold20(
+                                              context,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 2,
+                                            softWrap: false,
+                                          ),
+                                          Text(
+                                            "${widget.ticket.orecalId}".tr,
+                                            style: AppTextStyle.latoBold20(
+                                              context,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 2,
+                                            softWrap: false,
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        spacing: 4,
+                                        children: [
+                                          Text(
+                                            '${widget.ticket.branchObject?.branchId ?? '-'}',
+                                            style: AppTextStyle.latoBold16(
+                                              context,
+                                            ).copyWith(color: AppColors.green),
+                                          ),
+                                          Container(
+                                            width: screenWidth * 0.012,
+                                            height: screenHeight * 0.006,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.green,
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                            ),
+                                          ),
+                                          Text(
+                                            widget.ticket.branchObject?.name ??
+                                                '-',
+                                            style: AppTextStyle.latoBold16(
+                                              context,
+                                            ).copyWith(color: AppColors.green),
+                                          ),
+                                        ],
+                                      ),
+                                      Text(
+                                        widget.ticket.branchObject?.area ?? '-',
+                                        style: AppTextStyle.latoRegular19(
+                                          context,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          "Status".tr,
+                                          style: AppTextStyle.latoRegular16(
+                                            context,
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: screenHeight * 0.01,
+                                            horizontal: screenWidth * 0.04,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                '${widget.ticket.status}' ==
+                                                    'Awaiting'
+                                                ? const Color(0xffDFE699)
+                                                : '${widget.ticket.status}' ==
+                                                      'Completed'
+                                                ? const Color(0xff8FCFAD)
+                                                : const Color(0xffDBA0A0),
+                                            borderRadius: BorderRadius.circular(
+                                              50,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            '${widget.ticket.status}'.tr,
+                                            style: AppTextStyle.latoBold13(
+                                              context,
+                                            ).copyWith(color: AppColors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Text('${widget.ticket.comment}'.tr),
+                              if (widget.ticket.status == 'Awaiting')
+                                Row(
+                                  spacing: 10,
+                                  children: [
+                                    Expanded(
+                                      child: CustomOutlineButtonWidget(
+                                        screenWidth: screenWidth,
+                                        color: Colors.transparent,
+                                        foregroundColor: AppColors.green,
+                                        onPressed: () {
+                                          context
+                                              .read<TicketsCubit>()
+                                              .updateTicketStatus(
+                                                widget.ticket.id.toString(),
+                                                "Canceled",
+                                              );
+                                        },
+                                        text: 'Cancel',
+                                        borderColor: AppColors.green,
+                                        topPadding: 15.0,
+                                        textStyle: AppTextStyle.latoBold20(
+                                          context,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: CustomButtonWidget(
+                                        screenWidth: screenWidth,
+                                        text: 'Complete',
+                                        onpressed: () {
+                                          context
+                                              .read<TicketsCubit>()
+                                              .updateTicketStatus(
+                                                widget.ticket.id.toString(),
+                                                "Completed",
+                                              );
+                                        },
+                                        foregroundcolor: AppColors.white,
+                                        color: AppColors.green,
+                                        toppadding: 15.0,
+                                        textstyle: AppTextStyle.latoBold20(
+                                          context,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              else
+                                Row(),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -269,9 +480,11 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                       ).copyWith(color: AppColors.green),
                                     ),
                                     Text(
-                                      getDateFromTimestamp(
-                                        widget.ticket.requestDate!,
-                                      ),
+                                      widget.ticket.requestDate != null
+                                          ? getDateFromTimestamp(
+                                              widget.ticket.requestDate,
+                                            )
+                                          : '-',
                                     ),
                                   ],
                                 ),
@@ -285,10 +498,11 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                       ).copyWith(color: AppColors.green),
                                     ),
                                     Text(
-                                      getDateFromTimestamp(
-                                        widget.ticket.repairDate ??
-                                            DateTime.now(),
-                                      ),
+                                      widget.ticket.repairDate != null
+                                          ? getDateFromTimestamp(
+                                              widget.ticket.repairDate,
+                                            )
+                                          : '-',
                                     ),
                                   ],
                                 ),
@@ -321,9 +535,11 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                       ).copyWith(color: AppColors.green),
                                     ),
                                     Text(
-                                      getDateFromTimestamp(
-                                        widget.ticket.requestDate!,
-                                      ),
+                                      widget.ticket.requestDate != null
+                                          ? getDateFromTimestamp(
+                                              widget.ticket.requestDate,
+                                            )
+                                          : '-',
                                     ),
                                   ],
                                 ),
@@ -337,10 +553,11 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                       ).copyWith(color: AppColors.green),
                                     ),
                                     Text(
-                                      getDateFromTimestamp(
-                                        widget.ticket.responseDate ??
-                                            DateTime.now(),
-                                      ),
+                                      widget.ticket.responseDate != null
+                                          ? getDateFromTimestamp(
+                                              widget.ticket.responseDate,
+                                            )
+                                          : '-',
                                     ),
                                   ],
                                 ),
@@ -385,7 +602,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                         context,
                                       ).copyWith(color: AppColors.green),
                                     ),
-                                    Text(widget.ticket.user?.name ?? ''),
+                                    Text(widget.ticket.user?.name ?? '_'),
                                   ],
                                 ),
                               ],
@@ -416,7 +633,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                         context,
                                       ).copyWith(color: AppColors.green),
                                     ),
-                                    Text(widget.ticket.user?.name ?? ''),
+                                    Text(widget.ticket.user?.name ?? '_'),
                                   ],
                                 ),
                               ],
@@ -456,7 +673,6 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                           ),
                                         ),
                                         child: SingleChildScrollView(
-                                          // 👈 يضمن إن مفيش overflow
                                           child: Padding(
                                             padding: const EdgeInsets.all(16.0),
                                             child: Column(
@@ -491,6 +707,13 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                                   foregroundcolor:
                                                       AppColors.white,
                                                   onpressed: () {
+                                                    context
+                                                        .read<TicketsCubit>()
+                                                        .updateTicketComment(
+                                                          widget.ticket.id
+                                                              .toString(),
+                                                          damageComment.text,
+                                                        );
                                                     Navigator.pop(
                                                       context,
                                                     ); // يقفل الـ Dialog بعد الضغط
@@ -515,7 +738,23 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                               ),
                             ],
                           ),
-                          Text("${widget.ticket.damageDescription}"),
+                          BlocBuilder<TicketsCubit, TicketsState>(
+                            builder: (context, state) {
+                              if (state is GetTicketsSuccess) {
+                                final currentTicket = state.tickets.firstWhere(
+                                  (t) => t.id == widget.ticket.id,
+                                  orElse: () => widget.ticket,
+                                );
+                                return Text(
+                                  currentTicket.damageDescription ??
+                                      'No Damage',
+                                );
+                              }
+                              return Text(
+                                widget.ticket.damageDescription ?? 'No Damage',
+                              );
+                            },
+                          ),
                         ],
                       ),
                     ),
@@ -533,7 +772,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                               context,
                             ).copyWith(color: AppColors.green),
                           ),
-                          Text("${widget.ticket.attachment}"),
+                          Text(widget.ticket.attachment ?? 'No Attachment'),
                         ],
                       ),
                     ),
@@ -579,9 +818,13 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                     spacing: 20,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      SizedBox(height: 3,),
-
-                                      Text( capitalizeEachWord('add Cost'),style: AppTextStyle.latoBold26(context).copyWith(color: AppColors.green),),
+                                      SizedBox(height: 3),
+                                      Text(
+                                        capitalizeEachWord('add Cost'),
+                                        style: AppTextStyle.latoBold26(
+                                          context,
+                                        ).copyWith(color: AppColors.green),
+                                      ),
                                       CustomInputWidget(
                                         inbutIcon: 'assets/images/id.svg',
                                         iconColor: AppColors.green,
@@ -600,19 +843,21 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                       ),
                                       CustomInputWidget(
                                         inbutIcon:
-                                        'assets/images/deductions.svg',
+                                            'assets/images/deductions.svg',
                                         iconColor: AppColors.green,
                                         inbutHintText: 'Ammount',
                                         changeToPass: false,
                                       ),
-                                      Container(
+                                      SizedBox(
                                         width: screenWidth,
                                         child: CustomButtonWidget(
-                                          screenWidth: screenWidth*0.5,
+                                          screenWidth: screenWidth * 0.5,
                                           toppadding: 10,
-                                          onpressed: (){},
+                                          onpressed: () {},
                                           text: 'Add',
-                                          foregroundcolor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                                          foregroundcolor: Theme.of(
+                                            context,
+                                          ).buttonTheme.colorScheme?.primary,
                                           color: Theme.of(
                                             context,
                                           ).buttonTheme.colorScheme?.secondary,
@@ -626,7 +871,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                 ),
                               );
                             },
-                        );
+                          );
                         },
                         child: Card(
                           shape: RoundedRectangleBorder(
@@ -694,7 +939,14 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                     },
                   );
                 }
-                return Text('No Assets Added Yet');
+                return Center(
+                  child: Text(
+                    'No Assets Added Yet',
+                    style: AppTextStyle.latoBold23(
+                      context,
+                    ).copyWith(color: Colors.green),
+                  ),
+                );
               },
             ),
           ),

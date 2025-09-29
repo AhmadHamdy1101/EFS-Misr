@@ -186,9 +186,29 @@ class TicketsCubit extends Cubit<TicketsState> {
       newStatus: newStatus,
     );
     result.fold((l) {}, (ticket) {
-      emit(UpdateTicketStatusSuccess(tickets: ticket));
-      getTickets();
-      emit(GetTicketsSuccess(tickets: allTickets));
+      final updatedTickets = allTickets.map((e) {
+        return e.id == ticket.id ? ticket : e;
+      }).toList();
+      allTickets.clear();
+      allTickets.addAll(updatedTickets);
+      emit(GetTicketsSuccess(tickets: updatedTickets));
+      // getTickets();
+      // emit(GetTicketsSuccess(tickets: allTickets));
+    });
+  }
+
+  Future<void> updateTicketComment(String ticketId, String newComment) async {
+    final result = await homeRepo.updateTicketComment(
+      ticketID: ticketId,
+      newComment: newComment,
+    );
+    result.fold((l) {}, (ticket) {
+      final updatedTickets = allTickets.map((e) {
+        return e.id == ticket.id ? ticket : e;
+      }).toList();
+      allTickets.clear();
+      allTickets.addAll(updatedTickets);
+      emit(GetTicketsSuccess(tickets: updatedTickets));
     });
   }
 

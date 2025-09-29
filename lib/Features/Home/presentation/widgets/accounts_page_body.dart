@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
@@ -205,7 +206,6 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                             ),
                             startActionPane: ActionPane(
                               motion: const DrawerMotion(),
-
                               children: [
                                 SlidableAction(
                                   onPressed: (context) async {
@@ -240,20 +240,24 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                 children: [
                                   Row(
                                     spacing: 15,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Container(
                                         width: screenWidth * 0.15,
                                         height: screenWidth * 0.15,
                                         decoration: BoxDecoration(
-                                          color: AppColors.lightGreen.withOpacity(
-                                            0.25,
+                                          color: AppColors.lightGreen
+                                              .withOpacity(0.25),
+                                          borderRadius: BorderRadius.circular(
+                                            60,
                                           ),
-                                          borderRadius: BorderRadius.circular(60),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: AppColors.black.withAlpha(25),
+                                              color: AppColors.black.withAlpha(
+                                                25,
+                                              ),
                                               blurRadius: 10,
                                             ),
                                           ],
@@ -262,7 +266,8 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                         child: ClipRRect(
                                           child: Image.asset(
                                             width: screenWidth,
-                                            users[index].image ?? 'assets/images/user.png',
+                                            users[index].image ??
+                                                'assets/images/user.png',
                                             fit: BoxFit.cover,
                                           ),
                                         ),
@@ -271,26 +276,33 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                         width: screenWidth * 0.31,
                                         child: Column(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           spacing: 5,
                                           children: [
                                             Column(
                                               crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text("${users[index].name}".tr),
                                                 Text(
-                                                  capitalizeEachWord(users[index].position?.name ?? 'No Possition')
+                                                  capitalizeEachWord(
+                                                    users[index]
+                                                            .position
+                                                            ?.name ??
+                                                        'No Possition',
+                                                  ),
                                                 ),
                                               ],
                                             ),
                                             Text(
                                               (users[index].company ?? '').tr,
-                                              style: AppTextStyle.latoBold20(
-                                                context,
-                                              ).copyWith(color: AppColors.green),
+                                              style:
+                                                  AppTextStyle.latoBold20(
+                                                    context,
+                                                  ).copyWith(
+                                                    color: AppColors.green,
+                                                  ),
                                             ),
-
                                           ],
                                         ),
                                       ),
@@ -306,9 +318,8 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                               ),
                                               decoration: BoxDecoration(
                                                 color: Color(0xff8FCFAD),
-                                                borderRadius: BorderRadius.circular(
-                                                  50,
-                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
                                               ),
                                               child: Row(
                                                 spacing: 4,
@@ -319,11 +330,12 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                                       users[index].status,
                                                     ).tr,
                                                     style:
-                                                    AppTextStyle.latoBold16(
-                                                      context,
-                                                    ).copyWith(
-                                                      color: AppColors.white,
-                                                    ),
+                                                        AppTextStyle.latoBold16(
+                                                          context,
+                                                        ).copyWith(
+                                                          color:
+                                                              AppColors.white,
+                                                        ),
                                                     textAlign: TextAlign.center,
                                                   ),
                                                 ],
@@ -335,40 +347,83 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                     ],
                                   ),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     spacing: 10,
                                     children: [
                                       Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         spacing: 10,
                                         children: [
-                                        SvgPicture.asset('assets/images/Phone.svg',color: Theme.of(context).colorScheme.primary,),
-                                        Text(users[index].phone ?? capitalizeEachWord('no phone'))
-                                      ],),
+                                          SvgPicture.asset(
+                                            'assets/images/Phone.svg',
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                          ),
+                                          Text(
+                                            users[index].phone ??
+                                                capitalizeEachWord('no phone'),
+                                          ),
+                                        ],
+                                      ),
                                       Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         spacing: 10,
                                         children: [
-                                        SvgPicture.asset('assets/images/address.svg',color: Theme.of(context).colorScheme.primary,),
-                                        Text(capitalizeEachWord('${users[index].address }')?? capitalizeEachWord('no address')),
-                                      ],),
+                                          SvgPicture.asset(
+                                            'assets/images/address.svg',
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                          ),
+                                          Text(
+                                            capitalizeEachWord(
+                                              '${users[index].address}',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                       Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         spacing: 10,
                                         children: [
-                                          SvgPicture.asset('assets/images/Email.svg',color: Theme.of(context).colorScheme.primary,),
-                                          Text(users[index].email ?? capitalizeEachWord('no email')),
-                                        ],),
+                                          SvgPicture.asset(
+                                            'assets/images/Email.svg',
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                          ),
+                                          Text(
+                                            users[index].email ??
+                                                capitalizeEachWord('no email'),
+                                          ),
+                                        ],
+                                      ),
                                       Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         spacing: 10,
                                         children: [
-                                          SvgPicture.asset('assets/images/Email.svg',color: Theme.of(context).colorScheme.primary,),
-                                          Text(users[index].companyEmail ?? capitalizeEachWord('no company email')),
-                                        ],),
-
+                                          SvgPicture.asset(
+                                            'assets/images/Email.svg',
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                          ),
+                                          Text(
+                                            users[index].companyEmail ??
+                                                capitalizeEachWord(
+                                                  'no company email',
+                                                ),
+                                          ),
+                                        ],
+                                      ),
                                     ],
-                                  )
+                                  ),
                                 ],
                               ),
                             ),
