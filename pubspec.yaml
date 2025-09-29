@@ -58,7 +58,6 @@ dependencies:
   shared_preferences: ^2.5.3
   flutter_datetime_picker_plus: ^2.2.0
   flutter_slidable: ^3.0.0
-  http: ^1.2.1
 
 
 
