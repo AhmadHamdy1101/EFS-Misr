@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 
 
 class AddSuccessPage extends StatelessWidget {
-  const AddSuccessPage({super.key, required this.message});
+  const AddSuccessPage({super.key, required this.message, required this.buttonTitle, required this.onPress, this.secondPress});
   final String message;
+  final String buttonTitle;
+  final  onPress;
+  final secondPress;
+
   @override
   Widget build(BuildContext context) {
-    return AddSuccessPageBody(message: message);
+    return AddSuccessPageBody(message: message,buttonTitle: buttonTitle,onPress: onPress,secondPress: secondPress,);
   }
 }

@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
+import 'package:efs_misr/Features/Home/presentation/pages/add_Tickets_page.dart';
 import 'package:efs_misr/Features/Home/presentation/pages/add_success_page.dart';
+import 'package:efs_misr/Features/Home/presentation/pages/ticket_page.dart';
 import 'package:efs_misr/constants/constants.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:file_saver/file_saver.dart';
@@ -245,7 +247,7 @@ class TicketsCubit extends Cubit<TicketsState> {
         //   colorText: AppColors.white,
         // );
         getTickets();
-        Get.to(AddSuccessPage(message: 'Ticket added successfully'));
+        Get.to(AddSuccessPage(message: 'Ticket added successfully',buttonTitle: 'Add More Tickets', onPress: () {Get.to(AddTicketsPage());},secondPress: (){TicketPage();},));
         emit(GetTicketsSuccess(tickets: allTickets));
       },
     );

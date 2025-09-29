@@ -17,6 +17,7 @@ final Assets assets;
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
+          leading: BackButton(color: Theme.of(context).colorScheme.primary,),
           title: Text(
             'Assets Details'.tr,
             style: AppTextStyle.latoBold26(

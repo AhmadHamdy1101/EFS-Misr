@@ -59,7 +59,7 @@ class CustomInputWidget extends StatelessWidget {
           fillColor: Theme.of(context).buttonTheme.colorScheme?.primary,
           hintStyle: AppTextStyle.latoBold20(
             context,
-          ).copyWith(color: Theme.of(context).colorScheme.primary),
+          ).copyWith(color: Theme.of(context).colorScheme?.primary),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(9.0),
             child: SvgPicture.asset(inbutIcon,color: iconColor,),

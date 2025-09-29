@@ -54,6 +54,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
       ),
       appBar: AppBar(
         centerTitle: true,
+        leading: BackButton(color:  Theme.of(context).colorScheme?.primary,),
         title: Text(
           'Tickets Details'.tr,
           style: AppTextStyle.latoBold26(

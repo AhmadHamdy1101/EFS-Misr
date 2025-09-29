@@ -61,10 +61,10 @@ packages:
     dependency: transitive
     description:
       name: bloc
-      sha256: "52c10575f4445c61dd9e0cafcc6356fdd827c4c64dd7945ef3c4105f6b6ac189"
+      sha256: e18b8e7825e9921d67a6d256dba0b6015ece8a577eb0a411845c46a352994d78
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.0"
+    version: "9.0.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -449,7 +449,7 @@ packages:
     source: hosted
     version: "2.1.0"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: bb2ce4590bc2667c96f318d68cac1b5a7987ec819351d32b1c987239a815e007
@@ -588,10 +588,10 @@ packages:
     dependency: "direct main"
     description:
       name: mobile_scanner
-      sha256: "54005bdea7052d792d35b4fef0f84ec5ddc3a844b250ecd48dc192fb9b4ebc95"
+      sha256: "5e7e09d904dc01de071b79b3f3789b302b0ed3c9c963109cd3f83ad90de62ecf"
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.1"
+    version: "7.1.2"
   nested:
     dependency: transitive
     description:
@@ -844,10 +844,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_android
-      sha256: a2608114b1ffdcbc9c120eb71a0e207c71da56202852d4aab8a5e30a82269e74
+      sha256: bd14436108211b0d4ee5038689a56d4ae3620fd72fd6036e113bf1345bc74d9e
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.12"
+    version: "2.4.13"
   shared_preferences_foundation:
     dependency: transitive
     description:
@@ -969,26 +969,26 @@ packages:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: e8e351522b7c3442609e04f1613f29b7917147bb3de41dbd3c1ec4169cf1888d
+      sha256: "7c700778e2b390412f3a364aa38fbc010570ade19684b9d6613d17e7ca284898"
       url: "https://pub.dev"
     source: hosted
-    version: "31.1.20"
+    version: "31.1.21"
   syncfusion_flutter_xlsio:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_xlsio
-      sha256: "51ee2929100875d238e46b90e0772dba8c7310f83ac1b3d142b48c6b2e0f8f47"
+      sha256: "16b246b290e155a9cdad85dfe708bada96f188fc91b20fba0328e8644d154270"
       url: "https://pub.dev"
     source: hosted
-    version: "31.1.20"
+    version: "31.1.21"
   syncfusion_officecore:
     dependency: transitive
     description:
       name: syncfusion_officecore
-      sha256: f11fcc09c89bd59f614d60b71da6bcbf2a1151d594b985845b835d5ebf47460b
+      sha256: e704825ebc3eff637d7c923dc42ed196f4d1785b3368bf92af8a998ba8f68bad
       url: "https://pub.dev"
     source: hosted
-    version: "31.1.20"
+    version: "31.1.21"
   term_glyph:
     dependency: transitive
     description:

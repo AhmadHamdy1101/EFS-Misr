@@ -1,4 +1,5 @@
 import 'package:efs_misr/Features/Home/presentation/pages/add_account_page.dart';
+import 'package:efs_misr/Features/Home/presentation/pages/edit_account_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/accounts_cubit.dart';
 import 'package:efs_misr/core/Functions/Capitalize_Function.dart';
 import 'package:flutter/material.dart';
@@ -209,16 +210,9 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                               children: [
                                 SlidableAction(
                                   onPressed: (context) async {
-                                    context.read<AccountsCubit>().deleteAccount(
-                                      users[index].id,
-                                      users[index].userid,
-                                    );
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          '${users[index].name} تم حذفه',
-                                        ),
-                                      ),
+                                    Get.to(
+                                      () =>
+                                          EditAccountPage(user: users[index]),
                                     );
                                   },
                                   backgroundColor: AppColors.green,

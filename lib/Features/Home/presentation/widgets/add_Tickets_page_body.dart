@@ -77,6 +77,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
         slivers: [
           SliverAppBar(
             centerTitle: true,
+            leading:  BackButton(color: Theme.of(context).colorScheme.primary,),
             title: Text(
               'Add Ticket'.tr,
               style: AppTextStyle.latoBold26(

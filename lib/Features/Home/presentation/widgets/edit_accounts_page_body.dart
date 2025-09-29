@@ -1,4 +1,5 @@
 import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
+import 'package:efs_misr/Features/Home/data/models/user.dart';
 import 'package:efs_misr/core/utils/widgets/custom_dropdown_widget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_inbut_wedget.dart';
 import 'package:flutter/material.dart';
@@ -8,14 +9,15 @@ import 'package:get/get.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 
-class AddAccountPageBody extends StatefulWidget {
-  const AddAccountPageBody({super.key});
+class EditAccountPageBody extends StatefulWidget {
+  const EditAccountPageBody({super.key, this.user});
+  final Users? user;
 
   @override
-  State<AddAccountPageBody> createState() => _AddAccountPageBodyState();
+  State<EditAccountPageBody> createState() => _EditAccountPageBodyState();
 }
 
-class _AddAccountPageBodyState extends State<AddAccountPageBody> {
+class _EditAccountPageBodyState extends State<EditAccountPageBody> {
   String? selectedValue;
   final selectedPositionValue = BigInt.zero.obs;
   final selectedStatusValue = 0.obs;
@@ -84,43 +86,43 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                         children: [
                           CustomInputWidget(
                             inbutIcon: 'assets/images/profile.svg',
-                            inbutHintText: 'Username',
+                            inbutHintText: '${widget.user?.name}',
                             changeToPass: false,
                             textEditingController: username,
                           ),
                           CustomInputWidget(
                             inbutIcon: 'assets/images/Password.svg',
-                            inbutHintText: 'Password',
+                            inbutHintText: '${widget.user?.password}',
                             changeToPass: false,
                             textEditingController: password,
                           ),
                           CustomInputWidget(
                             inbutIcon: 'assets/images/Email.svg',
-                            inbutHintText: 'Email',
+                            inbutHintText: '${widget.user?.email}',
                             changeToPass: false,
                             textEditingController: email,
                           ),
                           CustomInputWidget(
                             inbutIcon: 'assets/images/Email.svg',
-                            inbutHintText: 'Company Email',
+                            inbutHintText: '${widget.user?.companyEmail}',
                             changeToPass: false,
                             textEditingController: companyEmail,
                           ),
                           CustomInputWidget(
                             inbutIcon: 'assets/images/address.svg',
-                            inbutHintText: 'Address',
+                            inbutHintText: '${widget.user?.address}',
                             changeToPass: false,
                             textEditingController: address,
                           ),
                           CustomInputWidget(
                             inbutIcon: 'assets/images/phone.svg',
-                            inbutHintText: 'Phone',
+                            inbutHintText: '${widget.user?.phone}',
                             changeToPass: false,
                             textEditingController: phone,
                           ),
                           CustomDropdownWidget(
                             inbutIcon: 'assets/images/Status.svg',
-                            inbutHintText: 'Status',
+                            inbutHintText: widget.user?.status == '1' ? 'Active' : widget.user?.status == '2' ? 'Internship' : widget.user?.status == '3' ? 'Terminated' : 'Suspended',
                             textEditingController: Status,
                             selectedValue: selectedValue,
                             Data: status,
@@ -130,7 +132,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                           ),
                           CustomDropdownWidget(
                             inbutIcon: 'assets/images/position.svg',
-                            inbutHintText: 'Position',
+                            inbutHintText: '${widget.user?.position?.name}',
                             textEditingController: Postition,
                             selectedValue: selectedValue,
                             Data: positions,
@@ -142,7 +144,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                           ),
                           CustomDropdownWidget(
                             inbutIcon: 'assets/images/company.svg',
-                            inbutHintText: 'Company',
+                            inbutHintText: '${widget.user?.company}',
                             selectedValue: selectedValue,
                             onChanged: (value) {
                               companyTxt.value = value!;
@@ -151,7 +153,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                           ),
                           CustomDropdownWidget(
                             inbutIcon: 'assets/images/role.svg',
-                            inbutHintText: 'Role',
+                            inbutHintText: '${widget.user?.role}',
                             selectedValue: selectedValue,
                             onChanged: (value) {
                               roleTxt.value = value!;
@@ -178,18 +180,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                       ),
                       onPressed: () {
                         addAccountLoading.value = true;
-                        context.read<AuthCubit>().addAccount(
-                          email: email.text,
-                          userName: username.text,
-                          password: password.text,
-                          phone: phone.text,
-                          address: address.text,
-                          companyEmail: companyEmail.text,
-                          company: companyTxt.value,
-                          position: selectedPositionValue.value,
-                          role: roleTxt.value,
-                          status: selectedStatusValue.value,
-                        );
+
                         addAccountLoading.value = false;
                       },
                       child: Obx(

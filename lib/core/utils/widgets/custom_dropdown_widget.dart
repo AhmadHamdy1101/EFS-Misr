@@ -59,7 +59,7 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
         borderRadius: BorderRadius.circular(10),
         isExpanded: true,
         initialValue: _currentValue,
-        hint: Text(widget.inbutHintText, textAlign: TextAlign.center,style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.black),),
+        hint: Text(widget.inbutHintText, textAlign: TextAlign.center,style: AppTextStyle.latoBold20(context).copyWith(color:  Theme.of(context).colorScheme.primary),),
         items: widget.Data.map((status) {
           return DropdownMenuItem<String>(
             value: status['value'],

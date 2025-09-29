@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
@@ -6,6 +7,7 @@ import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
@@ -141,8 +143,9 @@ class AccountsCubit extends Cubit<AccountsState> {
       print(id);
       print(userid);
 
-      // await supabaseClient.users.delete().eq('id', id!);
-     await supabaseClient.auth.admin.deleteUser(userid!);
+      await supabaseClient.users.delete().eq('id', id!);
+
+      await supabaseClient.auth.admin.deleteUser(userid!);
 
       // بعد الحذف نعيد تحميل القائمة
 
