@@ -93,7 +93,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                 children: [
                   CustomInputWidget(
                     inbutIcon: 'assets/images/id.svg',
-                    inbutHintText: 'Orical Id',
+                    inbutHintText: 'Orical Id'.tr,
                     changeToPass: false,
                     textEditingController: oricalid,
                     textInputType: TextInputType.number,
@@ -101,7 +101,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                   Obx(() {
                     return CustomDropdownWidget(
                       inbutIcon: 'assets/images/company.svg',
-                      inbutHintText: 'Branch',
+                      inbutHintText: 'Branch'.tr,
                       textEditingController: branch,
                       selectedValue: selectedValue,
                       onChanged: (value) {
@@ -112,7 +112,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                   },),
                   CustomDropdownWidget(
                     inbutIcon: 'assets/images/priority.svg',
-                    inbutHintText: 'Priority',
+                    inbutHintText: 'Priority'.tr,
                     textEditingController: priority,
                     selectedValue: selectedValue,
                     Data: priorityData,
@@ -122,7 +122,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                   ),
                   CustomInputWidget(
                     inbutIcon: 'assets/images/date.svg',
-                    inbutHintText: 'Request Date',
+                    inbutHintText: 'Request Date'.tr,
                     changeToPass: false,
                     readOnly: true,
                     textEditingController: requestDateText,
@@ -143,7 +143,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                   ),
                   CustomInputWidget(
                     inbutIcon: 'assets/images/comment.svg',
-                    inbutHintText: 'Comment',
+                    inbutHintText: 'Comment'.tr,
                     changeToPass: false,
                     textEditingController: comment,
                     textInputType: TextInputType.text,
@@ -151,7 +151,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                   Obx(() {
                     return CustomDropdownWidget(
                       inbutIcon: 'assets/images/engineer.svg',
-                      inbutHintText: 'Engineer',
+                      inbutHintText: 'Engineer'.tr,
                       textEditingController: engineer,
                       selectedValue: selectedValue,
                       Data: engineersData.value,
@@ -165,7 +165,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                     child: CustomButtonWidget(
                       screenWidth: screenWidth,
                       color: AppColors.green,
-                      text: 'Add Ticket',
+                      text: 'Add Ticket'.tr,
                       onpressed: () {
                         context.read<TicketsCubit>().addTicket(
                           branchID: selectedBranchID.value,

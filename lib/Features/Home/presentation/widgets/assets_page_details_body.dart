@@ -259,7 +259,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                                       borderRadius: BorderRadius.circular(50),
                                     ),
                                     child: Text(
-                                      tickets[index].variation ?? 'No Type',
+                                      tickets[index].variation ?? 'No Type'.tr,
                                       style: AppTextStyle.latoRegular15(
                                         context,
                                       ).copyWith(color: AppColors.white),

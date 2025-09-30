@@ -61,7 +61,8 @@ class AssetsCubit extends Cubit<AssetsState> {
 
   Future<void> convertAssetsToExcel() async {
     try {
-      final data = await supabaseClient.assets.select('id,barcode,name,branch(name),floor,place,created_at,area,type,amount');
+      // final data = await supabaseClient.assets.select('id,barcode,name,branch(name),floor,place,created_at,area,type,amount');
+      final data = await supabaseClient.assetsAndTickets.select('id,tickets(orecal_id),assets(barcode,name,branch(name),floor,place,area,type),Ammount');
       if (data.isEmpty) {
         return;
       }
@@ -69,15 +70,15 @@ class AssetsCubit extends Cubit<AssetsState> {
       final combined = data.map((row) {
         return {
           'id': row['id'],
-          'barcode': row['barcode'],
-          'name': row['name'],
-          'branch': row['branch']?['name'] ?? '',
-          'floor': row['floor'],
-          'place': row['place'],
-          'created_at': row['created_at'],
-          'area': row['area'],
-          'type': row['type'],
-          'amount': row['amount'],
+          'barcode': row['assets']?['barcode'] ?? '',
+          'name': row['assets']?['name'] ?? '',
+          'branch': row['assets']?['branch']?['name'] ?? '',
+          'floor': row['assets']?['floor'] ?? '',
+          'place': row['assets']?['place'] ?? '',
+          'area': row['assets']?['area'] ?? '',
+          'type': row['assets']?['type'] ?? '',
+          'amount': row['Ammount'],
+
 
         };
       }).toList();

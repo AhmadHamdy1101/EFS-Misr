@@ -1,3 +1,4 @@
+import 'package:efs_misr/Features/Home/presentation/pages/SplashScreen.dart';
 import 'package:efs_misr/auth_gate.dart';
 import 'package:flutter/material.dart';
 

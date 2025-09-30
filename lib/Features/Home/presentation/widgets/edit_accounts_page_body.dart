@@ -66,7 +66,7 @@ class _EditAccountPageBodyState extends State<EditAccountPageBody> {
             centerTitle: true,
             leading: BackButton(color:  Theme.of(context).colorScheme.primary,),
             title: Text(
-              'Add Accounts'.tr,
+              'Edit Accounts'.tr,
               style: AppTextStyle.latoBold26(
                 context,
               ).copyWith(color: AppColors.green),
@@ -115,13 +115,13 @@ class _EditAccountPageBodyState extends State<EditAccountPageBody> {
                             textEditingController: address,
                           ),
                           CustomInputWidget(
-                            inbutIcon: 'assets/images/phone.svg',
+                            inbutIcon: 'assets/images/Phone.svg',
                             inbutHintText: '${widget.user?.phone}',
                             changeToPass: false,
                             textEditingController: phone,
                           ),
                           CustomDropdownWidget(
-                            inbutIcon: 'assets/images/Status.svg',
+                            inbutIcon: 'assets/images/status.svg',
                             inbutHintText: widget.user?.status == '1' ? 'Active' : widget.user?.status == '2' ? 'Internship' : widget.user?.status == '3' ? 'Terminated' : 'Suspended',
                             textEditingController: Status,
                             selectedValue: selectedValue,
@@ -159,6 +159,7 @@ class _EditAccountPageBodyState extends State<EditAccountPageBody> {
                               roleTxt.value = value!;
                             },
                             Data: role,
+                            iconColor: AppColors.gray,
                           ),
                         ],
                       ),

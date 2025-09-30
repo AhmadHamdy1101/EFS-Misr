@@ -88,7 +88,7 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                     children: [
                       SvgPicture.asset('assets/images/Excel.svg'),
                       Text(
-                        'Export',
+                        'Export'.tr,
                         style: AppTextStyle.latoBold20(
                           context,
                         ).copyWith(color: AppColors.green),
@@ -113,7 +113,7 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                     children: [
                       Icon(Icons.add, color: AppColors.green),
                       Text(
-                        'Add Ticket',
+                        'Add Ticket'.tr,
                         style: AppTextStyle.latoBold20(
                           context,
                         ).copyWith(color: AppColors.green),

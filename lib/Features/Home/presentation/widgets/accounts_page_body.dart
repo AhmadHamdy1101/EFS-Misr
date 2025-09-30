@@ -29,15 +29,15 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
   String checkStatus(int? status) {
     switch (status) {
       case 1:
-        return 'Active';
+        return 'Active'.tr;
       case 2:
-        return 'Internship';
+        return 'Internship'.tr;
       case 3:
-        return 'Terminated';
+        return 'Terminated'.tr;
       case 4:
-        return 'Suspended';
+        return 'Suspended'.tr;
       default:
-        return 'Unknown';
+        return 'Unknown'.tr;
     }
   }
 
@@ -116,7 +116,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                       children: [
                         SvgPicture.asset('assets/images/Excel.svg'),
                         Text(
-                          'Export',
+                          'Export'.tr,
                           style: AppTextStyle.latoBold20(
                             context,
                           ).copyWith(color: AppColors.green),
@@ -141,7 +141,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                       children: [
                         Icon(Icons.add, color: AppColors.green),
                         Text(
-                          'Add Account',
+                          'Add Account'.tr.tr,
                           style: AppTextStyle.latoBold20(
                             context,
                           ).copyWith(color: AppColors.green),

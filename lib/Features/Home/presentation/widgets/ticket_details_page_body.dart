@@ -453,7 +453,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                     ),
                   ),
                   Text(
-                    "Ticket Details".tr,
+                    "Tickets Details".tr,
                     style: TextStyle(
                       fontSize: screenWidth * 0.045,
                       fontWeight: FontWeight.bold,

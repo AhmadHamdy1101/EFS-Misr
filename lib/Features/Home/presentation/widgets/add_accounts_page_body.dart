@@ -84,43 +84,43 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                         children: [
                           CustomInputWidget(
                             inbutIcon: 'assets/images/profile.svg',
-                            inbutHintText: 'Username',
+                            inbutHintText: 'Username'.tr,
                             changeToPass: false,
                             textEditingController: username,
                           ),
                           CustomInputWidget(
                             inbutIcon: 'assets/images/Password.svg',
-                            inbutHintText: 'Password',
+                            inbutHintText: 'Password'.tr,
                             changeToPass: false,
                             textEditingController: password,
                           ),
                           CustomInputWidget(
                             inbutIcon: 'assets/images/Email.svg',
-                            inbutHintText: 'Email',
+                            inbutHintText: 'Email'.tr,
                             changeToPass: false,
                             textEditingController: email,
                           ),
                           CustomInputWidget(
                             inbutIcon: 'assets/images/Email.svg',
-                            inbutHintText: 'Company Email',
+                            inbutHintText: 'Company Email'.tr,
                             changeToPass: false,
                             textEditingController: companyEmail,
                           ),
                           CustomInputWidget(
                             inbutIcon: 'assets/images/address.svg',
-                            inbutHintText: 'Address',
+                            inbutHintText: 'Address'.tr,
                             changeToPass: false,
                             textEditingController: address,
                           ),
                           CustomInputWidget(
-                            inbutIcon: 'assets/images/phone.svg',
-                            inbutHintText: 'Phone',
+                            inbutIcon: 'assets/images/Phone.svg',
+                            inbutHintText: 'Phone'.tr,
                             changeToPass: false,
                             textEditingController: phone,
                           ),
                           CustomDropdownWidget(
-                            inbutIcon: 'assets/images/Status.svg',
-                            inbutHintText: 'Status',
+                            inbutIcon: 'assets/images/status.svg',
+                            inbutHintText: 'Status'.tr,
                             textEditingController: Status,
                             selectedValue: selectedValue,
                             Data: status,
@@ -130,7 +130,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                           ),
                           CustomDropdownWidget(
                             inbutIcon: 'assets/images/position.svg',
-                            inbutHintText: 'Position',
+                            inbutHintText: 'Position'.tr,
                             textEditingController: Postition,
                             selectedValue: selectedValue,
                             Data: positions,
@@ -142,7 +142,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                           ),
                           CustomDropdownWidget(
                             inbutIcon: 'assets/images/company.svg',
-                            inbutHintText: 'Company',
+                            inbutHintText: 'Company'.tr,
                             selectedValue: selectedValue,
                             onChanged: (value) {
                               companyTxt.value = value!;
@@ -151,12 +151,13 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                           ),
                           CustomDropdownWidget(
                             inbutIcon: 'assets/images/role.svg',
-                            inbutHintText: 'Role',
+                            inbutHintText: 'Role'.tr,
                             selectedValue: selectedValue,
                             onChanged: (value) {
                               roleTxt.value = value!;
                             },
                             Data: role,
+                            iconColor: AppColors.gray,
                           ),
                         ],
                       ),

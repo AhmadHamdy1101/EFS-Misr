@@ -55,7 +55,7 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
         ],
       ),
       child: DropdownButtonFormField<String>(
-        dropdownColor: AppColors.white,
+        dropdownColor: Theme.of(context).primaryColor,
         borderRadius: BorderRadius.circular(10),
         isExpanded: true,
         initialValue: _currentValue,
@@ -63,7 +63,7 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
         items: widget.Data.map((status) {
           return DropdownMenuItem<String>(
             value: status['value'],
-            child: Text(status['name'], style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.black)),
+            child: Text(status['name'], style: AppTextStyle.latoBold20(context).copyWith(color: Theme.of(context).colorScheme.primary)),
           );
         }).toList(),
         onChanged: (value) {

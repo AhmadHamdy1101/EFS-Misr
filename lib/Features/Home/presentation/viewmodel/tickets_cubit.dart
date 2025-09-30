@@ -80,7 +80,7 @@ class TicketsCubit extends Cubit<TicketsState> {
   Future<void> convertTicketsToExcel() async {
     try {
       final data = await supabaseClient.tickets.select(
-        'orecal_id,branch(name) ,comment, priority, request_date, repair_date,response_date,repair_duration,users!tickets_closed_by_fkey(name)as closed_by, users!tickets_engineer_fkey(name)as engineer,damage_description,status,created_at',
+        'orecal_id,branch(branch_id,name) , priority, request_date, repair_date,response_date,damage_description,status',
       );
       if (data.isEmpty) {
         return;
@@ -89,18 +89,15 @@ class TicketsCubit extends Cubit<TicketsState> {
       final combined = data.map((row) {
         return {
           'orecal_id': row['orecal_id'],
-          'branch': row['branch']?['name'] ?? '',
-          'comment': row['comment'],
+          'branch_name': row['branch']?['name'] ?? '',
+          'branch_id': row['branch']?['branch_id'] ?? '',
+          'damage_description': row['damage_description'],
           'priority': row['priority'],
           'request_date': row['request_date'],
           'repair_date': row['repair_date'],
           'response_date': row['response_date'],
-          'repair_duration': row['repair_duration'],
-          'closed_by': row['closed_by']?['name'] ?? '',
-          'engineer': row['engineer']?['name'] ?? '',
-          'damage_description': row['damage_description'],
           'status': row['status'],
-          'created_at': row['created_at'],
+
         };
       }).toList();
 
@@ -116,7 +113,9 @@ class TicketsCubit extends Cubit<TicketsState> {
 
       //  headers
       for (var i = 0; i < headers.length; i++) {
-        sheet.getRangeByIndex(1, i + 1).setText(headers[i].toString());
+        final cell = sheet.getRangeByIndex(1, i + 1);
+        cell.setText(headers[i].toString());
+        cell.cellStyle = headerStyle;
       }
 
       //  data

@@ -1,6 +1,7 @@
 import 'package:efs_misr/Features/Auth/domain/auth_repo.dart';
 import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
+import 'package:efs_misr/Features/Home/presentation/pages/SplashScreen.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/accounts_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
@@ -145,7 +146,7 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
         themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-        home: MainApp(),
+        home: SplashScreen(),
       ),
     );
   }

@@ -29,8 +29,11 @@ class _AuthGateState extends State<AuthGate> {
     return BlocConsumer<AuthCubit, AuthCubitState>(
       builder: (context, state) {
         if (state is AuthLoading) {
-          return Center(
-            child: CircularProgressIndicator(backgroundColor: AppColors.green),
+          return Container(
+            decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+            child: Center(
+              child: CircularProgressIndicator(backgroundColor: AppColors.green),
+            ),
           );
         }
         if (state is SessionExist) {

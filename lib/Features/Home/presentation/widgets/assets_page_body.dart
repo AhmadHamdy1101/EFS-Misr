@@ -101,7 +101,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                             children: [
                               SvgPicture.asset('assets/images/Excel.svg'),
                               Text(
-                                'Export',
+                                'Export'.tr,
                                 style: AppTextStyle.latoBold20(
                                   context,
                                 ).copyWith(color: AppColors.green),

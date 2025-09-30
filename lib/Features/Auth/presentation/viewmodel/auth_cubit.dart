@@ -45,6 +45,7 @@ class AuthCubit extends Cubit<AuthCubitState> {
 
 
   Future<void> checkSession() async {
+    emit(AuthLoading());
     final session = auth.currentSession;
     if (session?.user != null) {
       final res = await authRepo.getUserData(userId: session!.user.id);
