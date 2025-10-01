@@ -27,6 +27,8 @@ class TicketDetailsPageBody extends StatefulWidget {
 
 class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
   final TextEditingController damageComment = TextEditingController();
+  final TextEditingController amount = TextEditingController();
+  final TextEditingController comment = TextEditingController();
   final Data = [
     {'name': 'Spare Parts', 'value': 'Spare Parts'},
     {'name': 'No Spare Parts', 'value': 'No Spare Parts'},
@@ -54,7 +56,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
       ),
       appBar: AppBar(
         centerTitle: true,
-        leading: BackButton(color:  Theme.of(context).colorScheme?.primary,),
+        leading: BackButton(color:  Theme.of(context).colorScheme.primary,),
         title: Text(
           'Tickets Details'.tr,
           style: AppTextStyle.latoBold26(
@@ -829,8 +831,9 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                       CustomInputWidget(
                                         inbutIcon: 'assets/images/id.svg',
                                         iconColor: AppColors.green,
-                                        inbutHintText: 'Name',
+                                        inbutHintText: 'Comment',
                                         changeToPass: false,
+                                        textEditingController: comment,
                                       ),
                                       CustomDropdownWidget(
                                         inbutIcon: 'assets/images/repair.svg',
@@ -846,15 +849,24 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                         inbutIcon:
                                             'assets/images/deductions.svg',
                                         iconColor: AppColors.green,
-                                        inbutHintText: 'Ammount',
+                                        inbutHintText: 'Amount',
                                         changeToPass: false,
+                                        textEditingController: amount,
                                       ),
                                       SizedBox(
                                         width: screenWidth,
                                         child: CustomButtonWidget(
                                           screenWidth: screenWidth * 0.5,
                                           toppadding: 10,
-                                          onpressed: () {},
+                                          onpressed: () {
+                                            context.read<AssetsTicketsCubit>().addAssetsRepair(
+                                              variation: selectedRepairValue.value,
+                                              comment: comment.text,
+                                              assetsId: data[index].id,
+                                              ticketId: widget.ticket.id,
+                                              amount: num.parse(amount.text),
+                                            );
+                                          },
                                           text: 'Add',
                                           foregroundcolor: Theme.of(
                                             context,

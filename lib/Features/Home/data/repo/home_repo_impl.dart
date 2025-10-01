@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:efs_misr/Features/Home/data/data_source/remote_data_source.dart';
 import 'package:efs_misr/Features/Home/data/models/assets.dart';
 import 'package:efs_misr/Features/Home/data/models/assets_and_tickets.dart';
+import 'package:efs_misr/Features/Home/data/models/assets_repair.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/data/models/tickets.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
@@ -171,4 +172,23 @@ class HomeRepoImpl extends HomeRepo {
       return Left(Failure.fromException(e));
     }
   }
+
+  @override
+  Future<Either<Failure, String>> addAssetsRepairs({required BigInt assetsId, required BigInt ticketId, required String variation, required String comment, required num amount}) async{
+    try{
+      final res = await supabaseClient.AssetsRepair.insert(AssetsRepair.insert(
+        amount: amount,
+        TicketsId: ticketId,
+        assetsId: assetsId,
+        comment: comment,
+        variation: variation
+      )).select();
+      print(res);
+      return Right('Success');
+    }
+        catch(e){
+          return Left(Failure.fromException(e));
+        }
+  }
+
 }

@@ -13,6 +13,7 @@ abstract class HomeRepo {
     required BigInt assetId,
   });
 
+
   Future<Either<Failure, Assets>> getAssetsByQrCode(String barcode);
 
   Future<Either<Failure, Tickets>> updateTicketStatus({
@@ -36,5 +37,12 @@ abstract class HomeRepo {
   Future<Either<Failure, String>> addAssetsAndTickets({
     required BigInt assetsId,
     required BigInt ticketId,
+  });
+  Future<Either<Failure, String>> addAssetsRepairs({
+    required BigInt assetsId,
+    required BigInt ticketId,
+    required  String variation,
+    required String comment,
+    required num amount,
   });
 }

@@ -199,7 +199,12 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                     ),
                     isScrollControlled: false, // لو محتاج يتمدد مع المحتوى
-                    builder: (BuildContext context) {
+                    builder: (BuildContext context)  {
+                       context
+                          .read<AssetsTicketsCubit>()
+                          .getAssetsWithTicketId(
+                        ticketId: tickets[index].id,
+                      );
                       return TicketDetailsPage(tickets: tickets[index]);
                     },
                   );

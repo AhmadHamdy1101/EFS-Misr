@@ -34,7 +34,7 @@ class AssetsRepair implements SupadartClass<AssetsRepair> {
   static String get c_id => 'id';
   static String get c_createdAt => 'created_at';
   static String get c_assetsId => 'assets_id';
-  static String get c_TicketsId => 'Tickets_id';
+  static String get c_TicketsId => 'ticket_id';
   static String get c_amount => 'amount';
   static String get c_comment => 'comment';
   static String get c_variation => 'variation';
@@ -61,7 +61,7 @@ class AssetsRepair implements SupadartClass<AssetsRepair> {
       if (id != null) 'id': id.toString(),
       if (createdAt != null) 'created_at': createdAt.toUtc().toIso8601String(),
       if (assetsId != null) 'assets_id': assetsId.toString(),
-      if (TicketsId != null) 'Tickets_id': TicketsId.toString(),
+      if (TicketsId != null) 'ticket_id': TicketsId.toString(),
       if (amount != null) 'amount': amount.toString(),
       if (comment != null) 'comment': comment.toString(),
       if (variation != null) 'variation': variation.toString(),
@@ -147,7 +147,7 @@ class AssetsRepair implements SupadartClass<AssetsRepair> {
       if (id != null) 'id': id,
       if (createdAt != null) 'created_at': createdAt,
       if (assetsId != null) 'assets_id': assetsId,
-      if (TicketsId != null) 'Tickets_id': TicketsId,
+      if (TicketsId != null) 'ticket_id': TicketsId,
       if (amount != null) 'amount': amount,
       if (comment != null) 'comment': comment,
       if (variation != null) 'variation': variation,

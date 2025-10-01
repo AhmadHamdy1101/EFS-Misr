@@ -11,6 +11,7 @@ abstract class HomeRemoteDataSource {
   Future<List<Assets>> getAssetsWithTicketID({
     required BigInt ticketId
 });
+
   Future<List<Tickets>> getTicketsWithAssetsID({
     required BigInt assetId
 });
@@ -74,5 +75,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
         .eq('assets_tickets_details.assets_id', assetId).withConverter(Tickets.converter);
     return assetsAndTickets;
   }
+
+
   
 }
