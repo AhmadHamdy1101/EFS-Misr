@@ -1,20 +1,14 @@
-
-
 import 'package:efs_misr/Features/Home/presentation/widgets/accounts_page_body.dart';
 import 'package:flutter/material.dart';
 
-
-class AccontsPage extends StatefulWidget {
-  const AccontsPage({super.key});
+class AccountsPage extends StatefulWidget {
+  const AccountsPage({super.key});
 
   @override
-  State<AccontsPage> createState() => _AccontsPageState();
+  State<AccountsPage> createState() => _AccountsPageState();
 }
 
-class _AccontsPageState extends State<AccontsPage> {
-
-
-
+class _AccountsPageState extends State<AccountsPage> {
   @override
   Widget build(BuildContext context) {
     return (AccountsPageBody());

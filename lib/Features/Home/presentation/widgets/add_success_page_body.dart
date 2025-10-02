@@ -1,19 +1,37 @@
-
+import 'package:efs_misr/Features/Home/presentation/viewmodel/accounts_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:efs_misr/core/utils/widgets/custom_outline_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
 
 import '../../../../core/utils/app_text_styles.dart';
 
-class AddSuccessPageBody extends StatelessWidget {
-  const AddSuccessPageBody({super.key, required this.message, required this.buttonTitle, required this.onPress, this.secondPress});
+class AddSuccessPageBody extends StatefulWidget {
+  const AddSuccessPageBody({
+    super.key,
+    required this.message,
+    required this.buttonTitle,
+    required this.onPress,
+    this.secondPress,
+  });
 
   final String message;
   final String buttonTitle;
-  final  onPress ;
+  final onPress;
+
   final secondPress;
+
+  @override
+  State<AddSuccessPageBody> createState() => _AddSuccessPageBodyState();
+}
+
+class _AddSuccessPageBodyState extends State<AddSuccessPageBody> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<AccountsCubit>().getAccounts();
+  }
 
   // design here
   @override
@@ -31,7 +49,7 @@ class AddSuccessPageBody extends StatelessWidget {
             children: [
               SvgPicture.asset('assets/images/submited.svg'),
               Text('Add Successful', style: AppTextStyle.latoBold26(context)),
-              Text(message, style: AppTextStyle.latoBold26(context)),
+              Text(widget.message, style: AppTextStyle.latoBold26(context)),
               SizedBox(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -47,7 +65,7 @@ class AddSuccessPageBody extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.circular(50)),
                       ),
                       child: ElevatedButton(
-                        onPressed: onPress,
+                        onPressed: widget.onPress,
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                             Colors.transparent,
@@ -55,7 +73,7 @@ class AddSuccessPageBody extends StatelessWidget {
                           elevation: MaterialStateProperty.all<double>(0),
                         ),
                         child: Text(
-                          buttonTitle,
+                          widget.buttonTitle,
                           style: AppTextStyle.latoBold20(
                             context,
                           ).copyWith(color: AppColors.white),
@@ -65,7 +83,16 @@ class AddSuccessPageBody extends StatelessWidget {
                   ],
                 ),
               ),
-              CustomOutlineButtonWidget(screenWidth: screenWidth, borderColor: AppColors.green, topPadding: 10,color: Colors.transparent,foregroundColor: AppColors.green,onPressed: secondPress,text: 'back',textStyle: AppTextStyle.latoBold20(context),)
+              CustomOutlineButtonWidget(
+                screenWidth: screenWidth,
+                borderColor: AppColors.green,
+                topPadding: 10,
+                color: Colors.transparent,
+                foregroundColor: AppColors.green,
+                onPressed: widget.secondPress,
+                text: 'Back',
+                textStyle: AppTextStyle.latoBold20(context),
+              ),
               // ElevatedButton(
               //   onPressed: secondPress,
               //   style: ButtonStyle(

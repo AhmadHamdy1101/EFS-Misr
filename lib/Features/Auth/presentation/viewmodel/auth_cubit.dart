@@ -1,16 +1,17 @@
 import 'dart:async';
-import 'package:efs_misr/Features/Home/presentation/pages/add_account_page.dart';
+
 import 'package:efs_misr/Features/Home/presentation/pages/add_success_page.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../../constants/constants.dart';
 import '../../../Home/data/models/user.dart';
 import '../../domain/auth_repo.dart';
-part 'auth_state.dart';
 
+part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthCubitState> {
   final auth = supabaseClient.auth;
@@ -25,15 +26,15 @@ class AuthCubit extends Cubit<AuthCubitState> {
     final response = await authRepo.login(email, password);
     response.fold(
       (l) {
-        emit(LoginFailure(errorMsg:l.message));
+        emit(LoginFailure(errorMsg: l.message));
       },
       (userId) async {
-       final user =  await authRepo.getUserData(userId: userId);
+        final user = await authRepo.getUserData(userId: userId);
         user.fold(
-              (l) {
-            emit(LoginFailure(errorMsg:l.message));
+          (l) {
+            emit(LoginFailure(errorMsg: l.message));
           },
-              (user) {
+          (user) {
             emit(LoginSuccess(user: user));
             emit(SessionExist(user: user));
           },
@@ -42,18 +43,18 @@ class AuthCubit extends Cubit<AuthCubitState> {
     );
   }
 
-
-
   Future<void> checkSession() async {
     emit(AuthLoading());
     final session = auth.currentSession;
     if (session?.user != null) {
       final res = await authRepo.getUserData(userId: session!.user.id);
       res.fold(
-            (failure) {
-          emit(SessionLoadFailed(failure.message)); // اعمل الحالة دي لو مش موجودة
+        (failure) {
+          emit(
+            SessionLoadFailed(failure.message),
+          ); // اعمل الحالة دي لو مش موجودة
         },
-            (user) {
+        (user) {
           emit(SessionExist(user: user));
         },
       );
@@ -67,10 +68,10 @@ class AuthCubit extends Cubit<AuthCubitState> {
       if (newSession?.user != null) {
         final res = await authRepo.getUserData(userId: newSession!.user.id);
         res.fold(
-              (failure) {
+          (failure) {
             emit(SessionLoadFailed(failure.message));
           },
-              (user) {
+          (user) {
             emit(SessionExist(user: user));
           },
         );
@@ -79,7 +80,6 @@ class AuthCubit extends Cubit<AuthCubitState> {
       }
     });
   }
-
 
   Future<void> addAccount({
     required String email,
@@ -92,12 +92,16 @@ class AuthCubit extends Cubit<AuthCubitState> {
     required BigInt position,
     required String role,
     required int status,
-  }) async
-  {
-    final result = await authRepo.addAccount(email: email,password: password);
+  }) async {
+    final result = await authRepo.addAccount(email: email, password: password);
     result.fold(
       (l) {
-        Get.snackbar("Error", l.message,backgroundColor: Colors.red,colorText: AppColors.white);
+        Get.snackbar(
+          "Error",
+          l.message,
+          backgroundColor: Colors.red,
+          colorText: AppColors.white,
+        );
       },
       (userId) async {
         final savingData = await authRepo.saveUsersData(
@@ -106,7 +110,7 @@ class AuthCubit extends Cubit<AuthCubitState> {
           companyEmail: companyEmail,
           email: email,
           address: address,
-          company:company,
+          company: company,
           phone: phone,
           position: position,
           status: status,
@@ -115,11 +119,24 @@ class AuthCubit extends Cubit<AuthCubitState> {
         );
         savingData.fold(
           (l) {
-            Get.snackbar("Error", l.message,backgroundColor: Colors.red,colorText: AppColors.white);
+            Get.snackbar(
+              "Error",
+              l.message,
+              backgroundColor: Colors.red,
+              colorText: AppColors.white,
+            );
           },
           (r) {
-            Get.snackbar("Success", 'Account created successfully',backgroundColor: AppColors.green,colorText: AppColors.white);
-            Get.to(AddSuccessPage(message: 'Account created successfully',onPress: (){Get.to(AddAccountPage());},buttonTitle: 'Add Another Account',secondPress: (){AddAccountPage();},));
+            Get.to(
+              AddSuccessPage(
+                message: 'Account created successfully',
+                onPress: () {
+                  Get.back();
+                },
+                buttonTitle: 'Add Another Account',
+                secondPress: () {},
+              ),
+            );
           },
         );
       },
@@ -130,7 +147,6 @@ class AuthCubit extends Cubit<AuthCubitState> {
     await auth.signOut();
     emit(SessionNotExist());
   }
-
 
   @override
   Future<void> close() {

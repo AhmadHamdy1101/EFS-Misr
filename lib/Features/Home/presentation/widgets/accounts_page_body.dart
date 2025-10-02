@@ -77,7 +77,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: CustomInputWidget(
                         onChanged: (value) {
-                          return context.read<AccountsCubit>().searchTickets(
+                          return context.read<AccountsCubit>().searchUsers(
                             value,
                           );
                         },
@@ -185,17 +185,11 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
 
                               children: [
                                 SlidableAction(
-                                  onPressed: (context) async {
+                                  onPressed: (context) {
                                     context.read<AccountsCubit>().deleteAccount(
                                       users[index].id,
                                       users[index].userid,
-                                    );
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          '${users[index].name} تم حذفه',
-                                        ),
-                                      ),
+                                      users[index].name,
                                     );
                                   },
                                   backgroundColor: Colors.red,
@@ -211,8 +205,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                 SlidableAction(
                                   onPressed: (context) async {
                                     Get.to(
-                                      () =>
-                                          EditAccountPage(user: users[index]),
+                                      () => EditAccountPage(user: users[index]),
                                     );
                                   },
                                   backgroundColor: AppColors.green,

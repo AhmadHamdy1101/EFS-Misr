@@ -1,9 +1,9 @@
-
 import 'package:efs_misr/Features/Home/presentation/pages/ticket_page.dart';
 import 'package:efs_misr/Features/Home/presentation/widgets/QRView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/widgets/custom_navigation_bar.dart';
 import '../../data/models/user.dart';
@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> {
       HomePageBody(user: widget.user),
       AssetsPage(),
       TicketPage(),
-      AccontsPage(),
+      AccountsPage(),
       MenuPage(user: widget.user),
     ];
     final pagesuser = [
@@ -74,9 +74,11 @@ class _HomePageState extends State<HomePage> {
           width: screenWidth * 0.07,
         ),
       ),
-      body: widget.user.role == 'Admin'? pages[selectedIndex]:pagesuser[selectedIndex],
+      body: widget.user.role == 'Admin'
+          ? pages[selectedIndex]
+          : pagesuser[selectedIndex],
       bottomNavigationBar: CustomBottomNav(
-        icons: widget.user.role == 'Admin'? iconPaths:iconPathsUser,
+        icons: widget.user.role == 'Admin' ? iconPaths : iconPathsUser,
         selectedIndex: selectedIndex,
         onPressed: _onItemTapped,
       ),
