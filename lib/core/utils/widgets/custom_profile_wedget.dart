@@ -12,7 +12,7 @@ class CustomProfileWidget extends StatelessWidget {
   });
 
   final double screenWidth;
-  final String image;
+  final Widget image;
   final String name;
   final String position;
   final VoidCallback? onPress;
@@ -35,12 +35,7 @@ class CustomProfileWidget extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(50),
-                  child: Image.asset(
-                    image,
-                    width: 50,
-                    height: 50,
-                    fit: BoxFit.cover,
-                  ),
+                  child: image,
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

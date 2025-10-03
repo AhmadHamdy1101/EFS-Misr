@@ -2,6 +2,7 @@ import 'package:efs_misr/Features/Home/data/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../constants/constants.dart';
+import '../../../../core/Functions/Save_photo_Function.dart' hide supabaseClient;
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_menu_button_widget.dart';
@@ -17,15 +18,20 @@ class MenuPageBody extends StatefulWidget {
 }
 
 class _MenuPageBodyState extends State<MenuPageBody> {
+
+  String? _userImage;
   @override
   void initState() {
     super.initState();
+    _userImage = widget.user.image;
   }
 
   @override
   Widget build(BuildContext context) {
+
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    print(widget.user.image.toString());
 
     return CustomScrollView(
       slivers: [
@@ -65,20 +71,22 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () {
-                          print('Tap');
+                        onTap: () async {
+                          final newImageUrl = await uploadUserImage(context, widget.user.id);
+                          if (newImageUrl != null) {
+                            setState(() {
+                              _userImage = newImageUrl; // يحدث الصورة فورًا
+                            });
+                          }
                         },
                         child:
                           Stack(
                             children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(50),
-                                child: Image.asset(
-                                  'assets/images/user.png',
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.cover,
-                                ),
+                              CircleAvatar(
+                                radius: 40,
+                                backgroundImage: (_userImage != null && _userImage!.isNotEmpty)
+                                    ? NetworkImage(_userImage!)
+                                    : const AssetImage('assets/images/user.png') as ImageProvider,
                               ),
                               Positioned(
                                 bottom: 0,
