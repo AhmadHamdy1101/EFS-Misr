@@ -58,6 +58,9 @@ dependencies:
   shared_preferences: ^2.5.3
   flutter_datetime_picker_plus: ^2.2.0
   flutter_slidable: ^3.0.0
+  flutter_image_compress: ^2.4.0
+  image_cropper: ^11.0.0
+  image_picker: ^1.2.0
 
 
 
