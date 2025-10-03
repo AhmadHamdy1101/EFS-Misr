@@ -11,11 +11,10 @@ class AssetsRepair implements SupadartClass<AssetsRepair> {
   final BigInt? assetsId;
   final BigInt? TicketsId;
   final num? amount;
-  final List<Assets>? assets ;
-  final List<Tickets>? tickets ;
+  final List<Assets>? assets;
+  final List<Tickets>? tickets;
   final String? comment;
   final String? variation;
-
 
   const AssetsRepair({
     required this.id,
@@ -27,7 +26,6 @@ class AssetsRepair implements SupadartClass<AssetsRepair> {
     this.tickets,
     this.comment,
     this.variation,
-
   });
 
   static String get table_name => 'AssetsRepair';
@@ -38,7 +36,6 @@ class AssetsRepair implements SupadartClass<AssetsRepair> {
   static String get c_amount => 'amount';
   static String get c_comment => 'comment';
   static String get c_variation => 'variation';
-
 
   static List<AssetsRepair> converter(List<Map<String, dynamic>> data) {
     return data.map(AssetsRepair.fromJson).toList();
@@ -121,16 +118,20 @@ class AssetsRepair implements SupadartClass<AssetsRepair> {
           : null,
       assets: jsonn['assets'] != null
           ? (jsonn['assets'] is List
-          ? (jsonn['assets'] as List)
-          .map((e) => Assets.fromJson(e as Map<String, dynamic>))
-          .toList()
-          : [Assets.fromJson(jsonn['assets'] as Map<String, dynamic>)])
+                ? (jsonn['assets'] as List)
+                      .map((e) => Assets.fromJson(e as Map<String, dynamic>))
+                      .toList()
+                : [Assets.fromJson(jsonn['assets'] as Map<String, dynamic>)])
           : [],
       tickets: jsonn['tickets'] != null
           ? (jsonn['tickets'] as List)
-              .map((e) => Tickets.fromJson(e as Map<String, dynamic>))
-              .toList()
+                .map((e) => Tickets.fromJson(e as Map<String, dynamic>))
+                .toList()
           : [],
+      comment: jsonn['comment'] != null ? jsonn['comment'].toString() : null,
+      variation: jsonn['variation'] != null
+          ? jsonn['variation'].toString()
+          : null,
     );
   }
 

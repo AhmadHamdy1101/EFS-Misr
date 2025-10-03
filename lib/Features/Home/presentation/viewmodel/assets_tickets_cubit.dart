@@ -13,6 +13,7 @@ class AssetsTicketsCubit extends Cubit<AssetsTicketsState> {
 
   final List<Assets> assets = [];
   final List<Tickets> tickets = [];
+  final List<AssetsRepair> assetsRepair = [];
 
   Future<void> addAssetsAndTickets({
     required BigInt assetsId,
@@ -77,14 +78,31 @@ class AssetsTicketsCubit extends Cubit<AssetsTicketsState> {
       comment: comment,
       amount: amount,
     );
-    result.fold((l) {
-      print(l.message);
-    }, (r) {
-      Get.snackbar(
-        'Success',
-        'Details Added Successfully',
-        backgroundColor: AppColors.green,
-      );
-    });
+    result.fold(
+      (l) {
+        print(l.message);
+      },
+      (r) {
+        Get.snackbar(
+          'Success',
+          'Details Added Successfully',
+          backgroundColor: AppColors.green,
+        );
+      },
+    );
+  }
+
+  Future<void> getAssetsRepairDetails({required BigInt ticketID}) async {
+    final res = await homeRepo.getAssetsRepairWithTicketID(ticketID: ticketID);
+    res.fold(
+      (fail) {
+        print(fail.message);
+        Get.snackbar("error", fail.message);
+      },
+      (data) {
+        assetsRepair.clear();
+        assetsRepair.addAll(data);
+      },
+    );
   }
 }

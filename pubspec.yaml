@@ -38,7 +38,7 @@ dependencies:
   get: ^4.7.2
   flutter_secure_storage: ^9.2.4
   flutter_svg: ^2.2.1
-  supabase_flutter: ^2.9.1
+  supabase_flutter: ^2.10.2
   dartz: ^0.10.1
   dartx: ^1.2.0
   get_it: ^8.2.0
@@ -57,7 +57,7 @@ dependencies:
   open_filex: ^4.7.0
   shared_preferences: ^2.5.3
   flutter_datetime_picker_plus: ^2.2.0
-  flutter_slidable: ^3.0.0
+  flutter_slidable: ^4.0.3
   flutter_image_compress: ^2.4.0
   image_cropper: ^11.0.0
   image_picker: ^1.2.0

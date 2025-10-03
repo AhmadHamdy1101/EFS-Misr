@@ -35,6 +35,13 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
   ];
   String? selectedValue;
   final selectedRepairValue = ''.obs;
+  final assetRepairData = <AssetsRepair>[].obs;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +63,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
       ),
       appBar: AppBar(
         centerTitle: true,
-        leading: BackButton(color:  Theme.of(context).colorScheme.primary,),
+        leading: BackButton(color: Theme.of(context).colorScheme.primary),
         title: Text(
           'Tickets Details'.tr,
           style: AppTextStyle.latoBold26(
@@ -859,13 +866,18 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                           screenWidth: screenWidth * 0.5,
                                           toppadding: 10,
                                           onpressed: () {
-                                            context.read<AssetsTicketsCubit>().addAssetsRepair(
-                                              variation: selectedRepairValue.value,
-                                              comment: comment.text,
-                                              assetsId: data[index].id,
-                                              ticketId: widget.ticket.id,
-                                              amount: num.parse(amount.text),
-                                            );
+                                            context
+                                                .read<AssetsTicketsCubit>()
+                                                .addAssetsRepair(
+                                                  variation:
+                                                      selectedRepairValue.value,
+                                                  comment: comment.text,
+                                                  assetsId: data[index].id,
+                                                  ticketId: widget.ticket.id,
+                                                  amount: num.parse(
+                                                    amount.text,
+                                                  ),
+                                                );
                                           },
                                           text: 'Add',
                                           foregroundcolor: Theme.of(
@@ -905,7 +917,9 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Container(
-                                      padding: EdgeInsets.all(screenWidth * 0.03),
+                                      padding: EdgeInsets.all(
+                                        screenWidth * 0.03,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: AppColors.lightGreen.withOpacity(
                                           0.25,
@@ -922,7 +936,8 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                       ),
                                     ),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Column(
                                           crossAxisAlignment:
@@ -933,13 +948,15 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                           ],
                                         ),
                                         Text(
-                                          '${data[index].branchObject?.name}'.tr,
+                                          '${data[index].branchObject?.name}'
+                                              .tr,
                                           style: AppTextStyle.latoRegular16(
                                             context,
                                           ).copyWith(color: AppColors.green),
                                         ),
                                         Text(
-                                          '${data[index].branchObject?.area}'.tr,
+                                          '${data[index].branchObject?.area}'
+                                              .tr,
                                           style: AppTextStyle.latoRegular16(
                                             context,
                                           ).copyWith(color: AppColors.gray),
@@ -948,15 +965,32 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                     ),
                                   ],
                                 ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('- ',textAlign: TextAlign.start,),
-                                    Text('- '),
-                                  ],
-                                ),
-
+                                // SizedBox(
+                                //   height: 60,
+                                //   width: Get.width,
+                                //   child: ListView.builder(
+                                //     itemCount: assetsRepairData.length,
+                                //     itemBuilder: (context, index) {
+                                //       print(assetsRepairData.length);
+                                //       return Column(
+                                //         mainAxisAlignment:
+                                //             MainAxisAlignment.start,
+                                //         crossAxisAlignment:
+                                //             CrossAxisAlignment.start,
+                                //         children: [
+                                //           Text(
+                                //             assetsRepairData[index].comment ??
+                                //                 '-',
+                                //           ),
+                                //           Text(
+                                //             assetsRepairData[index].amount
+                                //                 .toString(),
+                                //           ),
+                                //         ],
+                                //       );
+                                //     },
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),

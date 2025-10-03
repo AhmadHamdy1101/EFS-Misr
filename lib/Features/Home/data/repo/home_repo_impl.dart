@@ -174,21 +174,42 @@ class HomeRepoImpl extends HomeRepo {
   }
 
   @override
-  Future<Either<Failure, String>> addAssetsRepairs({required BigInt assetsId, required BigInt ticketId, required String variation, required String comment, required num amount}) async{
-    try{
-      final res = await supabaseClient.AssetsRepair.insert(AssetsRepair.insert(
-        amount: amount,
-        TicketsId: ticketId,
-        assetsId: assetsId,
-        comment: comment,
-        variation: variation
-      )).select();
+  Future<Either<Failure, String>> addAssetsRepairs({
+    required BigInt assetsId,
+    required BigInt ticketId,
+    required String variation,
+    required String comment,
+    required num amount,
+  }) async {
+    try {
+      final res = await supabaseClient.AssetsRepair.insert(
+        AssetsRepair.insert(
+          amount: amount,
+          TicketsId: ticketId,
+          assetsId: assetsId,
+          comment: comment,
+          variation: variation,
+        ),
+      ).select();
       print(res);
       return Right('Success');
+    } catch (e) {
+      return Left(Failure.fromException(e));
     }
-        catch(e){
-          return Left(Failure.fromException(e));
-        }
   }
 
+  @override
+  Future<Either<Failure, List<AssetsRepair>>> getAssetsRepairWithTicketID({
+    required BigInt ticketID,
+  }) async {
+    try {
+      final res = await homeRemoteDataSource.getAssetsRepairDetailsWithTicketId(
+        ticketID: ticketID,
+      );
+      return Right(res);
+    } catch (e) {
+      print(e);
+      return Left(Failure.fromException(e));
+    }
+  }
 }

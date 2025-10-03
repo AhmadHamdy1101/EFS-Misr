@@ -97,7 +97,6 @@ class TicketsCubit extends Cubit<TicketsState> {
           'repair_date': row['repair_date'],
           'response_date': row['response_date'],
           'status': row['status'],
-
         };
       }).toList();
 
@@ -193,8 +192,6 @@ class TicketsCubit extends Cubit<TicketsState> {
       allTickets.clear();
       allTickets.addAll(updatedTickets);
       emit(GetTicketsSuccess(tickets: updatedTickets));
-      // getTickets();
-      // emit(GetTicketsSuccess(tickets: allTickets));
     });
   }
 
@@ -246,7 +243,18 @@ class TicketsCubit extends Cubit<TicketsState> {
         //   colorText: AppColors.white,
         // );
         getTickets();
-        Get.to(AddSuccessPage(message: 'Ticket added successfully',buttonTitle: 'Add More Tickets', onPress: () {Get.to(AddTicketsPage());},secondPress: (){TicketPage();},));
+        Get.to(
+          AddSuccessPage(
+            message: 'Ticket added successfully',
+            buttonTitle: 'Add More Tickets',
+            onPress: () {
+              Get.to(AddTicketsPage());
+            },
+            secondPress: () {
+              TicketPage();
+            },
+          ),
+        );
         emit(GetTicketsSuccess(tickets: allTickets));
       },
     );

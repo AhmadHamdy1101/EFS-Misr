@@ -8,15 +8,15 @@ abstract class HomeRemoteDataSource {
   Future<List<Assets>> getAssets();
 
   Future<List<Users>> getUsers();
-  Future<List<Assets>> getAssetsWithTicketID({
-    required BigInt ticketId
-});
+  Future<List<Assets>> getAssetsWithTicketID({required BigInt ticketId});
 
-  Future<List<Tickets>> getTicketsWithAssetsID({
-    required BigInt assetId
-});
+  Future<List<Tickets>> getTicketsWithAssetsID({required BigInt assetId});
 
   Future<Assets> getAssetsByQrCode(String qrCode);
+
+  Future<List<AssetsRepair>> getAssetsRepairDetailsWithTicketId({
+    required BigInt ticketID,
+  });
 }
 
 class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
@@ -63,19 +63,34 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
   }
 
   @override
-  Future<List<Assets>> getAssetsWithTicketID({required BigInt ticketId}) async{
-    final assetsAndTickets = await supabaseClient.assets.select('*,branch(*), assets_tickets_details!inner(*)')
-        .eq('assets_tickets_details.Tickets_id', ticketId).withConverter(Assets.converter);
+  Future<List<Assets>> getAssetsWithTicketID({required BigInt ticketId}) async {
+    final assetsAndTickets = await supabaseClient.assets
+        .select('*,branch(*), assets_tickets_details!inner(*)')
+        .eq('assets_tickets_details.Tickets_id', ticketId)
+        .withConverter(Assets.converter);
     return assetsAndTickets;
   }
 
   @override
-  Future<List<Tickets>> getTicketsWithAssetsID({required BigInt assetId}) async{
-    final assetsAndTickets = await supabaseClient.tickets.select('*, engineer:users!tickets_engineer_fkey(*,positions(*)), branch:branch(*),assets_tickets_details!inner(*)')
-        .eq('assets_tickets_details.assets_id', assetId).withConverter(Tickets.converter);
+  Future<List<Tickets>> getTicketsWithAssetsID({
+    required BigInt assetId,
+  }) async {
+    final assetsAndTickets = await supabaseClient.tickets
+        .select(
+          '*, engineer:users!tickets_engineer_fkey(*,positions(*)), branch:branch(*),assets_tickets_details!inner(*)',
+        )
+        .eq('assets_tickets_details.assets_id', assetId)
+        .withConverter(Tickets.converter);
     return assetsAndTickets;
   }
 
-
-  
+  @override
+  Future<List<AssetsRepair>> getAssetsRepairDetailsWithTicketId({
+    required BigInt ticketID,
+  }) async {
+    final data = await supabaseClient.AssetsRepair.select()
+        .eq('ticket_id', ticketID)
+        .withConverter(AssetsRepair.converter);
+    return data;
+  }
 }
