@@ -897,53 +897,66 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                               vertical: 20,
                               horizontal: 20,
                             ),
-                            child: Row(
-                              spacing: 15,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
+                            child: Column(
                               children: [
-                                Container(
-                                  padding: EdgeInsets.all(screenWidth * 0.03),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.lightGreen.withOpacity(
-                                      0.25,
-                                    ),
-                                    borderRadius: BorderRadius.circular(60),
-                                  ),
-                                  child: ClipRRect(
-                                    child: SvgPicture.asset(
-                                      'assets/images/${data[index].type}.svg',
-                                      color: AppColors.green,
-                                      width: screenWidth * 0.1,
-                                      height: screenWidth * 0.1,
-                                    ),
-                                  ),
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                Row(
+                                  spacing: 15,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
+                                    Container(
+                                      padding: EdgeInsets.all(screenWidth * 0.03),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.lightGreen.withOpacity(
+                                          0.25,
+                                        ),
+                                        borderRadius: BorderRadius.circular(60),
+                                      ),
+                                      child: ClipRRect(
+                                        child: SvgPicture.asset(
+                                          'assets/images/${data[index].type}.svg',
+                                          color: AppColors.green,
+                                          width: screenWidth * 0.1,
+                                          height: screenWidth * 0.1,
+                                        ),
+                                      ),
+                                    ),
                                     Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text("${data[index].type}".tr),
-                                        Text('${data[index].barcode}'),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text("${data[index].type}".tr),
+                                            Text('${data[index].barcode}'),
+                                          ],
+                                        ),
+                                        Text(
+                                          '${data[index].branchObject?.name}'.tr,
+                                          style: AppTextStyle.latoRegular16(
+                                            context,
+                                          ).copyWith(color: AppColors.green),
+                                        ),
+                                        Text(
+                                          '${data[index].branchObject?.area}'.tr,
+                                          style: AppTextStyle.latoRegular16(
+                                            context,
+                                          ).copyWith(color: AppColors.gray),
+                                        ),
                                       ],
-                                    ),
-                                    Text(
-                                      '${data[index].branchObject?.name}'.tr,
-                                      style: AppTextStyle.latoRegular16(
-                                        context,
-                                      ).copyWith(color: AppColors.green),
-                                    ),
-                                    Text(
-                                      '${data[index].branchObject?.area}'.tr,
-                                      style: AppTextStyle.latoRegular16(
-                                        context,
-                                      ).copyWith(color: AppColors.gray),
                                     ),
                                   ],
                                 ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('- ',textAlign: TextAlign.start,),
+                                    Text('- '),
+                                  ],
+                                ),
+
                               ],
                             ),
                           ),

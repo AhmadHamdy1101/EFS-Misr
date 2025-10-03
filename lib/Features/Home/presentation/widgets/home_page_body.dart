@@ -52,7 +52,19 @@ class _HomePageBodyState extends State<HomePageBody> {
               ),
               CustomProfileWidget(
                 screenWidth: screenWidth,
-                image: "assets/images/user.png",
+                image:  (widget.user.image != null && widget.user.image!.isNotEmpty)
+                    ? Image.network(
+                  widget.user.image!,
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                )
+                    : Image.asset(
+                  'assets/images/user.png',
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
                 name: '${widget.user.name}',
                 position: '${widget.user.position!.name}',
                 onPress: () {},
