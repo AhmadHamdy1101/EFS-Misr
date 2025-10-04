@@ -4,6 +4,7 @@ import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
 import 'package:efs_misr/Features/Home/presentation/pages/SplashScreen.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/accounts_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/qrcode_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
@@ -50,6 +51,9 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => AccountsCubit(getIt.get<HomeRepo>())),
         BlocProvider(
           create: (context) => AssetsTicketsCubit(getIt.get<HomeRepo>()),
+        ),
+        BlocProvider(
+          create: (context) => AssetsRepairCubit(getIt.get<HomeRepo>()),
         ),
       ],
       child: GetMaterialApp(

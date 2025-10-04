@@ -1,4 +1,5 @@
 import 'package:efs_misr/Features/Home/presentation/pages/add_Tickets_page.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
@@ -142,23 +143,16 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        context.read<AssetsTicketsCubit>()
-                          ..getAssetsRepairDetails(
-                            ticketID: state.tickets[index].id,
-                          )
-                          ..getAssetsWithTicketId(
-                            ticketId: state.tickets[index].id,
-                          );
-                        // context
-                        //    .read<AssetsTicketsCubit>()
-                        //    .getAssetsWithTicketId(
-                        //      ticketId: state.tickets[index].id,
-                        //    );
-                        // context
-                        //    .read<AssetsTicketsCubit>()
-                        //    .getAssetsRepairDetails(
-                        //      ticketID: state.tickets[index].id,
-                        //    );
+                        context
+                            .read<AssetsTicketsCubit>()
+                            .getAssetsWithTicketId(
+                              ticketId: state.tickets[index].id,
+                            );
+                        context
+                            .read<AssetsRepairCubit>()
+                            .getAssetsRepairDetails(
+                              ticketID: state.tickets[index].id,
+                            );
                         Get.to(
                           () =>
                               TicketDetailsPage(tickets: state.tickets[index]),

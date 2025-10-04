@@ -91,18 +91,4 @@ class AssetsTicketsCubit extends Cubit<AssetsTicketsState> {
       },
     );
   }
-
-  Future<void> getAssetsRepairDetails({required BigInt ticketID}) async {
-    final res = await homeRepo.getAssetsRepairWithTicketID(ticketID: ticketID);
-    res.fold(
-      (fail) {
-        print(fail.message);
-        Get.snackbar("error", fail.message);
-      },
-      (data) {
-        assetsRepair.clear();
-        assetsRepair.addAll(data);
-      },
-    );
-  }
 }

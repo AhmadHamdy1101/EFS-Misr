@@ -1,4 +1,5 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/widgets/QRViewTicket.dart';
@@ -965,32 +966,58 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                     ),
                                   ],
                                 ),
-                                // SizedBox(
-                                //   height: 60,
-                                //   width: Get.width,
-                                //   child: ListView.builder(
-                                //     itemCount: assetsRepairData.length,
-                                //     itemBuilder: (context, index) {
-                                //       print(assetsRepairData.length);
-                                //       return Column(
-                                //         mainAxisAlignment:
-                                //             MainAxisAlignment.start,
-                                //         crossAxisAlignment:
-                                //             CrossAxisAlignment.start,
-                                //         children: [
-                                //           Text(
-                                //             assetsRepairData[index].comment ??
-                                //                 '-',
-                                //           ),
-                                //           Text(
-                                //             assetsRepairData[index].amount
-                                //                 .toString(),
-                                //           ),
-                                //         ],
-                                //       );
-                                //     },
-                                //   ),
-                                // ),
+
+                                // ***************** data assets repair here **************************//
+                                SizedBox(
+                                  height: 60,
+                                  width: Get.width,
+                                  child:
+                                      BlocBuilder<
+                                        AssetsRepairCubit,
+                                        AssetsRepairState
+                                      >(
+                                        builder: (context, state) {
+                                          if (state
+                                              is GetAssetsRepairDataLoading) {
+                                            return CircularProgressIndicator();
+                                          }
+                                          if (state
+                                              is GetAssetsRepairDataFailed) {
+                                            return Text(state.errMsg);
+                                          }
+                                          if (state
+                                              is GetAssetsRepairDataSuccess) {
+                                            return ListView.builder(
+                                              itemCount:
+                                                  state.assetsRepair.length,
+                                              itemBuilder: (context, index) {
+                                                return Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      state
+                                                              .assetsRepair[index]
+                                                              .comment ??
+                                                          '-',
+                                                    ),
+                                                    Text(
+                                                      state
+                                                          .assetsRepair[index]
+                                                          .amount
+                                                          .toString(),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }
+                                          return Text('No Spare parts');
+                                        },
+                                      ),
+                                ),
                               ],
                             ),
                           ),
