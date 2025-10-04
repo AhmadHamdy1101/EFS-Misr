@@ -22,6 +22,7 @@ abstract class HomeRepo {
   Future<Either<Failure, Tickets>> updateTicketStatus({
     required String ticketID,
     required String newStatus,
+    required DateTime repairDate,
   });
 
   Future<Either<Failure, Tickets>> updateTicketComment({

@@ -48,6 +48,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
       return {"name": br["name"], "value": br["id"].toString()};
     }).toList();
   }
+
   String? selectedValue;
 
   final priorityData = [
@@ -77,7 +78,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
         slivers: [
           SliverAppBar(
             centerTitle: true,
-            leading:  BackButton(color: Theme.of(context).colorScheme.primary,),
+            leading: BackButton(color: Theme.of(context).colorScheme.primary),
             title: Text(
               'Add Ticket'.tr,
               style: AppTextStyle.latoBold26(
@@ -109,7 +110,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                       },
                       Data: branchesData.value,
                     );
-                  },),
+                  }),
                   CustomDropdownWidget(
                     inbutIcon: 'assets/images/priority.svg',
                     inbutHintText: 'Priority'.tr,
@@ -154,7 +155,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                       inbutHintText: 'Engineer'.tr,
                       textEditingController: engineer,
                       selectedValue: selectedValue,
-                      Data: engineersData.value,
+                      Data: engineersData.toList(),
                       onChanged: (value) {
                         selectedEngineer.value = BigInt.tryParse(value!)!;
                       },

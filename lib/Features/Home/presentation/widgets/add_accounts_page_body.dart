@@ -1,10 +1,12 @@
 import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
+import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/core/utils/widgets/custom_dropdown_widget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_inbut_wedget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
+import '../../../../constants/constants.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 
@@ -35,12 +37,20 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
     {'name': 'Terminated', 'value': '3'},
     {'name': 'Suspended', 'value': '4'},
   ];
-  final positions = [
-    {'name': 'Administrator Manager', 'value': '1'},
-    {'name': 'Head Of Operation', 'value': '2'},
-    {'name': 'Engineer', 'value': '3'},
-    {'name': 'Head of Facility Management ', 'value': '4'},
-  ];
+  final positions = <Map<String, dynamic>>[].obs;
+
+  Future<void> loadPositions() async {
+    final positionsData = await supabaseClient.positions.select();
+    positions.value = positionsData.map<Map<String, dynamic>>((po) {
+      return {"name": po["name"], "value": po["id"].toString()};
+    }).toList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadPositions();
+  }
 
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
@@ -62,7 +72,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
         slivers: [
           SliverAppBar(
             centerTitle: true,
-            leading: BackButton(color:  Theme.of(context).colorScheme.primary,),
+            leading: BackButton(color: Theme.of(context).colorScheme.primary),
             title: Text(
               'Add Accounts'.tr,
               style: AppTextStyle.latoBold26(
@@ -128,18 +138,20 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                               selectedStatusValue.value = int.tryParse(value!)!;
                             },
                           ),
-                          CustomDropdownWidget(
-                            inbutIcon: 'assets/images/position.svg',
-                            inbutHintText: 'Position'.tr,
-                            textEditingController: Postition,
-                            selectedValue: selectedValue,
-                            Data: positions,
-                            onChanged: (value) {
-                              selectedPositionValue.value = BigInt.tryParse(
-                                value!,
-                              )!;
-                            },
-                          ),
+                          Obx(() {
+                            return CustomDropdownWidget(
+                              inbutIcon: 'assets/images/position.svg',
+                              inbutHintText: 'Position'.tr,
+                              textEditingController: Postition,
+                              selectedValue: selectedValue,
+                              Data: positions.value,
+                              onChanged: (value) {
+                                selectedPositionValue.value = BigInt.tryParse(
+                                  value!,
+                                )!;
+                              },
+                            );
+                          }),
                           CustomDropdownWidget(
                             inbutIcon: 'assets/images/company.svg',
                             inbutHintText: 'Company'.tr,

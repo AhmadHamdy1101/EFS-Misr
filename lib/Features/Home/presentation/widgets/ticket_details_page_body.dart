@@ -36,13 +36,6 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
   ];
   String? selectedValue;
   final selectedRepairValue = ''.obs;
-  final assetRepairData = <AssetsRepair>[].obs;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -242,8 +235,10 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                             context
                                                 .read<TicketsCubit>()
                                                 .updateTicketStatus(
-                                                  widget.ticket.id.toString(),
-                                                  "Canceled",
+                                                  ticketId: widget.ticket.id
+                                                      .toString(),
+                                                  newStatus: "Canceled",
+                                                  repairDate: DateTime.now(),
                                                 );
                                           },
                                           text: 'Cancel',
@@ -262,8 +257,10 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                             context
                                                 .read<TicketsCubit>()
                                                 .updateTicketStatus(
-                                                  widget.ticket.id.toString(),
-                                                  "Completed",
+                                                  ticketId: widget.ticket.id
+                                                      .toString(),
+                                                  newStatus: "Completed",
+                                                  repairDate: DateTime.now(),
                                                 );
                                           },
                                           foregroundcolor: AppColors.white,
@@ -420,8 +417,10 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                           context
                                               .read<TicketsCubit>()
                                               .updateTicketStatus(
-                                                widget.ticket.id.toString(),
-                                                "Canceled",
+                                                ticketId: widget.ticket.id
+                                                    .toString(),
+                                                newStatus: "Canceled",
+                                                repairDate: DateTime.now(),
                                               );
                                         },
                                         text: 'Cancel',
@@ -440,8 +439,10 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                           context
                                               .read<TicketsCubit>()
                                               .updateTicketStatus(
-                                                widget.ticket.id.toString(),
-                                                "Completed",
+                                                ticketId: widget.ticket.id
+                                                    .toString(),
+                                                newStatus: "Completed",
+                                                repairDate: DateTime.now(),
                                               );
                                         },
                                         foregroundcolor: AppColors.white,
@@ -469,115 +470,245 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Card(
-                    child: Container(
-                      padding: EdgeInsets.all(20.0),
-                      child: Row(
-                        spacing: 15,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              spacing: 10,
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                  BlocBuilder<TicketsCubit, TicketsState>(
+                    builder: (context, state) {
+                      if (state is GetTicketsSuccess) {
+                        final currentTicket = state.tickets.firstWhere(
+                          (t) => t.id == widget.ticket.id,
+                          orElse: () => widget.ticket,
+                        );
+                        return Card(
+                          child: Container(
+                            padding: EdgeInsets.all(20.0),
+                            child: Row(
+                              spacing: 15,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Request Date'.tr,
-                                      style: AppTextStyle.latoBold20(
-                                        context,
-                                      ).copyWith(color: AppColors.green),
-                                    ),
-                                    Text(
-                                      widget.ticket.requestDate != null
-                                          ? getDateFromTimestamp(
-                                              widget.ticket.requestDate,
-                                            )
-                                          : '-',
-                                    ),
-                                  ],
+                                Expanded(
+                                  child: Column(
+                                    spacing: 10,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Request Date'.tr,
+                                            style: AppTextStyle.latoBold20(
+                                              context,
+                                            ).copyWith(color: AppColors.green),
+                                          ),
+                                          Text(
+                                            currentTicket.requestDate != null
+                                                ? getDateFromTimestamp(
+                                                    currentTicket.requestDate,
+                                                  )
+                                                : '-',
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Repair Date:'.tr,
+                                            style: AppTextStyle.latoBold20(
+                                              context,
+                                            ).copyWith(color: AppColors.green),
+                                          ),
+                                          Text(
+                                            currentTicket.repairDate != null
+                                                ? getDateFromTimestamp(
+                                                    currentTicket.repairDate,
+                                                  )
+                                                : '-',
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Repair Date:'.tr,
-                                      style: AppTextStyle.latoBold20(
-                                        context,
-                                      ).copyWith(color: AppColors.green),
+                                Container(
+                                  height: screenHeight * 0.13,
+                                  width: 1,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(10),
                                     ),
-                                    Text(
-                                      widget.ticket.repairDate != null
-                                          ? getDateFromTimestamp(
-                                              widget.ticket.repairDate,
-                                            )
-                                          : '-',
-                                    ),
-                                  ],
+                                    color: AppColors.gray,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    spacing: 10,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Request Date:'.tr,
+                                            style: AppTextStyle.latoBold20(
+                                              context,
+                                            ).copyWith(color: AppColors.green),
+                                          ),
+                                          Text(
+                                            currentTicket.requestDate != null
+                                                ? getDateFromTimestamp(
+                                                    currentTicket.requestDate,
+                                                  )
+                                                : '-',
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Response Date:'.tr,
+                                            style: AppTextStyle.latoBold20(
+                                              context,
+                                            ).copyWith(color: AppColors.green),
+                                          ),
+                                          Text(
+                                            currentTicket.responseDate != null
+                                                ? getDateFromTimestamp(
+                                                    currentTicket.responseDate,
+                                                  )
+                                                : '-',
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          Container(
-                            height: screenHeight * 0.13,
-                            width: 1,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10),
+                        );
+                      }
+                      return Card(
+                        child: Container(
+                          padding: EdgeInsets.all(20.0),
+                          child: Row(
+                            spacing: 15,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  spacing: 10,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Request Date'.tr,
+                                          style: AppTextStyle.latoBold20(
+                                            context,
+                                          ).copyWith(color: AppColors.green),
+                                        ),
+                                        Text(
+                                          widget.ticket.requestDate != null
+                                              ? getDateFromTimestamp(
+                                                  widget.ticket.requestDate,
+                                                )
+                                              : '-',
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Repair Date:'.tr,
+                                          style: AppTextStyle.latoBold20(
+                                            context,
+                                          ).copyWith(color: AppColors.green),
+                                        ),
+                                        Text(
+                                          widget.ticket.repairDate != null
+                                              ? getDateFromTimestamp(
+                                                  widget.ticket.repairDate,
+                                                )
+                                              : '-',
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                              color: AppColors.gray,
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              spacing: 10,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
+                              Container(
+                                height: screenHeight * 0.13,
+                                width: 1,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10),
+                                  ),
+                                  color: AppColors.gray,
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  spacing: 10,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      'Request Date:'.tr,
-                                      style: AppTextStyle.latoBold20(
-                                        context,
-                                      ).copyWith(color: AppColors.green),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Request Date:'.tr,
+                                          style: AppTextStyle.latoBold20(
+                                            context,
+                                          ).copyWith(color: AppColors.green),
+                                        ),
+                                        Text(
+                                          widget.ticket.requestDate != null
+                                              ? getDateFromTimestamp(
+                                                  widget.ticket.requestDate,
+                                                )
+                                              : '-',
+                                        ),
+                                      ],
                                     ),
-                                    Text(
-                                      widget.ticket.requestDate != null
-                                          ? getDateFromTimestamp(
-                                              widget.ticket.requestDate,
-                                            )
-                                          : '-',
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Response Date:'.tr,
+                                          style: AppTextStyle.latoBold20(
+                                            context,
+                                          ).copyWith(color: AppColors.green),
+                                        ),
+                                        Text(
+                                          widget.ticket.responseDate != null
+                                              ? getDateFromTimestamp(
+                                                  widget.ticket.responseDate,
+                                                )
+                                              : '-',
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Response Date:'.tr,
-                                      style: AppTextStyle.latoBold20(
-                                        context,
-                                      ).copyWith(color: AppColors.green),
-                                    ),
-                                    Text(
-                                      widget.ticket.responseDate != null
-                                          ? getDateFromTimestamp(
-                                              widget.ticket.responseDate,
-                                            )
-                                          : '-',
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    },
                   ),
                   Card(
                     child: Container(
@@ -721,9 +852,13 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                                     context
                                                         .read<TicketsCubit>()
                                                         .updateTicketComment(
-                                                          widget.ticket.id
+                                                          ticketId: widget
+                                                              .ticket
+                                                              .id
                                                               .toString(),
-                                                          damageComment.text,
+                                                          newComment:
+                                                              damageComment
+                                                                  .text,
                                                         );
                                                     Navigator.pop(
                                                       context,

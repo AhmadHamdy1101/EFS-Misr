@@ -180,10 +180,15 @@ class TicketsCubit extends Cubit<TicketsState> {
     }
   }
 
-  Future<void> updateTicketStatus(String ticketId, String newStatus) async {
+  Future<void> updateTicketStatus({
+    required String ticketId,
+    required String newStatus,
+    required DateTime repairDate,
+  }) async {
     final result = await homeRepo.updateTicketStatus(
       ticketID: ticketId,
       newStatus: newStatus,
+      repairDate: repairDate,
     );
     result.fold((l) {}, (ticket) {
       final updatedTickets = allTickets.map((e) {
@@ -195,7 +200,10 @@ class TicketsCubit extends Cubit<TicketsState> {
     });
   }
 
-  Future<void> updateTicketComment(String ticketId, String newComment) async {
+  Future<void> updateTicketComment({
+    required String ticketId,
+    required String newComment,
+  }) async {
     final result = await homeRepo.updateTicketComment(
       ticketID: ticketId,
       newComment: newComment,
@@ -236,19 +244,13 @@ class TicketsCubit extends Cubit<TicketsState> {
         );
       },
       (tickets) {
-        // Get.snackbar(
-        //   "Success",
-        //   "Ticket added successfully",
-        //   backgroundColor: Colors.green,
-        //   colorText: AppColors.white,
-        // );
         getTickets();
         Get.to(
           AddSuccessPage(
             message: 'Ticket added successfully',
             buttonTitle: 'Add More Tickets',
             onPress: () {
-              Get.to(AddTicketsPage());
+              Get.off(AddTicketsPage());
             },
             secondPress: () {
               TicketPage();

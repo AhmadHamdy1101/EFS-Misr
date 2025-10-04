@@ -60,10 +60,11 @@ class HomeRepoImpl extends HomeRepo {
   Future<Either<Failure, Tickets>> updateTicketStatus({
     required String ticketID,
     required String newStatus,
+    required DateTime repairDate,
   }) async {
     try {
       final tickets = await supabaseClient.tickets
-          .update(Tickets.update(status: newStatus))
+          .update(Tickets.update(status: newStatus, repairDate: repairDate))
           .eq('id', ticketID)
           .select('''
       *,
