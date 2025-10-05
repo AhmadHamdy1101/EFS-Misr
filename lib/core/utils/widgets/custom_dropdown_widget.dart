@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../app_colors.dart';
 import '../app_text_styles.dart';
 
 class CustomDropdownWidget extends StatefulWidget {
@@ -13,9 +12,11 @@ class CustomDropdownWidget extends StatefulWidget {
     this.textInputType,
     this.validator,
     this.onChanged,
-    required this.selectedValue, required this.Data, this.iconColor,
+    required this.selectedValue,
+    required this.Data,
+    this.iconColor,
   });
-final iconColor;
+  final iconColor;
   final String inbutIcon;
   final String inbutHintText;
   final String? selectedValue;
@@ -59,11 +60,22 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
         borderRadius: BorderRadius.circular(10),
         isExpanded: true,
         initialValue: _currentValue,
-        hint: Text(widget.inbutHintText, textAlign: TextAlign.center,style: AppTextStyle.latoBold20(context).copyWith(color:  Theme.of(context).colorScheme.primary),),
+        hint: Text(
+          widget.inbutHintText,
+          textAlign: TextAlign.center,
+          style: AppTextStyle.latoBold20(
+            context,
+          ).copyWith(color: Theme.of(context).colorScheme.primary),
+        ),
         items: widget.Data.map((status) {
           return DropdownMenuItem<String>(
             value: status['value'],
-            child: Text(status['name'], style: AppTextStyle.latoBold20(context).copyWith(color: Theme.of(context).colorScheme.primary)),
+            child: Text(
+              status['name'],
+              style: AppTextStyle.latoBold20(
+                context,
+              ).copyWith(color: Theme.of(context).colorScheme.primary),
+            ),
           );
         }).toList(),
         onChanged: (value) {
@@ -81,7 +93,7 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
           ),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(9.0),
-            child: SvgPicture.asset(widget.inbutIcon,color: widget.iconColor,),
+            child: SvgPicture.asset(widget.inbutIcon, color: widget.iconColor),
           ),
           border: InputBorder.none,
         ),

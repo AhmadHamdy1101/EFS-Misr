@@ -8,23 +8,25 @@ class CustomInputWidget extends StatelessWidget {
   const CustomInputWidget({
     super.key,
     required this.inbutIcon,
-    required this.inbutHintText,
+    this.inbutHintText,
     required this.changeToPass,
     this.textEditingController,
     this.textInputType,
     this.validator,
     this.onChanged,
     this.readOnly,
-    this.onTap, this.iconColor,
+    this.onTap,
+    this.iconColor,
   });
   final iconColor;
   final String inbutIcon;
-  final String inbutHintText;
+  final String? inbutHintText;
   final bool changeToPass;
   final TextEditingController? textEditingController;
   final TextInputType? textInputType;
   final String? Function(String?)? validator;
   final String? Function(String?)? onChanged;
+
   final bool? readOnly;
   final VoidCallback? onTap;
 
@@ -59,10 +61,10 @@ class CustomInputWidget extends StatelessWidget {
           fillColor: Theme.of(context).buttonTheme.colorScheme?.primary,
           hintStyle: AppTextStyle.latoBold20(
             context,
-          ).copyWith(color: Theme.of(context).colorScheme?.primary),
+          ).copyWith(color: Theme.of(context).colorScheme.primary),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(9.0),
-            child: SvgPicture.asset(inbutIcon,color: iconColor,),
+            child: SvgPicture.asset(inbutIcon, color: iconColor),
           ),
           prefixIconConstraints: const BoxConstraints(
             minWidth: 30, // العرض المطلوب

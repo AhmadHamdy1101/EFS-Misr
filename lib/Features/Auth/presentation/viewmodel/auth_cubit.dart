@@ -25,16 +25,16 @@ class AuthCubit extends Cubit<AuthCubitState> {
     emit(AuthLoading());
     final response = await authRepo.login(email, password);
     response.fold(
-          (l) {
+      (l) {
         emit(LoginFailure(errorMsg: l.message));
       },
-          (userId) async {
+      (userId) async {
         final user = await authRepo.getUserData(userId: userId);
         user.fold(
-              (l) {
+          (l) {
             emit(LoginFailure(errorMsg: l.message));
           },
-              (user) {
+          (user) {
             emit(LoginSuccess(user: user));
             emit(SessionExist(user: user));
           },
@@ -49,12 +49,12 @@ class AuthCubit extends Cubit<AuthCubitState> {
     if (session?.user != null) {
       final res = await authRepo.getUserData(userId: session!.user.id);
       res.fold(
-            (failure) {
+        (failure) {
           emit(
             SessionLoadFailed(failure.message),
           ); // اعمل الحالة دي لو مش موجودة
         },
-            (user) {
+        (user) {
           emit(SessionExist(user: user));
         },
       );
@@ -68,10 +68,10 @@ class AuthCubit extends Cubit<AuthCubitState> {
       if (newSession?.user != null) {
         final res = await authRepo.getUserData(userId: newSession!.user.id);
         res.fold(
-              (failure) {
+          (failure) {
             emit(SessionLoadFailed(failure.message));
           },
-              (user) {
+          (user) {
             emit(SessionExist(user: user));
           },
         );
@@ -95,7 +95,7 @@ class AuthCubit extends Cubit<AuthCubitState> {
   }) async {
     final result = await authRepo.addAccount(email: email, password: password);
     result.fold(
-          (l) {
+      (l) {
         Get.snackbar(
           "Error",
           l.message,
@@ -103,7 +103,7 @@ class AuthCubit extends Cubit<AuthCubitState> {
           colorText: AppColors.white,
         );
       },
-          (userId) async {
+      (userId) async {
         final savingData = await authRepo.saveUsersData(
           password: password,
           role: role,
@@ -118,7 +118,7 @@ class AuthCubit extends Cubit<AuthCubitState> {
           userName: userName,
         );
         savingData.fold(
-              (l) {
+          (l) {
             Get.snackbar(
               "Error",
               l.message,
@@ -126,7 +126,7 @@ class AuthCubit extends Cubit<AuthCubitState> {
               colorText: AppColors.white,
             );
           },
-              (r) {
+          (r) {
             Get.to(
               AddSuccessPage(
                 message: 'Account created successfully',
@@ -175,7 +175,4 @@ class AuthCubit extends Cubit<AuthCubitState> {
   //     emit(SessionLoadFailed(e.toString()));
   //   }
   // }
-
 }
-
-

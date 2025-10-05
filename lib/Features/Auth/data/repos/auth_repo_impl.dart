@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/supabase_functions.dart';
+
 import '../../../../constants/constants.dart';
 import '../../../../core/Errors/failure.dart';
 import '../../../Home/data/models/user.dart';
@@ -19,19 +20,20 @@ class AuthRepoImpl extends AuthRepo {
         password: password,
       );
       final userId = res.user?.id;
-      if (userId == null) return Left(GeneralFailure('Login failed: user missing'));
+      if (userId == null) {
+        return Left(GeneralFailure('Login failed: user missing'));
+      }
       return Right(userId);
     } catch (e) {
       return Left(Failure.fromException(e));
     }
   }
 
-
-
   @override
-  Future<Either<Failure, String>> addAccount(
-      {required String password, required String email}
-  ) async {
+  Future<Either<Failure, String>> addAccount({
+    required String password,
+    required String email,
+  }) async {
     try {
       final result = await SupabaseFunctions.createUser(
         email: email,
@@ -43,7 +45,8 @@ class AuthRepoImpl extends AuthRepo {
       }
 
       // لو رجع id
-      if (result.length == 36) { // طول UUID دايمًا 36
+      if (result.length == 36) {
+        // طول UUID دايمًا 36
         return Right(result);
       }
       return Left(GeneralFailure(result));
@@ -65,7 +68,7 @@ class AuthRepoImpl extends AuthRepo {
     required BigInt position,
     required String role,
     required int status,
-}) async {
+  }) async {
     try {
       await supabaseClient.users.insert(
         Users.insert(
@@ -76,7 +79,7 @@ class AuthRepoImpl extends AuthRepo {
           phone: phone,
           createdAt: DateTime.now(),
           name: userName,
-          positionID:position,
+          positionID: position,
           companyEmail: companyEmail,
           company: company,
           role: role,
@@ -91,9 +94,7 @@ class AuthRepoImpl extends AuthRepo {
   }
 
   @override
-  Future<Either<Failure, Users>> getUserData({
-    required String userId,
-  }) async {
+  Future<Either<Failure, Users>> getUserData({required String userId}) async {
     try {
       final user = await authRemoteData.getUserData(userId: userId);
       return Right(user);

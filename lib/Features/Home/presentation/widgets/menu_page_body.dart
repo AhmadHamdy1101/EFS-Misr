@@ -1,8 +1,8 @@
 import 'package:efs_misr/Features/Home/data/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../../constants/constants.dart';
-import '../../../../core/Functions/Save_photo_Function.dart' hide supabaseClient;
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_menu_button_widget.dart';
@@ -18,7 +18,6 @@ class MenuPageBody extends StatefulWidget {
 }
 
 class _MenuPageBodyState extends State<MenuPageBody> {
-
   String? _userImage;
   @override
   void initState() {
@@ -28,7 +27,6 @@ class _MenuPageBodyState extends State<MenuPageBody> {
 
   @override
   Widget build(BuildContext context) {
-
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     print(widget.user.image.toString());
@@ -72,74 +70,74 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                     children: [
                       GestureDetector(
                         onTap: () async {
-                          final newImageUrl = await uploadUserImage(context, widget.user.id);
-                          if (newImageUrl != null) {
-                            setState(() {
-                              _userImage = newImageUrl; // يحدث الصورة فورًا
-                            });
-                          }
+                          // final newImageUrl = await uploadUserImage(context, widget.user.id);
+                          // if (newImageUrl != null) {
+                          //   setState(() {
+                          //     _userImage = newImageUrl; // يحدث الصورة فورًا
+                          //   });
+                          // }
                         },
-                        child:
-                          Stack(
-                            children: [
-                              CircleAvatar(
-                                radius: 40,
-                                backgroundImage: (_userImage != null && _userImage!.isNotEmpty)
-                                    ? NetworkImage(_userImage!)
-                                    : const AssetImage('assets/images/user.png') as ImageProvider,
+                        child: Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 40,
+                              backgroundImage:
+                                  (_userImage != null && _userImage!.isNotEmpty)
+                                  ? NetworkImage(_userImage!)
+                                  : const AssetImage('assets/images/user.png')
+                                        as ImageProvider,
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: CircleAvatar(
+                                radius: 15,
+                                backgroundColor: AppColors.green,
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  color: AppColors.white,
+                                  size: 18.0,
+                                  semanticLabel:
+                                      'Text to announce in accessibility modes',
+                                ),
                               ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: CircleAvatar(
-                                  radius: 15,
-                                  backgroundColor: AppColors.green,
-                                  child: Icon(
-                                    Icons.camera_alt,
-                                    color: AppColors.white,
-                                    size: 18.0,
-                                    semanticLabel:
-                                    'Text to announce in accessibility modes',
-                                  ),
-                                )
-                              ),
-                            ]
-                          ),),
-                          
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      Text(
+                        "${widget.user.name}",
+                        style: AppTextStyle.latoBold26(
+                          context,
+                        ).copyWith(color: AppColors.white),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        spacing: 8,
+                        children: [
                           Text(
-                            "${widget.user.name}",
-                            style: AppTextStyle.latoBold26(
+                            "${widget.user.position?.name}",
+                            style: AppTextStyle.latoRegular16(
                               context,
                             ).copyWith(color: AppColors.white),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            spacing: 8,
-                            children: [
-                              Text(
-                                "${widget.user.position?.name}",
-                                style: AppTextStyle.latoRegular16(
-                                  context,
-                                ).copyWith(color: AppColors.white),
-                              ),
-                              Container(
-                                width: 5,
-                                height: 5,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: AppColors.white,
-                                ),
-                              ),
-                              Text(
-                                "${widget.user.id}",
-                                style: AppTextStyle.latoRegular19(
-                                  context,
-                                ).copyWith(color: AppColors.white),
-                              ),
-                            ],
+                          Container(
+                            width: 5,
+                            height: 5,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.white,
+                            ),
                           ),
-
-
+                          Text(
+                            "${widget.user.id}",
+                            style: AppTextStyle.latoRegular19(
+                              context,
+                            ).copyWith(color: AppColors.white),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),

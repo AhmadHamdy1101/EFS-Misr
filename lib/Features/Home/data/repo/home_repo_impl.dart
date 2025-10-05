@@ -114,7 +114,7 @@ class HomeRepoImpl extends HomeRepo {
     required BigInt ticketId,
   }) async {
     try {
-      final assetsAndTickets = await supabaseClient.assetsAndTickets.insert(
+      await supabaseClient.assetsAndTickets.insert(
         AssetsAndTickets.insert(assetsId: assetsId, TicketsId: ticketId),
       );
       return Right('Success');
@@ -133,7 +133,6 @@ class HomeRepoImpl extends HomeRepo {
       );
       return Right(assetsAndTickets);
     } catch (e) {
-      print(Failure.fromException(e));
       return Left(Failure.fromException(e));
     }
   }
@@ -147,7 +146,6 @@ class HomeRepoImpl extends HomeRepo {
           .getTicketsWithAssetsID(assetId: assetId);
       return Right(assetsAndTickets);
     } catch (e) {
-      print(Failure.fromException(e));
       return Left(Failure.fromException(e));
     }
   }
@@ -183,7 +181,7 @@ class HomeRepoImpl extends HomeRepo {
     required num amount,
   }) async {
     try {
-      final res = await supabaseClient.AssetsRepair.insert(
+      await supabaseClient.AssetsRepair.insert(
         AssetsRepair.insert(
           amount: amount,
           TicketsId: ticketId,
@@ -192,7 +190,6 @@ class HomeRepoImpl extends HomeRepo {
           variation: variation,
         ),
       ).select();
-      print(res);
       return Right('Success');
     } catch (e) {
       return Left(Failure.fromException(e));
@@ -209,7 +206,49 @@ class HomeRepoImpl extends HomeRepo {
       );
       return Right(res);
     } catch (e) {
-      print(e);
+      return Left(Failure.fromException(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Users>>> updateUserData({
+    required String userID,
+    required String? userName,
+    required String? phone,
+    required String? address,
+    required BigInt? position,
+    required int? status,
+    required String? role,
+    required String? companyEmail,
+    required String? company,
+    required String? email,
+    required String? password,
+  }) async {
+    try {
+      final res = await supabaseClient.functions.invoke(
+        'update-user',
+        body: {'userId': userID, 'email': email, 'password': password},
+      );
+      final user = await supabaseClient.users
+          .update(
+            Users.update(
+              address: address,
+              company: company,
+              companyEmail: companyEmail,
+              email: email,
+              name: userName,
+              password: password,
+              phone: phone,
+              role: role,
+              positionID: position,
+              status: status,
+            ),
+          )
+          .eq(Users.c_userid, userID)
+          .select('*,positions(*)')
+          .withConverter(Users.converter);
+      return Right(user);
+    } catch (e) {
       return Left(Failure.fromException(e));
     }
   }

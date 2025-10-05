@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
+import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -153,5 +155,54 @@ class AccountsCubit extends Cubit<AccountsState> {
     } catch (e) {
       print(e);
     }
+  }
+
+  Future<void> updateUserData({
+    required String userID,
+    required String? userName,
+    required String? phone,
+    required String? address,
+    required BigInt? position,
+    required int? status,
+    required String? role,
+    required String? companyEmail,
+    required String? company,
+    required String? email,
+    required String? password,
+  }) async {
+    final res = await homeRepo.updateUserData(
+      userID: userID,
+      userName: userName,
+      phone: phone,
+      address: address,
+      position: position,
+      status: status,
+      role: role,
+      companyEmail: companyEmail,
+      company: company,
+      email: email,
+      password: password,
+    );
+    res.fold(
+      (l) {
+        print(l.message);
+        Get.snackbar(
+          "Error while updating",
+          l.message,
+          backgroundColor: Colors.red,
+          colorText: AppColors.white,
+        );
+      },
+      (r) {
+        Get.snackbar(
+          "Update user successful",
+          'User has successfully updated',
+          backgroundColor: AppColors.green,
+          colorText: AppColors.white,
+        );
+        getAccounts();
+        emit(GetAccountsSuccess(allUsers));
+      },
+    );
   }
 }

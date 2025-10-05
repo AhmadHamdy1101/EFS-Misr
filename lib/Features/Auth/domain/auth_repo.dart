@@ -3,10 +3,8 @@ import 'package:dartz/dartz.dart';
 import '../../../core/Errors/failure.dart';
 import '../../Home/data/models/user.dart';
 
-
 abstract class AuthRepo {
-  Future<Either<Failure, String>> saveUsersData(
-  {
+  Future<Either<Failure, String>> saveUsersData({
     required String userID,
     required String userName,
     required String phone,
@@ -18,12 +16,14 @@ abstract class AuthRepo {
     required String company,
     required String email,
     required String password,
-}
-  );
+  });
 
   Future<Either<Failure, String>> login(String email, String password);
 
-  Future<Either<Failure,String>> addAccount({required String password,required String email});
+  Future<Either<Failure, String>> addAccount({
+    required String password,
+    required String email,
+  });
 
   Future<Either<Failure, Users>> getUserData({required String userId});
 }

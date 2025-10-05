@@ -108,7 +108,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                       onChanged: (value) {
                         selectedBranchID.value = BigInt.tryParse(value!)!;
                       },
-                      Data: branchesData.value,
+                      Data: branchesData.toList(),
                     );
                   }),
                   CustomDropdownWidget(

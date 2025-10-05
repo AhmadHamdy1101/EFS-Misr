@@ -144,7 +144,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                               inbutHintText: 'Position'.tr,
                               textEditingController: Postition,
                               selectedValue: selectedValue,
-                              Data: positions.value,
+                              Data: positions.toList(),
                               onChanged: (value) {
                                 selectedPositionValue.value = BigInt.tryParse(
                                   value!,

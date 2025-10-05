@@ -4,7 +4,6 @@
 // WARNING: Modifications may be overwritten. Please make changes in the SupaDart configuration.
 
 // SDK
-import 'package:efs_misr/Features/Home/data/models/assets_repair.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // No geobase needed
