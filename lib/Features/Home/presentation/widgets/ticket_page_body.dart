@@ -150,10 +150,26 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                 Expanded(child: IconButton(onPressed: (){
                   showModalBottomSheet(context: context, builder: (BuildContext context) { 
                     return Container(
+                      padding: EdgeInsets.only(top: 30 ,right: 10,left: 10),
                       child: Column(
+                        spacing: 10,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('Area'),
-                          CustomDropdownWidget(inbutIcon: 'assets/images/address', inbutHintText: 'Area', selectedValue: selectedValue, Data: Data)
+                          Text("Filter",style: AppTextStyle.latoBold26(context).copyWith(color: AppColors.green),),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Area',style: AppTextStyle.latoBold20(context),),
+                              CustomDropdownWidget(inbutIcon: 'assets/images/address', inbutHintText: 'Area', selectedValue: selectedValue, Data: Data)
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Branch',style: AppTextStyle.latoBold20(context),),
+                              CustomDropdownWidget(inbutIcon: 'assets/images/address', inbutHintText: 'Branch', selectedValue: selectedValue, Data: Data)
+                            ],
+                          )
                         ],
                       ),
                     );
