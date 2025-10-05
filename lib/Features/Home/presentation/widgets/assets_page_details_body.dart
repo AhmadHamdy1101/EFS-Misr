@@ -25,12 +25,27 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
 
   final tickets = <Tickets>[].obs;
   final assetsRepair = <AssetsRepair>[].obs;
+  // final totalAmount = 0.obs;
+  //
+  // void calculateTotalAmount() {
+  //   num total = 0;
+  //   for (final asset in assetsRepair) {
+  //     if (asset.amount != null) {
+  //       total += asset.amount!;
+  //     }
+  //   }
+  //   totalAmount.value = total as int;
+  //   // print("Total Amount = $total");
+  // }
+
 
   @override
   void initState() {
     super.initState();
     tickets.value = context.read<AssetsTicketsCubit>().tickets;
     assetsRepair.value = context.read<AssetsRepairCubit>().assetsRepair;
+    // calculateTotalAmount();
+    // ever(assetsRepair, (_) => calculateTotalAmount());
     // totalAmount = calculateTotalAmount(widget.assets.tickets!);
   }
 
@@ -47,6 +62,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
 
   @override
   Widget build(BuildContext context) {
+    print("AssetsRepair length: ${assetsRepair}");
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return CustomScrollView(
@@ -184,7 +200,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
         ),
         SliverFillRemaining(
           child: ListView.builder(
-            itemCount: tickets.length,
+            itemCount: assetsRepair.length,
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
@@ -199,9 +215,9 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                     isScrollControlled: false, // لو محتاج يتمدد مع المحتوى
                     builder: (BuildContext context) {
                       context.read<AssetsTicketsCubit>().getAssetsWithTicketId(
-                        ticketId: tickets[index].id,
+                        ticketId: assetsRepair[index].id,
                       );
-                      return TicketDetailsPage(tickets: tickets[index]);
+                      return TicketDetailsPage(tickets: tickets[index],);
                     },
                   );
                 },
@@ -260,7 +276,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                                       borderRadius: BorderRadius.circular(50),
                                     ),
                                     child: Text(
-                                      tickets[index].variation ?? 'No Type'.tr,
+                                      assetsRepair[index].variation ?? 'No Type'.tr,
                                       style: AppTextStyle.latoRegular15(
                                         context,
                                       ).copyWith(color: AppColors.white),
@@ -268,12 +284,12 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                                   ),
                                   Text(
                                     getDateFromTimestamp(
-                                      tickets[index].requestDate!,
+                                      assetsRepair[index].createdAt,
                                     ),
                                     style: AppTextStyle.latoBold16(context),
                                   ),
                                   Text(
-                                    '${tickets[index].comment}',
+                                    '${assetsRepair[index].comment}',
                                     style: AppTextStyle.latoRegular16(
                                       context,
                                     ).copyWith(color: AppColors.gray),
@@ -282,7 +298,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                               ),
                             ),
                             Text(
-                              "${tickets[index].amount ?? 0}",
+                              "${assetsRepair[index].amount ?? 0}",
                               style: AppTextStyle.latoBold26(
                                 context,
                               ).copyWith(color: AppColors.green),

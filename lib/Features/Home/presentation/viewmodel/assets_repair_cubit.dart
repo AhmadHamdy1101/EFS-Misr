@@ -13,7 +13,9 @@ class AssetsRepairCubit extends Cubit<AssetsRepairState> {
 
   Future<void> getAssetsRepairDetails({required BigInt ticketID}) async {
     emit(GetAssetsRepairDataLoading());
+
     final res = await homeRepo.getAssetsRepairWithTicketID(ticketID: ticketID);
+
     res.fold(
       (fail) {
         print(fail.message);
