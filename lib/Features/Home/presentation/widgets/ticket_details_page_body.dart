@@ -1099,6 +1099,17 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                         ),
                                       ],
                                     ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Total'),
+                                        Container(
+                                          decoration: BoxDecoration(color: AppColors.green),
+                                          child: Text(' EGP'),
+                                        )
+                                      ]
+                                    )
                                   ],
                                 ),
 
@@ -1126,9 +1137,9 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                               itemCount:
                                                   state.assetsRepair.length,
                                               itemBuilder: (context, index) {
-                                                return Column(
+                                                return Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment.start,
+                                                      MainAxisAlignment.spaceBetween,
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
@@ -1138,11 +1149,17 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                                               .comment ??
                                                           '-',
                                                     ),
-                                                    Text(
-                                                      state
-                                                          .assetsRepair[index]
-                                                          .amount
-                                                          .toString(),
+                                                    Row(
+                                                      spacing: 5,
+                                                      children: [
+                                                        Text(
+                                                          state
+                                                              .assetsRepair[index]
+                                                              .amount
+                                                              .toString(),style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)
+                                                        ),
+                                                        Text('EGP',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green))
+                                                      ],
                                                     ),
                                                   ],
                                                 );

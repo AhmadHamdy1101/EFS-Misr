@@ -94,7 +94,7 @@ class _AddTicketsPageBodyState extends State<AddTicketsPageBody> {
                 children: [
                   CustomInputWidget(
                     inbutIcon: 'assets/images/id.svg',
-                    inbutHintText: 'Orical Id'.tr,
+                    inbutHintText: 'Oracle Id'.tr,
                     changeToPass: false,
                     textEditingController: oricalid,
                     textInputType: TextInputType.number,
