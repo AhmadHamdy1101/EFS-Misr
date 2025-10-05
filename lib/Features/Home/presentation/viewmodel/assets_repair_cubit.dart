@@ -7,6 +7,7 @@ part 'assets_repair_state.dart';
 
 class AssetsRepairCubit extends Cubit<AssetsRepairState> {
   HomeRepo homeRepo;
+  final List<AssetsRepair> assetsRepair = [];
 
   AssetsRepairCubit(this.homeRepo) : super(AssetsRepairInitial());
 
@@ -19,6 +20,23 @@ class AssetsRepairCubit extends Cubit<AssetsRepairState> {
         emit(GetAssetsRepairDataFailed(errMsg: fail.message));
       },
       (data) {
+        emit(GetAssetsRepairDataSuccess(assetsRepair: data));
+      },
+    );
+  }
+
+  Future<void> getAssetsRepairDetailsWithAssetId({
+    required BigInt assetID,
+  }) async {
+    emit(GetAssetsRepairDataLoading());
+    final res = await homeRepo.getAssetsRepairWithAssetId(assetID: assetID);
+    res.fold(
+      (fail) {
+        print(fail.message);
+        emit(GetAssetsRepairDataFailed(errMsg: fail.message));
+      },
+      (data) {
+        assetsRepair.addAll(data);
         emit(GetAssetsRepairDataSuccess(assetsRepair: data));
       },
     );

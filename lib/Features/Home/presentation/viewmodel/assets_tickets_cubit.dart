@@ -13,7 +13,6 @@ class AssetsTicketsCubit extends Cubit<AssetsTicketsState> {
 
   final List<Assets> assets = [];
   final List<Tickets> tickets = [];
-  final List<AssetsRepair> assetsRepair = [];
 
   Future<void> addAssetsAndTickets({
     required BigInt assetsId,

@@ -55,6 +55,9 @@ abstract class HomeRepo {
   Future<Either<Failure, List<AssetsRepair>>> getAssetsRepairWithTicketID({
     required BigInt ticketID,
   });
+  Future<Either<Failure, List<AssetsRepair>>> getAssetsRepairWithAssetId({
+    required BigInt assetID,
+  });
 
   Future<Either<Failure, List<Users>>> updateUserData({
     required String userID,

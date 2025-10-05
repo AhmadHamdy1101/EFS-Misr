@@ -252,4 +252,18 @@ class HomeRepoImpl extends HomeRepo {
       return Left(Failure.fromException(e));
     }
   }
+
+  @override
+  Future<Either<Failure, List<AssetsRepair>>> getAssetsRepairWithAssetId({
+    required BigInt assetID,
+  }) async {
+    try {
+      final res = await homeRemoteDataSource.getAssetsRepairWithAssetId(
+        assetID: assetID,
+      );
+      return Right(res);
+    } catch (e) {
+      return Left(Failure.fromException(e));
+    }
+  }
 }
