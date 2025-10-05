@@ -1071,40 +1071,57 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                         ),
                                       ),
                                     ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("${data[index].type}".tr),
-                                            Text('${data[index].barcode}'),
-                                          ],
-                                        ),
-                                        Text(
-                                          '${data[index].branchObject?.name}'
-                                              .tr,
-                                          style: AppTextStyle.latoRegular16(
-                                            context,
-                                          ).copyWith(color: AppColors.green),
-                                        ),
-                                        Text(
-                                          '${data[index].branchObject?.area}'
-                                              .tr,
-                                          style: AppTextStyle.latoRegular16(
-                                            context,
-                                          ).copyWith(color: AppColors.gray),
-                                        ),
-                                      ],
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text("${data[index].type}".tr),
+                                              Text('${data[index].barcode}'),
+                                            ],
+                                          ),
+                                          Text(
+                                            '${data[index].branchObject?.name}'
+                                                .tr,
+                                            style: AppTextStyle.latoRegular16(
+                                              context,
+                                            ).copyWith(color: AppColors.green),
+                                          ),
+                                          Text(
+                                            '${data[index].branchObject?.area}'
+                                                .tr,
+                                            style: AppTextStyle.latoRegular16(
+                                              context,
+                                            ).copyWith(color: AppColors.gray),
+                                          ),
+                                        ],
+                                      ),
                                     ),
+                                    Column(
+                                      spacing: 5,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text('Total',style: AppTextStyle.latoBold26(context)),
+                                        Container(
+                                          padding: EdgeInsets.all(8.0),
+                                          decoration: BoxDecoration(color: AppColors.green,borderRadius:  BorderRadius.circular(25) ),
+                                          child: Text('${widget.ticket.amount} EGP',style: AppTextStyle.latoBold16(context).copyWith(color: AppColors.white),),
+                                        )
+                                      ]
+                                    )
                                   ],
                                 ),
+                                SizedBox(height: 10,),
 
                                 // ***************** data assets repair here **************************//
                                 SizedBox(
-                                  height: 60,
+                                  // height: 60,
                                   width: Get.width,
                                   child:
                                       BlocBuilder<
@@ -1123,12 +1140,14 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                           if (state
                                               is GetAssetsRepairDataSuccess) {
                                             return ListView.builder(
+                                              shrinkWrap: true,
+                                              physics: const NeverScrollableScrollPhysics(),
                                               itemCount:
                                                   state.assetsRepair.length,
                                               itemBuilder: (context, index) {
-                                                return Column(
+                                                return Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment.start,
+                                                      MainAxisAlignment.spaceBetween,
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
@@ -1138,11 +1157,17 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                                               .comment ??
                                                           '-',
                                                     ),
-                                                    Text(
-                                                      state
-                                                          .assetsRepair[index]
-                                                          .amount
-                                                          .toString(),
+                                                    Row(
+                                                      spacing: 5,
+                                                      children: [
+                                                        Text(
+                                                          state
+                                                              .assetsRepair[index]
+                                                              .amount
+                                                              .toString(),style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)
+                                                        ),
+                                                        Text('EGP',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green))
+                                                      ],
                                                     ),
                                                   ],
                                                 );
