@@ -3,6 +3,7 @@ import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubi
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
+import 'package:efs_misr/core/utils/widgets/custom_dropdown_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -23,6 +24,14 @@ class TicketPageBody extends StatefulWidget {
 class _TicketPageBodyState extends State<TicketPageBody> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController search = TextEditingController();
+  final List<Map<String, dynamic>> Data = [
+    {'name': 'North Cairo', 'value': 'North Cairo'},
+    {'name': 'South Cairo', 'value': 'South Cairo'},
+    {'name': 'Middle Cairo', 'value': 'Middle Cairo'},
+    {'name': 'New Cairo', 'value': 'New Cairo'},
+
+  ];
+  String? selectedValue;
 
   @override
   void dispose() {
@@ -138,6 +147,18 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                     ],
                   ),
                 ),
+                Expanded(child: IconButton(onPressed: (){
+                  showModalBottomSheet(context: context, builder: (BuildContext context) { 
+                    return Container(
+                      child: Column(
+                        children: [
+                          Text('Area'),
+                          CustomDropdownWidget(inbutIcon: 'assets/images/address', inbutHintText: 'Area', selectedValue: selectedValue, Data: Data)
+                        ],
+                      ),
+                    );
+                  });
+                }, icon: Icon(Icons.filter_list_rounded,color: AppColors.green,)))
               ],
             ),
           ),

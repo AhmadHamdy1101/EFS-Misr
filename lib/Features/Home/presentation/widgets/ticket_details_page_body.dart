@@ -419,11 +419,11 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                               .updateTicketStatus(
                                                 ticketId: widget.ticket.id
                                                     .toString(),
-                                                newStatus: "Canceled",
+                                                newStatus: "Rejected",
                                                 repairDate: DateTime.now(),
                                               );
                                         },
-                                        text: 'Cancel',
+                                        text: 'Rejected',
                                         borderColor: AppColors.green,
                                         topPadding: 15.0,
                                         textStyle: AppTextStyle.latoBold20(
