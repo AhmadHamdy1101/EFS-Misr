@@ -17,6 +17,9 @@ abstract class HomeRemoteDataSource {
   Future<List<AssetsRepair>> getAssetsRepairDetailsWithTicketId({
     required BigInt ticketID,
   });
+  Future<List<AssetsRepair>> getAssetsRepairWithAssetId({
+    required BigInt assetID,
+  });
 }
 
 class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
@@ -90,6 +93,16 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
   }) async {
     final data = await supabaseClient.AssetsRepair.select()
         .eq('ticket_id', ticketID)
+        .withConverter(AssetsRepair.converter);
+    return data;
+  }
+
+  @override
+  Future<List<AssetsRepair>> getAssetsRepairWithAssetId({
+    required BigInt assetID,
+  }) async {
+    final data = await supabaseClient.AssetsRepair.select()
+        .eq(AssetsRepair.c_assetsId, assetID)
         .withConverter(AssetsRepair.converter);
     return data;
   }

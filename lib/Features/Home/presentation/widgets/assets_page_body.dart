@@ -1,5 +1,6 @@
 import 'package:efs_misr/Features/Home/presentation/pages/assets_details_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -18,12 +19,10 @@ class AssetsPageBody extends StatefulWidget {
 }
 
 class _AssetsPageBodyState extends State<AssetsPageBody> {
-
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController search = TextEditingController();
   @override
   Widget build(BuildContext context) {
-
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -88,7 +87,9 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                       children: [
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                            backgroundColor: Theme.of(
+                              context,
+                            ).buttonTheme.colorScheme?.primary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),
@@ -125,8 +126,17 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                       // }
 
                       return GestureDetector(
-                        onTap: () async{
-                          await context.read<AssetsTicketsCubit>().getTicketsWithAssetsId(assetId: assets[index].id);
+                        onTap: () async {
+                          context
+                              .read<AssetsTicketsCubit>()
+                              .getTicketsWithAssetsId(
+                                assetId: assets[index].id,
+                              );
+                          context
+                              .read<AssetsRepairCubit>()
+                              .getAssetsRepairDetailsWithAssetId(
+                                assetID: assets[index].id,
+                              );
                           Get.to(
                             AssetsDetailsPage(assets: state.assets[index]),
                           );

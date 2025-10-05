@@ -1,9 +1,11 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/presentation/pages/ticket_details_page.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+
 import '../../../../core/Functions/GetDate_Function.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
@@ -22,13 +24,13 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
   // BigInt totalAmount = BigInt.zero;
 
   final tickets = <Tickets>[].obs;
+  final assetsRepair = <AssetsRepair>[].obs;
 
   @override
   void initState() {
     super.initState();
-    tickets.value = context
-        .read<AssetsTicketsCubit>()
-        .tickets;
+    tickets.value = context.read<AssetsTicketsCubit>().tickets;
+    assetsRepair.value = context.read<AssetsRepairCubit>().assetsRepair;
     // totalAmount = calculateTotalAmount(widget.assets.tickets!);
   }
 
@@ -45,14 +47,8 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -91,10 +87,12 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [Text("${widget.assets.type}".tr), Text(
-                                  '${widget.assets.barcode}')
-                              ]),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("${widget.assets.type}".tr),
+                              Text('${widget.assets.barcode}'),
+                            ],
+                          ),
                           Text(
                             '${widget.assets.branchObject?.name}'.tr,
                             style: AppTextStyle.latoRegular16(
@@ -132,7 +130,8 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                                       context,
                                     ).copyWith(color: AppColors.white),
                                     textAlign: TextAlign.center,
-                                  ), Text(
+                                  ),
+                                  Text(
                                     "EGP".tr,
                                     style: AppTextStyle.latoBold16(
                                       context,
@@ -151,10 +150,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                     width: screenWidth,
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: Theme
-                          .of(context)
-                          .colorScheme
-                          .tertiary,
+                      color: Theme.of(context).colorScheme.tertiary,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Column(
@@ -196,13 +192,13 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                     context: context,
                     backgroundColor: Theme.of(context).primaryColor,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
                     ),
                     isScrollControlled: false, // لو محتاج يتمدد مع المحتوى
-                    builder: (BuildContext context)  {
-                       context
-                          .read<AssetsTicketsCubit>()
-                          .getAssetsWithTicketId(
+                    builder: (BuildContext context) {
+                      context.read<AssetsTicketsCubit>().getAssetsWithTicketId(
                         ticketId: tickets[index].id,
                       );
                       return TicketDetailsPage(tickets: tickets[index]);
@@ -272,7 +268,8 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                                   ),
                                   Text(
                                     getDateFromTimestamp(
-                                        tickets[index].requestDate!),
+                                      tickets[index].requestDate!,
+                                    ),
                                     style: AppTextStyle.latoBold16(context),
                                   ),
                                   Text(
@@ -298,13 +295,10 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                               ).copyWith(color: AppColors.green),
                               textAlign: TextAlign.center,
                             ),
-                            SizedBox(
-                              width: screenWidth * 0.01,
-                            )
+                            SizedBox(width: screenWidth * 0.01),
                           ],
                         ),
                       ],
-
                     ),
                   ),
                 ),
@@ -312,7 +306,6 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
             },
           ),
         ),
-
       ],
     );
   }
