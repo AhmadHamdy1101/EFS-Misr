@@ -12,7 +12,7 @@ class AssetsRepair implements SupadartClass<AssetsRepair> {
   final BigInt? TicketsId;
   final num? amount;
   final List<Assets>? assets;
-  final List<Tickets>? tickets;
+  final Tickets? tickets;
   final String? comment;
   final String? variation;
 
@@ -123,11 +123,9 @@ class AssetsRepair implements SupadartClass<AssetsRepair> {
                       .toList()
                 : [Assets.fromJson(jsonn['assets'] as Map<String, dynamic>)])
           : [],
-      tickets: jsonn['tickets'] != null
-          ? (jsonn['tickets'] as List)
-                .map((e) => Tickets.fromJson(e as Map<String, dynamic>))
-                .toList()
-          : [],
+      tickets: jsonn['ticket'] != null
+          ? Tickets.fromJson(jsonn['ticket'] as Map<String, dynamic>)
+          : null,
       comment: jsonn['comment'] != null ? jsonn['comment'].toString() : null,
       variation: jsonn['variation'] != null
           ? jsonn['variation'].toString()

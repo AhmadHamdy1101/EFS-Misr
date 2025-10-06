@@ -17,3 +17,23 @@ final class GetAssetsRepairDataFailed extends AssetsRepairState {
 }
 
 final class GetAssetsRepairDataLoading extends AssetsRepairState {}
+
+final class GetAssetsRepairDataInAssetsPageSuccess extends AssetsRepairState {
+  final List<AssetsRepair> assetsRepair;
+
+  GetAssetsRepairDataInAssetsPageSuccess({required this.assetsRepair});
+}
+
+final class GetAssetsRepairDataInAssetsPageFailed extends AssetsRepairState {
+  final String errMsg;
+
+  GetAssetsRepairDataInAssetsPageFailed({required this.errMsg});
+}
+
+final class GetAssetsRepairDataInAssetsPageLoading extends AssetsRepairState {}
+
+final class UpdateTicketDataSuccess extends AssetsRepairState {
+  final Tickets tickets;
+
+  UpdateTicketDataSuccess({required this.tickets});
+}

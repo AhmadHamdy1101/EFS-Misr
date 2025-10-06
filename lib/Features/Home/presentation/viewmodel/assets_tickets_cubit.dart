@@ -1,8 +1,6 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
-import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 
 part 'assets_tickets_state.dart';
 
@@ -59,34 +57,6 @@ class AssetsTicketsCubit extends Cubit<AssetsTicketsState> {
       (r) {
         tickets.clear();
         tickets.addAll(r);
-      },
-    );
-  }
-
-  Future<void> addAssetsRepair({
-    required BigInt assetsId,
-    required BigInt ticketId,
-    required String variation,
-    required String comment,
-    required num amount,
-  }) async {
-    final result = await homeRepo.addAssetsRepairs(
-      assetsId: assetsId,
-      ticketId: ticketId,
-      variation: variation,
-      comment: comment,
-      amount: amount,
-    );
-    result.fold(
-      (l) {
-        print(l.message);
-      },
-      (r) {
-        Get.snackbar(
-          'Success',
-          'Details Added Successfully',
-          backgroundColor: AppColors.green,
-        );
       },
     );
   }

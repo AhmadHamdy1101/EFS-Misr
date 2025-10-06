@@ -173,7 +173,7 @@ class HomeRepoImpl extends HomeRepo {
   }
 
   @override
-  Future<Either<Failure, String>> addAssetsRepairs({
+  Future<Either<Failure, Tickets>> addAssetsRepairs({
     required BigInt assetsId,
     required BigInt ticketId,
     required String variation,
@@ -181,7 +181,7 @@ class HomeRepoImpl extends HomeRepo {
     required num amount,
   }) async {
     try {
-      await supabaseClient.AssetsRepair.insert(
+      final data = await supabaseClient.AssetsRepair.insert(
         AssetsRepair.insert(
           amount: amount,
           TicketsId: ticketId,
@@ -189,8 +189,18 @@ class HomeRepoImpl extends HomeRepo {
           comment: comment,
           variation: variation,
         ),
-      ).select();
-      return Right('Success');
+      ).select().withConverter(AssetsRepair.converter);
+
+      final ticketAmount = await supabaseClient.tickets
+          .select('''
+      *,
+      branch(*),
+      engineer:users!tickets_engineer_fkey(*,positions(*))
+    ''')
+          .eq('id', ticketId)
+          .single()
+          .withConverter(Tickets.converterSingle);
+      return Right(ticketAmount);
     } catch (e) {
       return Left(Failure.fromException(e));
     }

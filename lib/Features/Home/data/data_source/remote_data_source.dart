@@ -91,9 +91,14 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
   Future<List<AssetsRepair>> getAssetsRepairDetailsWithTicketId({
     required BigInt ticketID,
   }) async {
-    final data = await supabaseClient.AssetsRepair.select()
-        .eq('ticket_id', ticketID)
-        .withConverter(AssetsRepair.converter);
+    final data = await supabaseClient.AssetsRepair.select('''
+      *,
+      ticket:tickets(
+        *,
+        engineer:users!tickets_engineer_fkey(*, positions(*)),
+        branch:branch(*)
+      )
+    ''').eq('ticket_id', ticketID).withConverter(AssetsRepair.converter);
     return data;
   }
 
@@ -101,9 +106,17 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
   Future<List<AssetsRepair>> getAssetsRepairWithAssetId({
     required BigInt assetID,
   }) async {
-    final data = await supabaseClient.AssetsRepair.select()
-        .eq(AssetsRepair.c_assetsId, assetID)
-        .withConverter(AssetsRepair.converter);
+    final data =
+        await supabaseClient.AssetsRepair.select('''
+      *,
+      ticket:tickets(
+        *,
+        engineer:users!tickets_engineer_fkey(*, positions(*)),
+        branch:branch(*)
+      )
+    ''')
+            .eq(AssetsRepair.c_assetsId, assetID)
+            .withConverter(AssetsRepair.converter);
     return data;
   }
 }

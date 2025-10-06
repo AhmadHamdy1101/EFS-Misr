@@ -44,7 +44,7 @@ abstract class HomeRepo {
     required BigInt ticketId,
   });
 
-  Future<Either<Failure, String>> addAssetsRepairs({
+  Future<Either<Failure, Tickets>> addAssetsRepairs({
     required BigInt assetsId,
     required BigInt ticketId,
     required String variation,

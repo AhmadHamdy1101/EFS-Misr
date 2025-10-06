@@ -1001,9 +1001,9 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                         child: CustomButtonWidget(
                                           screenWidth: screenWidth * 0.5,
                                           toppadding: 10,
-                                          onpressed: () {
+                                          onpressed: () async {
                                             context
-                                                .read<AssetsTicketsCubit>()
+                                                .read<AssetsRepairCubit>()
                                                 .addAssetsRepair(
                                                   variation:
                                                       selectedRepairValue.value,
@@ -1013,6 +1013,11 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                                   amount: num.parse(
                                                     amount.text,
                                                   ),
+                                                );
+                                            await context
+                                                .read<AssetsRepairCubit>()
+                                                .getAssetsRepairDetails(
+                                                  ticketID: widget.ticket.id,
                                                 );
                                           },
                                           text: 'Add',
@@ -1105,78 +1110,128 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                       spacing: 5,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                        Text('Total',style: AppTextStyle.latoBold26(context)),
+                                        Text(
+                                          'Total',
+                                          style: AppTextStyle.latoBold26(
+                                            context,
+                                          ),
+                                        ),
                                         Container(
                                           padding: EdgeInsets.all(8.0),
-                                          decoration: BoxDecoration(color: AppColors.green,borderRadius:  BorderRadius.circular(25) ),
-                                          child: Text('${widget.ticket.amount} EGP',style: AppTextStyle.latoBold16(context).copyWith(color: AppColors.white),),
-                                        )
-                                      ]
-                                    )
+                                          decoration: BoxDecoration(
+                                            color: AppColors.green,
+                                            borderRadius: BorderRadius.circular(
+                                              25,
+                                            ),
+                                          ),
+                                          child:
+                                              BlocSelector<
+                                                AssetsRepairCubit,
+                                                AssetsRepairState,
+                                                Tickets
+                                              >(
+                                                selector: (state) {
+                                                  if (state
+                                                      is UpdateTicketDataSuccess) {
+                                                    return state.tickets;
+                                                  }
+                                                  return widget.ticket;
+                                                },
+                                                builder: (context, ticket) {
+                                                  return Text(
+                                                    '${ticket.amount} EGP',
+                                                    style:
+                                                        AppTextStyle.latoBold16(
+                                                          context,
+                                                        ).copyWith(
+                                                          color:
+                                                              AppColors.white,
+                                                        ),
+                                                  );
+                                                },
+                                              ),
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
-                                SizedBox(height: 10,),
+                                SizedBox(height: 10),
 
                                 // ***************** data assets repair here **************************//
                                 SizedBox(
                                   // height: 60,
                                   width: Get.width,
-                                  child:
-                                      BlocBuilder<
-                                        AssetsRepairCubit,
-                                        AssetsRepairState
-                                      >(
-                                        builder: (context, state) {
-                                          if (state
-                                              is GetAssetsRepairDataLoading) {
-                                            return CircularProgressIndicator();
-                                          }
-                                          if (state
-                                              is GetAssetsRepairDataFailed) {
-                                            return Text(state.errMsg);
-                                          }
-                                          if (state
-                                              is GetAssetsRepairDataSuccess) {
-                                            return ListView.builder(
-                                              shrinkWrap: true,
-                                              physics: const NeverScrollableScrollPhysics(),
-                                              itemCount:
-                                                  state.assetsRepair.length,
-                                              itemBuilder: (context, index) {
-                                                return Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.spaceBetween,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                  child: BlocBuilder<AssetsRepairCubit, AssetsRepairState>(
+                                    buildWhen: (previous, current) =>
+                                        current is GetAssetsRepairDataSuccess ||
+                                        current is GetAssetsRepairDataLoading ||
+                                        current is GetAssetsRepairDataFailed,
+                                    builder: (context, state) {
+                                      if (state is GetAssetsRepairDataLoading) {
+                                        return CircularProgressIndicator();
+                                      }
+                                      if (state is GetAssetsRepairDataFailed) {
+                                        return Text(state.errMsg);
+                                      }
+                                      if (state is GetAssetsRepairDataSuccess) {
+                                        return ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemCount: state.assetsRepair.length,
+                                          itemBuilder: (context, index) {
+                                            return Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  state
+                                                          .assetsRepair[index]
+                                                          .comment ??
+                                                      '-',
+                                                ),
+                                                Row(
+                                                  spacing: 5,
                                                   children: [
                                                     Text(
                                                       state
-                                                              .assetsRepair[index]
-                                                              .comment ??
-                                                          '-',
+                                                          .assetsRepair[index]
+                                                          .amount
+                                                          .toString(),
+                                                      style:
+                                                          AppTextStyle.latoBold20(
+                                                            context,
+                                                          ).copyWith(
+                                                            color:
+                                                                AppColors.green,
+                                                          ),
                                                     ),
-                                                    Row(
-                                                      spacing: 5,
-                                                      children: [
-                                                        Text(
-                                                          state
-                                                              .assetsRepair[index]
-                                                              .amount
-                                                              .toString(),style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green)
-                                                        ),
-                                                        Text('EGP',style: AppTextStyle.latoBold20(context).copyWith(color: AppColors.green))
-                                                      ],
+                                                    Text(
+                                                      'EGP',
+                                                      style:
+                                                          AppTextStyle.latoBold20(
+                                                            context,
+                                                          ).copyWith(
+                                                            color:
+                                                                AppColors.green,
+                                                          ),
                                                     ),
                                                   ],
-                                                );
-                                              },
+                                                ),
+                                              ],
                                             );
-                                          }
-                                          return Text('No Spare parts');
-                                        },
-                                      ),
+                                          },
+                                        );
+                                      }
+                                      return Text('No Spare parts');
+                                    },
+                                  ),
                                 ),
                               ],
                             ),
