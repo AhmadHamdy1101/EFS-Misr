@@ -271,6 +271,7 @@ class HomeRepoImpl extends HomeRepo {
       final res = await homeRemoteDataSource.getAssetsRepairWithAssetId(
         assetID: assetID,
       );
+
       return Right(res);
     } catch (e) {
       return Left(Failure.fromException(e));

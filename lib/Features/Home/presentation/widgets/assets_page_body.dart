@@ -1,13 +1,19 @@
+import 'dart:ffi';
+
 import 'package:efs_misr/Features/Home/presentation/pages/assets_details_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
+import 'package:efs_misr/core/utils/widgets/custom_outline_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
+import '../../../../constants/constants.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
+import '../../../../core/utils/widgets/custom_button_widget.dart';
+import '../../../../core/utils/widgets/custom_dropdown_widget.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
 import '../viewmodel/assets_tickets_cubit.dart';
 
@@ -19,8 +25,20 @@ class AssetsPageBody extends StatefulWidget {
 }
 
 class _AssetsPageBodyState extends State<AssetsPageBody> {
+  final List<Map<String, dynamic>> Data = [
+    {'name': 'North Cairo', 'value': 'North Cairo'},
+    {'name': 'South Cairo', 'value': 'South Cairo'},
+    {'name': 'Middle Cairo', 'value': 'Middle Cairo'},
+    {'name': 'New Cairo', 'value': 'New Cairo'},
+    {'name': 'Maadi', 'value': 'Maadi'},
+  ];
+  String? selectedArea;
+  String? selectedBranch;
+
+  String? selectedValue;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController search = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -84,6 +102,8 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
+                      spacing: 10,
+
                       children: [
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -108,6 +128,178 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                 ).copyWith(color: AppColors.green),
                               ),
                             ],
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(
+                              context,
+                            ).buttonTheme.colorScheme?.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                          ),
+                          onPressed: () {
+                            // Get.to(AddTicketsPage());
+                          },
+                          child: Row(
+                            spacing: 10,
+                            children: [
+                              Icon(Icons.add, color: AppColors.green),
+                              Text(
+                                'Add Assets'.tr,
+                                style: AppTextStyle.latoBold20(
+                                  context,
+                                ).copyWith(color: AppColors.green),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: IconButton(
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Container(
+                                    padding: EdgeInsets.only(
+                                      top: 30,
+                                      right: 10,
+                                      left: 10,
+                                    ),
+                                    child: Column(
+                                      spacing: 10,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Filter",
+                                          style: AppTextStyle.latoBold26(
+                                            context,
+                                          ).copyWith(color: AppColors.green),
+                                        ),
+                                        Column(
+                                          spacing: 10,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Area',
+                                              style: AppTextStyle.latoBold20(
+                                                context,
+                                              ),
+                                            ),
+                                            CustomDropdownWidget(
+                                              inbutIcon:
+                                                  'assets/images/address',
+                                              inbutHintText: 'Area',
+                                              selectedValue: selectedValue,
+                                              Data: Data,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  selectedArea = value;
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        Column(
+                                          spacing: 10,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Branch',
+                                              style: AppTextStyle.latoBold20(
+                                                context,
+                                              ),
+                                            ),
+                                            CustomDropdownWidget(
+                                              inbutIcon:
+                                                  'assets/images/address',
+                                              inbutHintText: 'Branch',
+                                              selectedValue: selectedValue,
+                                              Data: Data,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  selectedBranch = value;
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 5),
+                                        SizedBox(
+                                          width: screenWidth,
+
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisSize: MainAxisSize.min,
+
+                                            children: [
+                                              SizedBox(
+                                                width: screenWidth * 0.4,
+                                                child: CustomButtonWidget(
+                                                  screenWidth: screenWidth,
+                                                  toppadding: 10,
+                                                  textstyle:
+                                                      AppTextStyle.latoBold26(
+                                                        context,
+                                                      ),
+                                                  text: 'Filter',
+                                                  color: AppColors.green,
+                                                  foregroundcolor: Theme.of(
+                                                    context,
+                                                  ).primaryColor,
+                                                  onpressed: () {
+                                                    Navigator.pop(context);
+                                                    context
+                                                        .read<AssetsCubit>()
+                                                        .filterAssets(
+                                                          area: selectedArea,
+                                                          branch:
+                                                              selectedBranch,
+                                                        );
+                                                  },
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: screenWidth * 0.4,
+                                                child: CustomOutlineButtonWidget(
+                                                  screenWidth: screenWidth,
+                                                  borderColor: AppColors.green,
+                                                  topPadding: 10,
+                                                  foregroundColor:
+                                                      AppColors.green,
+                                                  text: 'Clear',
+                                                  textStyle:
+                                                      AppTextStyle.latoBold26(
+                                                        context,
+                                                      ),
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    context
+                                                        .read<AssetsCubit>()
+                                                        .getAssets();
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            icon: Icon(
+                              Icons.filter_list_rounded,
+                              color: AppColors.green,
+                            ),
                           ),
                         ),
                       ],
@@ -220,7 +412,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
-                                              "0",
+                                              "${assets[index].amount ?? 0}",
                                               style:
                                                   AppTextStyle.latoBold16(
                                                     context,

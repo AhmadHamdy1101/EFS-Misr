@@ -53,7 +53,8 @@ class AssetsCubit extends Cubit<AssetsState> {
           asset.branchObject?.name?.toLowerCase().contains(search) ?? false;
       final areaName =
           asset.branchObject?.area?.toLowerCase().contains(search) ?? false;
-      return nameMatch || branchName || areaName;
+      final barcode = asset.barcode?.toLowerCase().contains(search) ?? false;
+      return nameMatch || branchName || areaName || barcode;
     }).toList();
     searchedAssets.addAll(res);
     emit(GetAssetsSuccess(assets: searchedAssets));
@@ -175,4 +176,17 @@ class AssetsCubit extends Cubit<AssetsState> {
 
     }
   }
+  void filterAssets({String? area, String? branch}) {
+    if (state is GetAssetsSuccess) {
+      final currentState = state as GetAssetsSuccess;
+      final filtered = currentState.assets.where((asset) {
+        final matchArea = area == null || area.isEmpty || asset.branchObject?.area == area;
+        final matchBranch = branch == null || branch.isEmpty || asset.branchObject?.name == branch;
+        return matchArea && matchBranch;
+      }).toList();
+
+      emit(GetAssetsSuccess(assets: filtered));
+    }
+  }
+
 }

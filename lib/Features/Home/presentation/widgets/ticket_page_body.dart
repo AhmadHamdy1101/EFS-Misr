@@ -3,6 +3,7 @@ import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubi
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
+import 'package:efs_misr/core/utils/widgets/custom_button_widget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_dropdown_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -157,6 +158,7 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                         children: [
                           Text("Filter",style: AppTextStyle.latoBold26(context).copyWith(color: AppColors.green),),
                           Column(
+                            spacing: 10,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('Area',style: AppTextStyle.latoBold20(context),),
@@ -164,11 +166,17 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                             ],
                           ),
                           Column(
+                            spacing: 10,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('Branch',style: AppTextStyle.latoBold20(context),),
                               CustomDropdownWidget(inbutIcon: 'assets/images/address', inbutHintText: 'Branch', selectedValue: selectedValue, Data: Data)
                             ],
+                          ),
+                          SizedBox(height: 5,),
+                          Container(
+                            width: screenWidth,
+                            child: CustomButtonWidget(screenWidth: screenWidth, toppadding: 10, textstyle: AppTextStyle.latoBold26(context),text: 'Filter',color: AppColors.green,foregroundcolor: Theme.of(context).primaryColor,),
                           )
                         ],
                       ),

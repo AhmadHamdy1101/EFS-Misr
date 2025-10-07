@@ -1,11 +1,13 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/presentation/pages/ticket_details_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
+import 'package:efs_misr/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/Functions/Calculate_assetsRepair_Sum_function.dart';
 import '../../../../core/Functions/GetDate_Function.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
@@ -27,6 +29,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
 
   // final totalAmount = 0.obs;
   //
+
   // void calculateTotalAmount() {
   //   num total = 0;
   //   for (final asset in assetsRepair) {
@@ -48,16 +51,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
     // totalAmount = calculateTotalAmount(widget.assets.tickets!);
   }
 
-  // BigInt calculateTotalAmount(List<Tickets> tickets) {
-  //   BigInt total = BigInt.zero;
-  //   for (final ticket in tickets) {
-  //     if (ticket.amount != null) {
-  //       total += ticket.amount!;
-  //     }
-  //   }
-  //
-  //   return total;
-  // }
+
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +133,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    "0",
+                                    '${widget.assets.amount ?? 0}',
                                     style: AppTextStyle.latoBold16(
                                       context,
                                     ).copyWith(color: AppColors.white),
