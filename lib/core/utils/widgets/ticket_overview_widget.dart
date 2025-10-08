@@ -76,6 +76,8 @@ class TicketOverViewWidget extends StatelessWidget {
                     ),
                     Row(
                       spacing: 4,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(
                           child: Text(
@@ -83,6 +85,7 @@ class TicketOverViewWidget extends StatelessWidget {
                             style: AppTextStyle.latoBold16(
                               context,
                             ).copyWith(color: AppColors.green),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                         Container(
@@ -94,13 +97,14 @@ class TicketOverViewWidget extends StatelessWidget {
                           ),
                         ),
                         FittedBox(
+                          alignment: AlignmentGeometry.center,
                           fit: BoxFit.scaleDown,
                           child: Text(
-                            '${ticketData.branchObject?.name}',
-                            overflow: TextOverflow.clip,
+                            ticketData.branchObject?.name?? '-',
                             style: AppTextStyle.latoBold16(
                               context,
                             ).copyWith(color: AppColors.green),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                       ],
@@ -109,7 +113,7 @@ class TicketOverViewWidget extends StatelessWidget {
                       height: 24,
                       width: screenWidth * 0.32,
                       child: Text(
-                        '${ticketData.branchObject?.area}',
+                        '${ticketData.branchObject?.areaObject?.name ?? '-'}',
                         style: AppTextStyle.latoRegular19(context),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,

@@ -52,7 +52,7 @@ class AssetsCubit extends Cubit<AssetsState> {
       final branchName =
           asset.branchObject?.name?.toLowerCase().contains(search) ?? false;
       final areaName =
-          asset.branchObject?.area?.toLowerCase().contains(search) ?? false;
+          asset.branchObject?.areaObject?.name?.toLowerCase().contains(search) ?? false;
       final barcode = asset.barcode?.toLowerCase().contains(search) ?? false;
       return nameMatch || branchName || areaName || barcode;
     }).toList();

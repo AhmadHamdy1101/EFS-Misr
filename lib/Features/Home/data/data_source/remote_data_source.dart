@@ -28,7 +28,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
     final tickets = await supabaseClient.tickets
         .select('''
       *,
-      branch(*),
+      branch(*,area:area!branch_area_fkey(*)),
       engineer:users!tickets_engineer_fkey(*,positions(*))
     ''')
         .order('created_at', ascending: false)
