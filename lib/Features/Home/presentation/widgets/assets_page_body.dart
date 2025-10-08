@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/presentation/pages/assets_details_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
@@ -15,6 +16,7 @@ import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_button_widget.dart';
 import '../../../../core/utils/widgets/custom_dropdown_widget.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
+import '../../data/models/area.dart';
 import '../viewmodel/assets_tickets_cubit.dart';
 
 class AssetsPageBody extends StatefulWidget {
@@ -24,21 +26,55 @@ class AssetsPageBody extends StatefulWidget {
   State<AssetsPageBody> createState() => _AssetsPageBodyState();
 }
 
+
 class _AssetsPageBodyState extends State<AssetsPageBody> {
-  final List<Map<String, dynamic>> Data = [
-    {'name': 'North Cairo', 'value': 'North Cairo'},
-    {'name': 'South Cairo', 'value': 'South Cairo'},
-    {'name': 'Middle Cairo', 'value': 'Middle Cairo'},
-    {'name': 'New Cairo', 'value': 'New Cairo'},
-    {'name': 'Maadi', 'value': 'Maadi'},
-  ];
-  String? selectedArea;
-  String? selectedBranch;
+  // final List<Map<String, dynamic>> Data = [
+  //   {'name': 'North Cairo', 'value': 'North Cairo'},
+  //   {'name': 'South Cairo', 'value': '2'},
+  //   {'name': 'Middle Cairo', 'value': 'Middle Cairo'},
+  //   {'name': 'New Cairo', 'value': 'New Cairo'},
+  //   {'name': 'Maadi', 'value': 'Maadi'},
+  // ];
+
+  final branchData = <Map<String, dynamic>>[].obs;
+
+  Future<void> loadbranch() async {
+    final branch = await supabaseClient.branch.select();
+    branchData.value = branch.map<Map<String, dynamic>>((po) {
+      return {"name": po["name"], "value": po["id"].toString()};
+    }).toList();
+  }
+  final areaData = <Map<String, dynamic>>[].obs;
+
+  Future<void> loadarea() async {
+    final area = await supabaseClient.area.select();
+    areaData.value = area.map<Map<String, dynamic>>((po) {
+      return {"name": po["name"], "value": po["id"].toString()};
+    }).toList();
+  }
+  // final List<Map<String, dynamic>> branch = [
+  //   {'name': 'North Cairo', 'value': 'North Cairo'},
+  //   {'name': 'South Cairo', 'value': 'South Cairo'},
+  //   {'name': 'Middle Cairo', 'value': 'Middle Cairo'},
+  //   {'name': 'New Cairo', 'value': 'New Cairo'},
+  //   {'name': 'Maadi', 'value': 'Maadi'},
+  // ];
+  BigInt? selectedArea;
+  BigInt? selectedBranch;
 
   String? selectedValue;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController search = TextEditingController();
 
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    loadbranch();
+    loadarea();
+  }
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -194,10 +230,10 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                                   'assets/images/address',
                                               inbutHintText: 'Area',
                                               selectedValue: selectedValue,
-                                              Data: Data,
+                                              Data: areaData.toList(),
                                               onChanged: (value) {
                                                 setState(() {
-                                                  selectedArea = value;
+                                                  selectedArea = BigInt.tryParse(value!);
                                                 });
                                               },
                                             ),
@@ -219,10 +255,10 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                                   'assets/images/address',
                                               inbutHintText: 'Branch',
                                               selectedValue: selectedValue,
-                                              Data: Data,
+                                              Data: branchData.toList(),
                                               onChanged: (value) {
                                                 setState(() {
-                                                  selectedBranch = value;
+                                                  selectedBranch = BigInt.tryParse(value!);
                                                 });
                                               },
                                             ),
@@ -263,7 +299,11 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                                           branch:
                                                               selectedBranch,
                                                         );
+                                                    print(selectedArea);
+                                                    print(selectedBranch);
+
                                                   },
+
                                                 ),
                                               ),
                                               SizedBox(

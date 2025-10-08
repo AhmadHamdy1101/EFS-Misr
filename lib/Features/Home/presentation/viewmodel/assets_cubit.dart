@@ -24,6 +24,7 @@ class AssetsCubit extends Cubit<AssetsState> {
 
   final List<Assets> allAssets = [];
   final List<Assets> searchedAssets = [];
+  final List<Assets> filterdAssets = [];
 
   Future<void> getAssets() async {
     emit(GetAssetsLoading());
@@ -176,17 +177,20 @@ class AssetsCubit extends Cubit<AssetsState> {
 
     }
   }
-  void filterAssets({String? area, String? branch}) {
-    if (state is GetAssetsSuccess) {
-      final currentState = state as GetAssetsSuccess;
-      final filtered = currentState.assets.where((asset) {
-        final matchArea = area == null || area.isEmpty || asset.branchObject?.area == area;
-        final matchBranch = branch == null || branch.isEmpty || asset.branchObject?.name == branch;
-        return matchArea && matchBranch;
-      }).toList();
+  void filterAssets({BigInt? area, BigInt? branch}) {
+    filterdAssets.clear();
 
-      emit(GetAssetsSuccess(assets: filtered));
-    }
+    final res = allAssets.where((asset) {
+      final matchArea = area == null ||
+          asset.branchObject?.areaObject?.id == area;
+      final matchBranch = branch == null ||
+          asset.branchObject?.id == branch;
+      return matchBranch || matchArea;
+    }).toList();
+
+    filterdAssets.addAll(res);
+    emit(GetAssetsSuccess(assets: filterdAssets));
   }
+
 
 }
