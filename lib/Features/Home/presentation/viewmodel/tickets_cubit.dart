@@ -218,6 +218,58 @@ class TicketsCubit extends Cubit<TicketsState> {
     });
   }
 
+  Future<void> updateTicketResponseDate({
+    required String ticketId,
+    required DateTime responseDate,
+  }) async {
+    final result = await homeRepo.updateTicketResponseDate(
+      ticketID: ticketId,
+      responseDate: responseDate,
+    );
+    result.fold((l) {}, (ticket) {
+      final updatedTickets = allTickets.map((e) {
+        return e.id == ticket.id ? ticket : e;
+      }).toList();
+      allTickets.clear();
+      allTickets.addAll(updatedTickets);
+      emit(GetTicketsSuccess(tickets: updatedTickets));
+    });
+  }
+
+  Future<void> addAssetsRepair({
+    required BigInt assetsId,
+    required BigInt ticketId,
+    required String variation,
+    required String comment,
+    required num amount,
+  }) async {
+    final result = await homeRepo.addAssetsRepairs(
+      assetsId: assetsId,
+      ticketId: ticketId,
+      variation: variation,
+      comment: comment,
+      amount: amount,
+    );
+    result.fold(
+      (l) {
+        print(l.message);
+      },
+      (ticket) {
+        final updatedTickets = allTickets.map((e) {
+          return e.id == ticket.id ? ticket : e;
+        }).toList();
+        allTickets.clear();
+        allTickets.addAll(updatedTickets);
+        emit(GetTicketsSuccess(tickets: updatedTickets));
+      },
+    );
+    Get.snackbar(
+      'Success',
+      'Details Added Successfully',
+      backgroundColor: AppColors.green,
+    );
+  }
+
   Future<void> addTicket({
     required BigInt orecalID,
     required String comment,

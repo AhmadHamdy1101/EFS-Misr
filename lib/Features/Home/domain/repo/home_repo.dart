@@ -29,6 +29,10 @@ abstract class HomeRepo {
     required String ticketID,
     required String newComment,
   });
+  Future<Either<Failure, Tickets>> updateTicketResponseDate({
+    required String ticketID,
+    required DateTime responseDate,
+  });
 
   Future<Either<Failure, List<Tickets>>> addTicket({
     required BigInt orecalID,
@@ -55,6 +59,7 @@ abstract class HomeRepo {
   Future<Either<Failure, List<AssetsRepair>>> getAssetsRepairWithTicketID({
     required BigInt ticketID,
   });
+
   Future<Either<Failure, List<AssetsRepair>>> getAssetsRepairWithAssetId({
     required BigInt assetID,
   });

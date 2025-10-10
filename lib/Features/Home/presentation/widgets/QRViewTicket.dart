@@ -1,5 +1,6 @@
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/qrcode_cubit.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,11 +28,23 @@ class _QRScanTicketPageState extends State<QRScanTicketPage> {
         listener: (context, state) {
           if (state is QrcodeSuccess) {
             // Get.to(AssetsDetailsPage(assets: state.assets,));
-            context.read<AssetsTicketsCubit>().addAssetsAndTickets(assetsId: state.assets.id, ticketId: widget.ticketId);
+            context.read<AssetsTicketsCubit>().addAssetsAndTickets(
+              assetsId: state.assets.id,
+              ticketId: widget.ticketId,
+            );
+            context.read<TicketsCubit>().updateTicketResponseDate(
+              ticketId: widget.ticketId.toString(),
+              responseDate: DateTime.now(),
+            );
             Get.back();
           }
           if (state is QrcodeFailed) {
-            Get.snackbar('Error', state.errMsg,backgroundColor: Colors.red,colorText: Colors.white);
+            Get.snackbar(
+              'Error',
+              state.errMsg,
+              backgroundColor: Colors.red,
+              colorText: Colors.white,
+            );
           }
         },
         builder: (context, state) {
@@ -48,7 +61,9 @@ class _QRScanTicketPageState extends State<QRScanTicketPage> {
                     final List<Barcode> barcodes = capture.barcodes;
                     for (final barcode in barcodes) {
                       if (barcode.rawValue != null) {
-                        context.read<QrcodeCubit>().getAssetsByQrCode(barcode.rawValue!);
+                        context.read<QrcodeCubit>().getAssetsByQrCode(
+                          barcode.rawValue!,
+                        );
                       }
                     }
                     Future.delayed(const Duration(seconds: 2), () {
@@ -61,9 +76,10 @@ class _QRScanTicketPageState extends State<QRScanTicketPage> {
                 flex: 1,
                 child: Center(
                   child: Text(
-                      barcode != null ? 'Result: $barcode' : 'Scan a code'),
+                    barcode != null ? 'Result: $barcode' : 'Scan a code',
+                  ),
                 ),
-              )
+              ),
             ],
           );
         },

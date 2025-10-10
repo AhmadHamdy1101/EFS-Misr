@@ -277,4 +277,26 @@ class HomeRepoImpl extends HomeRepo {
       return Left(Failure.fromException(e));
     }
   }
+
+  @override
+  Future<Either<Failure, Tickets>> updateTicketResponseDate({
+    required String ticketID,
+    required DateTime responseDate,
+  }) async {
+    try {
+      final tickets = await supabaseClient.tickets
+          .update(Tickets.update(responseDate: responseDate))
+          .eq('id', ticketID)
+          .select('''
+      *,
+      branch(*),
+      engineer:users!tickets_engineer_fkey(*,positions(*))
+    ''')
+          .single()
+          .withConverter(Tickets.converterSingle);
+      return Right(tickets);
+    } catch (e) {
+      return Left(Failure.fromException(e));
+    }
+  }
 }

@@ -30,7 +30,6 @@ class _TicketPageBodyState extends State<TicketPageBody> {
     {'name': 'South Cairo', 'value': 'South Cairo'},
     {'name': 'Middle Cairo', 'value': 'Middle Cairo'},
     {'name': 'New Cairo', 'value': 'New Cairo'},
-
   ];
   String? selectedValue;
 
@@ -42,21 +41,13 @@ class _TicketPageBodyState extends State<TicketPageBody> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
           child: SizedBox(
-            width: MediaQuery
-                .sizeOf(context)
-                .width * 0.8,
+            width: MediaQuery.sizeOf(context).width * 0.8,
             child: Form(
               key: formKey,
               child: Column(
@@ -92,13 +83,9 @@ class _TicketPageBodyState extends State<TicketPageBody> {
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme
-                        .of(
+                    backgroundColor: Theme.of(
                       context,
-                    )
-                        .buttonTheme
-                        .colorScheme
-                        ?.primary,
+                    ).buttonTheme.colorScheme?.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50),
                     ),
@@ -121,13 +108,9 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme
-                        .of(
+                    backgroundColor: Theme.of(
                       context,
-                    )
-                        .buttonTheme
-                        .colorScheme
-                        ?.primary,
+                    ).buttonTheme.colorScheme?.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50),
                     ),
@@ -148,47 +131,96 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                     ],
                   ),
                 ),
-                Expanded(child: IconButton(onPressed: (){
-                  showModalBottomSheet(context: context, builder: (BuildContext context) { 
-                    return Container(
-                      padding: EdgeInsets.only(top: 30 ,right: 10,left: 10),
-                      child: Column(
-                        spacing: 10,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text("Filter",style: AppTextStyle.latoBold26(context).copyWith(color: AppColors.green),),
-                          Column(
-                            spacing: 10,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Area',style: AppTextStyle.latoBold20(context),),
-                              CustomDropdownWidget(inbutIcon: 'assets/images/address', inbutHintText: 'Area', selectedValue: selectedValue, Data: Data)
-                            ],
-                          ),
-                          Column(
-                            spacing: 10,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Branch',style: AppTextStyle.latoBold20(context),),
-                              CustomDropdownWidget(inbutIcon: 'assets/images/address', inbutHintText: 'Branch', selectedValue: selectedValue, Data: Data)
-                            ],
-                          ),
-                          SizedBox(height: 5,),
-                          Container(
-                            width: screenWidth,
-                            child: CustomButtonWidget(screenWidth: screenWidth, toppadding: 10, textstyle: AppTextStyle.latoBold26(context),text: 'Filter',color: AppColors.green,foregroundcolor: Theme.of(context).primaryColor,),
-                          )
-                        ],
-                      ),
-                    );
-                  });
-                }, icon: Icon(Icons.filter_list_rounded,color: AppColors.green,)))
+                Expanded(
+                  child: IconButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Container(
+                            padding: EdgeInsets.only(
+                              top: 30,
+                              right: 10,
+                              left: 10,
+                            ),
+                            child: Column(
+                              spacing: 10,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Filter",
+                                  style: AppTextStyle.latoBold26(
+                                    context,
+                                  ).copyWith(color: AppColors.green),
+                                ),
+                                Column(
+                                  spacing: 10,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Area',
+                                      style: AppTextStyle.latoBold20(context),
+                                    ),
+                                    CustomDropdownWidget(
+                                      inbutIcon: 'assets/images/address',
+                                      inbutHintText: 'Area',
+                                      selectedValue: selectedValue,
+                                      Data: Data,
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  spacing: 10,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Branch',
+                                      style: AppTextStyle.latoBold20(context),
+                                    ),
+                                    CustomDropdownWidget(
+                                      inbutIcon: 'assets/images/address',
+                                      inbutHintText: 'Branch',
+                                      selectedValue: selectedValue,
+                                      Data: Data,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5),
+                                SizedBox(
+                                  width: screenWidth,
+                                  child: CustomButtonWidget(
+                                    screenWidth: screenWidth,
+                                    toppadding: 10,
+                                    textstyle: AppTextStyle.latoBold26(context),
+                                    text: 'Filter',
+                                    color: AppColors.green,
+                                    foregroundcolor: Theme.of(
+                                      context,
+                                    ).primaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    icon: Icon(
+                      Icons.filter_list_rounded,
+                      color: AppColors.green,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
         ),
         SliverFillRemaining(
           child: BlocBuilder<TicketsCubit, TicketsState>(
+            buildWhen: (previous, current) =>
+                current is GetTicketsSuccess ||
+                current is GetTicketsFailure ||
+                current is GetTicketsLoading,
             builder: (context, state) {
               if (state is GetTicketsLoading) {
                 return const Center(child: CircularProgressIndicator());
@@ -207,15 +239,15 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                         context
                             .read<AssetsTicketsCubit>()
                             .getAssetsWithTicketId(
-                          ticketId: state.tickets[index].id,
-                        );
+                              ticketId: state.tickets[index].id,
+                            );
                         context
                             .read<AssetsRepairCubit>()
                             .getAssetsRepairDetails(
-                          ticketID: state.tickets[index].id,
-                        );
+                              ticketID: state.tickets[index].id,
+                            );
                         Get.to(
-                              () =>
+                          () =>
                               TicketDetailsPage(tickets: state.tickets[index]),
                         );
                       },
@@ -223,44 +255,66 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                         padding: const EdgeInsets.all(8.0),
                         child: Card(
                           child: Padding(
-                              padding: const EdgeInsets.all(20.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  PopupMenuButton(
-                                      icon: Icon(
-                                        Icons.more_horiz,
-                                        color: Theme.of(context).colorScheme.primary,
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                PopupMenuButton(
+                                  icon: Icon(
+                                    Icons.more_horiz,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
+                                  onSelected: (value) {
+                                    if (value == 'edit') {
+                                      // Handle edit action
+                                    } else if (value == 'delete') {
+                                      // Handle delete action
+                                    }
+                                  },
+                                  itemBuilder: (BuildContext context) {
+                                    return [
+                                      PopupMenuItem(
+                                        value: 'edit',
+                                        child: Text(
+                                          'Edit',
+                                          style:
+                                              AppTextStyle.latoBold20(
+                                                context,
+                                              ).copyWith(
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.primary,
+                                              ),
+                                        ),
                                       ),
-                                      onSelected: (value) {
-                                        if (value == 'edit') {
-                                          // Handle edit action
-                                        } else if (value == 'delete') {
-                                          // Handle delete action
-                                        }
-                                      },
-                                      itemBuilder: (BuildContext context) {
-                                        return [
-                                          PopupMenuItem(
-                                            value: 'edit',
-                                            child: Text('Edit',style: AppTextStyle.latoBold20(context).copyWith(color: Theme.of(context).colorScheme.primary)),
-                                          ),
-                                          PopupMenuItem(
-                                            value: 'delete',
-                                            child: Text('Delete',style: AppTextStyle.latoBold20(context).copyWith(color: Theme.of(context).colorScheme.primary),),
-                                          ),
-                                        ];
-                                      },
+                                      PopupMenuItem(
+                                        value: 'delete',
+                                        child: Text(
+                                          'Delete',
+                                          style:
+                                              AppTextStyle.latoBold20(
+                                                context,
+                                              ).copyWith(
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.primary,
+                                              ),
+                                        ),
+                                      ),
+                                    ];
+                                  },
                                   color: Theme.of(context).colorScheme.surface,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  TicketOverViewWidget(
-                                    screenWidth: screenWidth,
-                                    screenHeight: screenHeight,
-                                    ticketData: state.tickets[index],
-                                  ),
-                                ],
-                              )
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                TicketOverViewWidget(
+                                  screenWidth: screenWidth,
+                                  screenHeight: screenHeight,
+                                  ticketData: state.tickets[index],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

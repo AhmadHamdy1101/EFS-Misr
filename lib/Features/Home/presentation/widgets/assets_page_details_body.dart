@@ -1,13 +1,11 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/presentation/pages/ticket_details_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
-import 'package:efs_misr/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/Functions/Calculate_assetsRepair_Sum_function.dart';
 import '../../../../core/Functions/GetDate_Function.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
@@ -23,35 +21,13 @@ class AssetsDetailsPageBody extends StatefulWidget {
 }
 
 class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
-  // BigInt totalAmount = BigInt.zero;
-
   final tickets = <Tickets>[].obs;
-
-  // final totalAmount = 0.obs;
-  //
-
-  // void calculateTotalAmount() {
-  //   num total = 0;
-  //   for (final asset in assetsRepair) {
-  //     if (asset.amount != null) {
-  //       total += asset.amount!;
-  //     }
-  //   }
-  //   totalAmount.value = total as int;
-  //   // print("Total Amount = $total");
-  // }
 
   @override
   void initState() {
     super.initState();
     tickets.value = context.read<AssetsTicketsCubit>().tickets;
-
-    // calculateTotalAmount();
-    // ever(assetsRepair, (_) => calculateTotalAmount());
-    // totalAmount = calculateTotalAmount(widget.assets.tickets!);
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +177,6 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                 return ListView.builder(
                   itemCount: state.assetsRepair.length,
                   itemBuilder: (context, index) {
-                    print(state.assetsRepair[index].tickets);
                     return GestureDetector(
                       onTap: () {
                         showModalBottomSheet(
@@ -354,137 +329,6 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
             },
           ),
         ),
-        // SliverFillRemaining(
-        //   child: ListView.builder(
-        //     itemCount: tickets.length,
-        //     itemBuilder: (context, index) {
-        //       return GestureDetector(
-        //         onTap: () {
-        //           showModalBottomSheet(
-        //             context: context,
-        //             backgroundColor: Theme.of(context).primaryColor,
-        //             shape: RoundedRectangleBorder(
-        //               borderRadius: BorderRadius.vertical(
-        //                 top: Radius.circular(20),
-        //               ),
-        //             ),
-        //             isScrollControlled: false,
-        //
-        //             builder: (BuildContext context) {
-        //               context.read<AssetsTicketsCubit>().getAssetsWithTicketId(
-        //                 ticketId: tickets[index].id,
-        //               );
-        //               context.read<AssetsRepairCubit>().getAssetsRepairDetails(
-        //                 ticketID: tickets[index].id,
-        //               );
-        //               return TicketDetailsPage(tickets: tickets[index]);
-        //             },
-        //           );
-        //         },
-        //         child: Card(
-        //           shape: RoundedRectangleBorder(
-        //             borderRadius: BorderRadius.circular(16),
-        //           ),
-        //           elevation: 4,
-        //           margin: const EdgeInsets.all(12),
-        //           child: Container(
-        //             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-        //             child: Column(
-        //               spacing: 10,
-        //               children: [
-        //                 Row(
-        //                   spacing: 15,
-        //                   crossAxisAlignment: CrossAxisAlignment.center,
-        //                   mainAxisAlignment: MainAxisAlignment.start,
-        //                   children: [
-        //                     Container(
-        //                       padding: EdgeInsets.symmetric(
-        //                         horizontal: screenWidth * 0.03,
-        //                         vertical: screenHeight * 0.01,
-        //                       ),
-        //                       decoration: BoxDecoration(
-        //                         color: AppColors.white,
-        //                         borderRadius: BorderRadius.circular(60),
-        //                         boxShadow: [
-        //                           BoxShadow(
-        //                             color: AppColors.black.withAlpha(30),
-        //                             spreadRadius: 0,
-        //                             blurRadius: 11.2,
-        //                           ),
-        //                         ],
-        //                       ),
-        //                       child: ClipRRect(
-        //                         child: SvgPicture.asset(
-        //                           'assets/images/deductions.svg',
-        //                           color: AppColors.green,
-        //                           width: screenWidth * 0.09,
-        //                           height: screenWidth * 0.09,
-        //                         ),
-        //                       ),
-        //                     ),
-        //                     // Expanded(
-        //                     //   child: Column(
-        //                     //     crossAxisAlignment: CrossAxisAlignment.start,
-        //                     //     children: [
-        //                     //       Container(
-        //                     //         padding: EdgeInsets.symmetric(
-        //                     //           vertical: 5,
-        //                     //           horizontal: 10,
-        //                     //         ),
-        //                     //         decoration: BoxDecoration(
-        //                     //           color: AppColors.green,
-        //                     //           borderRadius: BorderRadius.circular(50),
-        //                     //         ),
-        //                     //         child: Text(
-        //                     //           assetsRepair[index]
-        //                     //                   .tickets[index]
-        //                     //                   .status ??
-        //                     //               'No Type'.tr,
-        //                     //           style: AppTextStyle.latoRegular15(
-        //                     //             context,
-        //                     //           ).copyWith(color: AppColors.white),
-        //                     //         ),
-        //                     //       ),
-        //                     //       Text(
-        //                     //         getDateFromTimestamp(
-        //                     //           assetsRepair[index].createdAt,
-        //                     //         ),
-        //                     //         style: AppTextStyle.latoBold16(context),
-        //                     //       ),
-        //                     //       Text(
-        //                     //         '${assetsRepair[index].comment}',
-        //                     //         style: AppTextStyle.latoRegular16(
-        //                     //           context,
-        //                     //         ).copyWith(color: AppColors.gray),
-        //                     //       ),
-        //                     //     ],
-        //                     //   ),
-        //                     // ),
-        //                     // Text(
-        //                     //   "${assetsRepair[index].amount ?? 0}",
-        //                     //   style: AppTextStyle.latoBold26(
-        //                     //     context,
-        //                     //   ).copyWith(color: AppColors.green),
-        //                     //   textAlign: TextAlign.center,
-        //                     // ),
-        //                     Text(
-        //                       "EGP".tr,
-        //                       style: AppTextStyle.latoBold26(
-        //                         context,
-        //                       ).copyWith(color: AppColors.green),
-        //                       textAlign: TextAlign.center,
-        //                     ),
-        //                     SizedBox(width: screenWidth * 0.01),
-        //                   ],
-        //                 ),
-        //               ],
-        //             ),
-        //           ),
-        //         ),
-        //       );
-        //     },
-        //   ),
-        // ),
       ],
     );
   }

@@ -3,8 +3,8 @@ SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIs
 output: lib/Features/Home/data/models
 separated: true
 mappings:
-  assets_tickets_details: AssetsAndTickets
+  area: Area
 tables:
-  - assets_tickets_details
+  - area
 
 

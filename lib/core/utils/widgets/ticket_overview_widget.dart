@@ -2,6 +2,7 @@ import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+
 import '../../Functions/GetDate_Function.dart';
 import '../app_colors.dart';
 import '../app_text_styles.dart';
@@ -62,14 +63,13 @@ class TicketOverViewWidget extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
                             softWrap: false,
-
-                          ),       Text(
+                          ),
+                          Text(
                             "${ticketData.orecalId}".tr,
                             style: AppTextStyle.latoBold16(context),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
                             softWrap: false,
-
                           ),
                         ],
                       ),
@@ -109,7 +109,7 @@ class TicketOverViewWidget extends StatelessWidget {
                       height: 24,
                       width: screenWidth * 0.32,
                       child: Text(
-                        '${ticketData.branchObject?.area}',
+                        '${ticketData.branchObject?.areaObject?.name}',
                         style: AppTextStyle.latoRegular19(context),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
@@ -147,8 +147,9 @@ class TicketOverViewWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
-        Text('${ticketData.comment}'.tr,style: AppTextStyle.latoBold20(context),
-
+        Text(
+          '${ticketData.comment}'.tr,
+          style: AppTextStyle.latoBold20(context),
         ),
         Container(
           padding: const EdgeInsets.all(15),
@@ -164,12 +165,23 @@ class TicketOverViewWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 10,
                   children: [
-                    _buildInfoRow('Request Date'.tr, getDateFromTimestamp(ticketData.requestDate!),context),
+                    _buildInfoRow(
+                      'Request Date'.tr,
+                      getDateFromTimestamp(ticketData.requestDate!),
+                      context,
+                    ),
                     _buildInfoRow(
                       'Response Date'.tr,
-                      getDateFromTimestamp(ticketData.responseDate??DateTime.now()),context
+                      getDateFromTimestamp(
+                        ticketData.responseDate ?? DateTime.now(),
+                      ),
+                      context,
                     ),
-                    _buildInfoRow('Priority'.tr, '${ticketData.priority}',context),
+                    _buildInfoRow(
+                      'Priority'.tr,
+                      '${ticketData.priority}',
+                      context,
+                    ),
                   ],
                 ),
               ),
@@ -185,9 +197,23 @@ class TicketOverViewWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: 10,
                     children: [
-                      _buildInfoRow('Repair Date'.tr, getDateFromTimestamp(ticketData.repairDate??DateTime.now()),context),
-                      _buildInfoRow('Closed By'.tr, ticketData.user?.name?? '__',context),
-                      _buildInfoRow('Engineer'.tr, ticketData.user?.name?? '__',context),
+                      _buildInfoRow(
+                        'Repair Date'.tr,
+                        getDateFromTimestamp(
+                          ticketData.repairDate ?? DateTime.now(),
+                        ),
+                        context,
+                      ),
+                      _buildInfoRow(
+                        'Closed By'.tr,
+                        ticketData.user?.name ?? '__',
+                        context,
+                      ),
+                      _buildInfoRow(
+                        'Engineer'.tr,
+                        ticketData.user?.name ?? '__',
+                        context,
+                      ),
                     ],
                   ),
                 ),
@@ -199,10 +225,13 @@ class TicketOverViewWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, dynamic value,context) {
+  Widget _buildInfoRow(String label, dynamic value, context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [Text(label, style: AppTextStyle.latoBold23(context)), Text(value ?? '----')],
+      children: [
+        Text(label, style: AppTextStyle.latoBold23(context)),
+        Text(value ?? '----'),
+      ],
     );
   }
 }

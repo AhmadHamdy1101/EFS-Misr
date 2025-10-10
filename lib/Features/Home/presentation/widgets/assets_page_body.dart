@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:efs_misr/Features/Home/presentation/pages/assets_details_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
@@ -9,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
-import '../../../../constants/constants.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_button_widget.dart';
@@ -384,7 +381,8 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                       ).copyWith(color: AppColors.green),
                                     ),
                                     Text(
-                                      '${assets[index].branchObject?.area}'.tr,
+                                      '${assets[index].branchObject?.areaObject?.name}'
+                                          .tr,
                                       style: AppTextStyle.latoRegular16(
                                         context,
                                       ).copyWith(color: AppColors.gray),

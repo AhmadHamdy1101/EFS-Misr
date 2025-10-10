@@ -173,7 +173,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                           ],
                                         ),
                                         Text(
-                                          '${widget.ticket.branchObject?.area}',
+                                          '${widget.ticket.branchObject?.areaObject?.name}',
                                           style: AppTextStyle.latoRegular19(
                                             context,
                                           ),
@@ -822,7 +822,6 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                               mainAxisSize: MainAxisSize.min,
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.stretch,
-                                              // 👈 بدل stretch
                                               children: [
                                                 Row(
                                                   mainAxisAlignment:
@@ -860,9 +859,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                                               damageComment
                                                                   .text,
                                                         );
-                                                    Navigator.pop(
-                                                      context,
-                                                    ); // يقفل الـ Dialog بعد الضغط
+                                                    Navigator.pop(context);
                                                   },
                                                   text: 'Submit',
                                                   color: AppColors.green,
@@ -1003,7 +1000,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                           toppadding: 10,
                                           onpressed: () async {
                                             context
-                                                .read<AssetsRepairCubit>()
+                                                .read<TicketsCubit>()
                                                 .addAssetsRepair(
                                                   variation:
                                                       selectedRepairValue.value,
@@ -1127,32 +1124,39 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                               25,
                                             ),
                                           ),
-                                          child:
-                                              BlocSelector<
-                                                AssetsRepairCubit,
-                                                AssetsRepairState,
-                                                Tickets
-                                              >(
-                                                selector: (state) {
-                                                  if (state
-                                                      is UpdateTicketDataSuccess) {
-                                                    return state.tickets;
-                                                  }
-                                                  return widget.ticket;
-                                                },
-                                                builder: (context, ticket) {
-                                                  return Text(
-                                                    '${ticket.amount} EGP',
-                                                    style:
-                                                        AppTextStyle.latoBold16(
-                                                          context,
-                                                        ).copyWith(
-                                                          color:
-                                                              AppColors.white,
-                                                        ),
-                                                  );
-                                                },
-                                              ),
+                                          child: BlocBuilder<TicketsCubit, TicketsState>(
+                                            builder: (context, state) {
+                                              if (state is GetTicketsSuccess) {
+                                                final currentTicket = state
+                                                    .tickets
+                                                    .firstWhere(
+                                                      (t) =>
+                                                          t.id ==
+                                                          widget.ticket.id,
+                                                      orElse: () =>
+                                                          widget.ticket,
+                                                    );
+                                                return Text(
+                                                  '${currentTicket.amount ?? 0} EGP',
+                                                  style:
+                                                      AppTextStyle.latoBold16(
+                                                        context,
+                                                      ).copyWith(
+                                                        color: AppColors.white,
+                                                      ),
+                                                );
+                                              }
+                                              return Text(
+                                                '${widget.ticket.amount ?? 0} EGP',
+                                                style:
+                                                    AppTextStyle.latoBold16(
+                                                      context,
+                                                    ).copyWith(
+                                                      color: AppColors.white,
+                                                    ),
+                                              );
+                                            },
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -1162,7 +1166,6 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
 
                                 // ***************** data assets repair here **************************//
                                 SizedBox(
-                                  // height: 60,
                                   width: Get.width,
                                   child: BlocBuilder<AssetsRepairCubit, AssetsRepairState>(
                                     buildWhen: (previous, current) =>
