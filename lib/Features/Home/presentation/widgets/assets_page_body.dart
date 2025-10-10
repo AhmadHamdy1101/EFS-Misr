@@ -1,3 +1,5 @@
+import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
+import 'package:efs_misr/Features/Home/presentation/pages/add_assets_page.dart';
 import 'package:efs_misr/Features/Home/presentation/pages/assets_details_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
+import '../../../../constants/constants.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_button_widget.dart';
@@ -29,12 +32,38 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
     {'name': 'New Cairo', 'value': 'New Cairo'},
     {'name': 'Maadi', 'value': 'Maadi'},
   ];
-  String? selectedArea;
-  String? selectedBranch;
+  BigInt? selectedArea;
+  BigInt? selectedBranch;
 
   String? selectedValue;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController search = TextEditingController();
+
+  final areaRes = <Map<String, dynamic>>[].obs;
+
+  Future<void> loadArea() async {
+    final areaData = await supabaseClient.area.select();
+    areaRes.value = areaData.map<Map<String, dynamic>>((po) {
+      return {"name": po["name"], "value": po["id"].toString()};
+    }).toList();
+  }
+
+  final branchRes = <Map<String, dynamic>>[].obs;
+
+  Future<void> loadbranch() async {
+    final branchData = await supabaseClient.branch.select();
+    branchRes.value = branchData.map<Map<String, dynamic>>((po) {
+      return {"name": po["name"], "value": po["id"].toString()};
+    }).toList();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadArea();
+    loadbranch();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +166,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                             ),
                           ),
                           onPressed: () {
-                            // Get.to(AddTicketsPage());
+                            Get.to(AddAssetsPage());
                           },
                           child: Row(
                             spacing: 10,
@@ -188,15 +217,19 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                             ),
                                             CustomDropdownWidget(
                                               inbutIcon:
-                                                  'assets/images/address',
+                                                  'assets/images/address.svg',
                                               inbutHintText: 'Area',
+
                                               selectedValue: selectedValue,
-                                              Data: Data,
                                               onChanged: (value) {
                                                 setState(() {
-                                                  selectedArea = value;
+                                                  selectedArea =
+                                                      BigInt.tryParse(value!);
                                                 });
                                               },
+                                              Data: areaRes.isNotEmpty
+                                                  ? areaRes.toList()
+                                                  : [],
                                             ),
                                           ],
                                         ),
@@ -213,13 +246,14 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                             ),
                                             CustomDropdownWidget(
                                               inbutIcon:
-                                                  'assets/images/address',
+                                                  'assets/images/address.svg',
                                               inbutHintText: 'Branch',
                                               selectedValue: selectedValue,
-                                              Data: Data,
+                                              Data: branchRes.toList(),
                                               onChanged: (value) {
                                                 setState(() {
-                                                  selectedBranch = value;
+                                                  selectedBranch =
+                                                      BigInt.tryParse(value!);
                                                 });
                                               },
                                             ),
@@ -281,6 +315,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                                     context
                                                         .read<AssetsCubit>()
                                                         .getAssets();
+
                                                   },
                                                 ),
                                               ),

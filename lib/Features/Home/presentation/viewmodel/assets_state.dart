@@ -12,4 +12,9 @@ final class GetAssetsSuccess extends AssetsState {
   GetAssetsSuccess({required this.assets});
 }
 final class GetAssetsLoading extends AssetsState {}
+class GetAssetsFiltered extends AssetsState {
+  final List<Assets> assets;
+  final bool resetDropdown;
+  GetAssetsFiltered({required this.assets, this.resetDropdown = false});
+}
 

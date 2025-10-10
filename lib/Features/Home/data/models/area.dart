@@ -6,14 +6,16 @@ import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 class Area implements SupadartClass<Area> {
   final BigInt id;
   final DateTime createdAt;
+  final String? name_ar;
   final String? name;
 
-  const Area({required this.id, required this.createdAt, this.name});
+  const Area({required this.id, required this.createdAt, this.name,this.name_ar});
 
   static String get table_name => 'area';
   static String get c_id => 'id';
   static String get c_createdAt => 'created_at';
   static String get c_name => 'name';
+  static String get c_name_ar => 'name_ar';
 
   static List<Area> converter(List<Map<String, dynamic>> data) {
     return data.map(Area.fromJson).toList();
@@ -27,11 +29,13 @@ class Area implements SupadartClass<Area> {
     BigInt? id,
     DateTime? createdAt,
     String? name,
+    String? name_ar,
   }) {
     return {
       if (id != null) 'id': id.toString(),
       if (createdAt != null) 'created_at': createdAt.toUtc().toIso8601String(),
       if (name != null) 'name': name,
+      if (name_ar != null) 'name_ar': name_ar,
     };
   }
 
@@ -39,16 +43,18 @@ class Area implements SupadartClass<Area> {
     BigInt? id,
     DateTime? createdAt,
     String? name,
+    String? name_ar,
   }) {
-    return _generateMap(id: id, createdAt: createdAt, name: name);
+    return _generateMap(id: id, createdAt: createdAt, name: name,name_ar: name_ar);
   }
 
   static Map<String, dynamic> update({
     BigInt? id,
     DateTime? createdAt,
     String? name,
+    String? name_ar,
   }) {
-    return _generateMap(id: id, createdAt: createdAt, name: name);
+    return _generateMap(id: id, createdAt: createdAt, name: name,name_ar: name_ar);
   }
 
   factory Area.fromJson(Map<String, dynamic> jsonn) {
@@ -60,19 +66,23 @@ class Area implements SupadartClass<Area> {
           ? DateTime.parse(jsonn['created_at'].toString())
           : DateTime.fromMillisecondsSinceEpoch(0),
       name: jsonn['name'] != null ? jsonn['name'].toString() : null,
+      name_ar: jsonn['name_ar'] != null ? jsonn['name_ar'].toString() : null,
     );
   }
 
-  static Object New({BigInt? id, DateTime? createdAt, String? name}) {
+  static Object New({BigInt? id, DateTime? createdAt, String? name,String? name_ar}) {
     return {
       if (id != null) 'id': id,
       if (createdAt != null) 'created_at': createdAt,
       if (name != null) 'name': name,
+      if (name_ar != null) 'name_ar': name_ar,
+
     };
   }
 
   Map<String, dynamic> toJson() {
-    return _generateMap(id: id, createdAt: createdAt, name: name);
+    return _generateMap(id: id, createdAt: createdAt, name: name
+    ,name_ar: name_ar);
   }
 
   static const _unset = Object();
@@ -80,11 +90,14 @@ class Area implements SupadartClass<Area> {
     Object? id = _unset,
     Object? createdAt = _unset,
     Object? name = _unset,
+    Object? name_ar = _unset,
   }) {
     return Area(
       id: id == _unset ? this.id : id as BigInt,
       createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
       name: name == _unset ? this.name : name as String?,
+      name_ar: name_ar == _unset ? this.name_ar : name_ar as String?,
+
     );
   }
 }

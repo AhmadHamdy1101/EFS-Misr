@@ -1,4 +1,5 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
+import 'package:efs_misr/core/Functions/Capitalize_Function.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -96,7 +97,7 @@ class TicketOverViewWidget extends StatelessWidget {
                         FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
-                            '${ticketData.branchObject?.name}',
+                            capitalizeEachWord('${ticketData.branchObject?.name}'),
                             overflow: TextOverflow.clip,
                             style: AppTextStyle.latoBold16(
                               context,
@@ -109,7 +110,7 @@ class TicketOverViewWidget extends StatelessWidget {
                       height: 24,
                       width: screenWidth * 0.32,
                       child: Text(
-                        '${ticketData.branchObject?.areaObject?.name}',
+                        capitalizeEachWord('${ticketData.branchObject?.areaObject!.name}'),
                         style: AppTextStyle.latoRegular19(context),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,

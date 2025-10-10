@@ -9,6 +9,7 @@ class Branch implements SupadartClass<Branch> {
   final BigInt id;
   final BigInt? branchId;
   final String? name;
+  final String? name_ar;
   final String? area;
   final DateTime createdAt;
   final Area? areaObject;
@@ -17,6 +18,7 @@ class Branch implements SupadartClass<Branch> {
     this.branchId,
     this.name,
     this.area,
+    this.name_ar,
     this.areaObject,
     required this.createdAt,
   });
@@ -27,6 +29,7 @@ class Branch implements SupadartClass<Branch> {
   static String get c_name => 'name';
   static String get c_area => 'area';
   static String get c_createdAt => 'created_at';
+  static String get c_name_ar => 'name_ar';
 
   static List<Branch> converter(List<Map<String, dynamic>> data) {
     return data.map(Branch.fromJson).toList();
@@ -40,6 +43,7 @@ class Branch implements SupadartClass<Branch> {
     BigInt? id,
     BigInt? branchId,
     String? name,
+    String? name_ar,
     String? area,
     DateTime? createdAt,
   }) {
@@ -47,6 +51,7 @@ class Branch implements SupadartClass<Branch> {
       if (id != null) 'id': id.toString(),
       if (branchId != null) 'branch_id': branchId.toString(),
       if (name != null) 'name': name,
+      if (name_ar != null) 'name_ar': name_ar,
       if (area != null) 'area': area,
       if (createdAt != null) 'created_at': createdAt.toUtc().toIso8601String(),
     };
@@ -56,6 +61,7 @@ class Branch implements SupadartClass<Branch> {
     BigInt? id,
     BigInt? branchId,
     String? name,
+    String? name_ar,
     String? area,
     DateTime? createdAt,
   }) {
@@ -63,6 +69,7 @@ class Branch implements SupadartClass<Branch> {
       id: id,
       branchId: branchId,
       name: name,
+      name_ar: name_ar,
       area: area,
       createdAt: createdAt,
     );
@@ -72,6 +79,7 @@ class Branch implements SupadartClass<Branch> {
     BigInt? id,
     BigInt? branchId,
     String? name,
+    String? name_ar,
     String? area,
     DateTime? createdAt,
   }) {
@@ -79,6 +87,7 @@ class Branch implements SupadartClass<Branch> {
       id: id,
       branchId: branchId,
       name: name,
+      name_ar: name_ar,
       area: area,
       createdAt: createdAt,
     );
@@ -97,6 +106,7 @@ class Branch implements SupadartClass<Branch> {
       areaObject: jsonn['area'] is Map<String, dynamic>
           ? Area.fromJson(jsonn['area'])
           : null,
+      name_ar: jsonn['name_ar'] != null ? jsonn['name_ar'].toString() : null,
       createdAt: jsonn['created_at'] != null
           ? DateTime.parse(jsonn['created_at'].toString())
           : DateTime.fromMillisecondsSinceEpoch(0),
@@ -107,6 +117,7 @@ class Branch implements SupadartClass<Branch> {
     BigInt? id,
     BigInt? branchId,
     String? name,
+    String? name_ar,
     String? area,
     DateTime? createdAt,
   }) {
@@ -116,6 +127,7 @@ class Branch implements SupadartClass<Branch> {
       if (name != null) 'name': name,
       if (area != null) 'area': area,
       if (createdAt != null) 'created_at': createdAt,
+      if (name_ar != null) 'name_ar': name_ar,
     };
   }
 
@@ -124,6 +136,7 @@ class Branch implements SupadartClass<Branch> {
       id: id,
       branchId: branchId,
       name: name,
+      name_ar: name_ar,
       area: area,
       createdAt: createdAt,
     );
@@ -134,6 +147,7 @@ class Branch implements SupadartClass<Branch> {
     Object? id = _unset,
     Object? branchId = _unset,
     Object? name = _unset,
+    Object? name_ar = _unset,
     Object? area = _unset,
     Object? createdAt = _unset,
   }) {
@@ -141,6 +155,7 @@ class Branch implements SupadartClass<Branch> {
       id: id == _unset ? this.id : id as BigInt,
       branchId: branchId == _unset ? this.branchId : branchId as BigInt?,
       name: name == _unset ? this.name : name as String?,
+      name_ar: name_ar == _unset ? this.name_ar : name_ar as String?,
       area: area == _unset ? this.area : area as String?,
       createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
     );

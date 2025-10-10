@@ -179,17 +179,24 @@ class AssetsCubit extends Cubit<AssetsState> {
   }
   void filterAssets({BigInt? area, BigInt? branch}) {
     filterdAssets.clear();
+    print(area);
+    print(branch);
 
     final res = allAssets.where((asset) {
-      final matchArea = area == null ||
-          asset.branchObject?.areaObject?.id == area;
-      final matchBranch = branch == null ||
-          asset.branchObject?.id == branch;
-      return matchBranch || matchArea;
+      final matchArea = area == null || asset.branchObject?.areaObject?.id == area;
+      final matchBranch = branch == null || asset.branchObject?.id == branch;
+
+      // لو الاتنين موجودين لازم يتحققوا الاتنين
+      if (area != null && branch != null) {
+        return matchArea && matchBranch;
+      }
+      // لو واحد منهم بس موجود
+      return matchArea && matchBranch;
     }).toList();
 
     filterdAssets.addAll(res);
     emit(GetAssetsSuccess(assets: filterdAssets));
+
   }
 
 
