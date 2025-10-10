@@ -35,6 +35,7 @@ abstract class SupadartClass<T> {
 // Supabase Client Extension
 extension SupadartClient on SupabaseClient {
   SupabaseQueryBuilder get assets => from('assets');
+  SupabaseQueryBuilder get area => from('area');
   SupabaseQueryBuilder get tickets => from('tickets');
   SupabaseQueryBuilder get positions => from('positions');
   SupabaseQueryBuilder get branch => from('branch');

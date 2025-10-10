@@ -70,7 +70,7 @@ class TicketsCubit extends Cubit<TicketsState> {
       final branchName =
           ticket.branchObject?.name?.toLowerCase().contains(search) ?? false;
       final areaName =
-          ticket.branchObject?.area?.toLowerCase().contains(search) ?? false;
+          ticket.branchObject?.areaObject?.name?.toLowerCase().contains(search) ?? false;
       return idMatch || commentMatch || branchName || areaName;
     }).toList();
     searchedTickets.addAll(res);

@@ -331,6 +331,11 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                       ),
                                       Row(
                                         spacing: 4,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+
                                         children: [
                                           Text(
                                             '${widget.ticket.branchObject?.branchId ?? '-'}',
@@ -348,7 +353,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                             ),
                                           ),
                                           Text(
-                                            widget.ticket.branchObject?.name ??
+                                            widget.ticket.branchObject?.id.toString() ??
                                                 '-',
                                             style: AppTextStyle.latoBold16(
                                               context,
@@ -357,7 +362,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                         ],
                                       ),
                                       Text(
-                                        widget.ticket.branchObject?.area ?? '-',
+                                        widget.ticket.branchObject?.areaObject?.name ?? '-',
                                         style: AppTextStyle.latoRegular19(
                                           context,
                                         ),

@@ -5,5 +5,6 @@ export 'tickets.dart';
 export 'positions.dart';
 export 'branch.dart';
 export 'user.dart';
+export 'area.dart';
 export 'assets_and_tickets.dart';
 export 'assets_repair.dart';
