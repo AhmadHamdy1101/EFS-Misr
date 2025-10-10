@@ -299,4 +299,36 @@ class HomeRepoImpl extends HomeRepo {
       return Left(Failure.fromException(e));
     }
   }
+
+  @override
+  Future<Either<Failure, List<Assets>>> addAssets({
+    required String? barcode,
+    required String? name,
+    required String? floor,
+    required String? place,
+    required String? type,
+    required BigInt? branch,
+  }) async {
+    try {
+      final assets = await supabaseClient.assets
+          .insert(
+            Assets.insert(
+              barcode: barcode,
+              name: name,
+              floor: floor,
+              place: place,
+              type: type,
+              Branch: branch,
+            ),
+          )
+          .select()
+          .withConverter(Assets.converter);
+      return Right(assets);
+    } catch (e) {
+      return Left(Failure.fromException(e));
+    }
+
+    // TODO: implement addAssets
+    throw UnimplementedError();
+  }
 }

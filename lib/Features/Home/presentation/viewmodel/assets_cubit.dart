@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
@@ -200,4 +201,22 @@ class AssetsCubit extends Cubit<AssetsState> {
   }
 
 
+}
+Future<Void> addAssets({
+  required String? barcode,
+  required String? name,
+  required String? floor,
+  required String? place,
+  required String? type,
+  required BigInt? branch,
+})async {
+  final result = await HomeRepo.addAssets(barcode: barcode, name: name, floor: floor, place: place, type: type, branch: branch);
+  result.fold(
+        (failure) {
+    },
+        (assets) {
+]
+
+    },
+  );
 }

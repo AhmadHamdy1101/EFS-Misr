@@ -56,6 +56,16 @@ abstract class HomeRepo {
     required num amount,
   });
 
+  Future<Either<Failure, List<Assets>>> addAssets({
+    required String? barcode,
+    required String? name,
+    required String? floor,
+    required String? place,
+    required String? type,
+    required BigInt? branch,
+});
+
+
   Future<Either<Failure, List<AssetsRepair>>> getAssetsRepairWithTicketID({
     required BigInt ticketID,
   });

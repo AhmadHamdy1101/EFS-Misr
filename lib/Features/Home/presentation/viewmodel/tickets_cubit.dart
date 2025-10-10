@@ -235,7 +235,6 @@ class TicketsCubit extends Cubit<TicketsState> {
       emit(GetTicketsSuccess(tickets: updatedTickets));
     });
   }
-
   Future<void> addAssetsRepair({
     required BigInt assetsId,
     required BigInt ticketId,
