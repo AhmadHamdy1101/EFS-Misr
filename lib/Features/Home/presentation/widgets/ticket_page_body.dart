@@ -270,7 +270,9 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                                     if (value == 'edit') {
                                       // Handle edit action
                                     } else if (value == 'delete') {
-                                      // Handle delete action
+                                      context.read<TicketsCubit>().deleteTicket(
+                                        ticketID: state.tickets[index].id,
+                                      );
                                     }
                                   },
                                   itemBuilder: (BuildContext context) {

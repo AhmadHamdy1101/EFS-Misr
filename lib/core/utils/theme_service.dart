@@ -6,16 +6,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ThemeService {
   static const _key = 'themeMode';
 
-  ThemeMode get theme => _loadThemeFromBox();
+  Future<ThemeMode> get theme => loadThemeFromBox();
 
-  ThemeMode _loadThemeFromBox() {
-    final box = Get.find<SharedPreferences>();
+  Future<ThemeMode> loadThemeFromBox() async {
+    final box = await SharedPreferences.getInstance();
     final themeText = box.getString(_key) ?? 'light';
     return themeText == 'dark' ? ThemeMode.dark : ThemeMode.light;
   }
 
   Future<void> switchTheme(ThemeMode mode) async {
-    final box = Get.find<SharedPreferences>();
+    final box = await SharedPreferences.getInstance();
     await box.setString(_key, mode == ThemeMode.dark ? 'dark' : 'light');
     Get.changeThemeMode(mode);
   }

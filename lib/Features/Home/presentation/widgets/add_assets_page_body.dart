@@ -1,5 +1,5 @@
-import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
 import 'package:efs_misr/core/utils/widgets/custom_dropdown_widget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_inbut_wedget.dart';
 import 'package:flutter/material.dart';
@@ -19,33 +19,22 @@ class AddAssetsPageBody extends StatefulWidget {
 
 class _AddAssetsPageBodyState extends State<AddAssetsPageBody> {
   String? selectedValue;
-  final selectedbranchValue = BigInt.zero.obs;
-  final selectedStatusValue = 0.obs;
-  final selectedUserStatusValue = 0.obs;
+  final selectedBranchValue = BigInt.zero.obs;
+  final selectedTypeValue = ''.obs;
+
   final addAccountLoading = false.obs;
-  final company = [
-    {'name': 'EFS', 'value': 'EFS'},
-    {'name': 'Bank Misr', 'value': 'Bank Misr'},
-  ];
   final typeData = [
     {'name': 'Furniture', 'value': 'Furniture'},
     {'name': 'Electricity', 'value': 'Electricity'},
     {'name': 'air conditioning', 'value': 'air conditioning'},
     {'name': 'Digital Call', 'value': 'Digital Call'},
-
-
   ];
-  final status = [
-    {'name': 'Active', 'value': '1'},
-    {'name': 'Internship', 'value': '2'},
-    {'name': 'Terminated', 'value': '3'},
-    {'name': 'Suspended', 'value': '4'},
-  ];
-  final brnchRes = <Map<String, dynamic>>[].obs;
 
-  Future<void> loadbrnach() async {
+  final branchData = <Map<String, dynamic>>[].obs;
+
+  Future<void> loadBranch() async {
     final brnachData = await supabaseClient.branch.select();
-    brnchRes.value = brnachData.map<Map<String, dynamic>>((po) {
+    branchData.value = brnachData.map<Map<String, dynamic>>((po) {
       return {"name": po["name"], "value": po["id"].toString()};
     }).toList();
   }
@@ -53,17 +42,17 @@ class _AddAssetsPageBodyState extends State<AddAssetsPageBody> {
   @override
   void initState() {
     super.initState();
-    loadbrnach();
+    loadBranch();
   }
 
   final TextEditingController barcode = TextEditingController();
   final TextEditingController name = TextEditingController();
   final TextEditingController floor = TextEditingController();
   final TextEditingController place = TextEditingController();
-  final TextEditingController Branch = TextEditingController();
+  final TextEditingController branch = TextEditingController();
   final TextEditingController type = TextEditingController();
 
-  final companyTxt = ''.obs;
+  final typeTxt = ''.obs;
   final roleTxt = ''.obs;
 
   @override
@@ -124,11 +113,11 @@ class _AddAssetsPageBodyState extends State<AddAssetsPageBody> {
                             return CustomDropdownWidget(
                               inbutIcon: 'assets/images/address.svg',
                               inbutHintText: 'Branch'.tr,
-                              textEditingController: Branch,
+                              textEditingController: branch,
                               selectedValue: selectedValue,
-                              Data: brnchRes.toList(),
+                              Data: branchData.toList(),
                               onChanged: (value) {
-                                selectedbranchValue.value = BigInt.tryParse(
+                                selectedBranchValue.value = BigInt.tryParse(
                                   value!,
                                 )!;
                               },
@@ -139,11 +128,10 @@ class _AddAssetsPageBodyState extends State<AddAssetsPageBody> {
                             inbutHintText: 'Type'.tr,
                             selectedValue: selectedValue,
                             onChanged: (value) {
-                              companyTxt.value = value!;
+                              typeTxt.value = value!;
                             },
                             Data: typeData,
                           ),
-
                         ],
                       ),
                     ),
@@ -162,37 +150,26 @@ class _AddAssetsPageBodyState extends State<AddAssetsPageBody> {
                           AppColors.white,
                         ),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                         addAccountLoading.value = true;
-                        // context.read<AuthCubit>().addAccount(
-                        //   email: email.text,
-                        //   userName: username.text,
-                        //   password: password.text,
-                        //   phone: phone.text,
-                        //   address: address.text,
-                        //   companyEmail: companyEmail.text,
-                        //   company: companyTxt.value,
-                        //   position: selectedPositionValue.value,
-                        //   role: roleTxt.value,
-                        //   status: selectedStatusValue.value,
-                        // );
+                        await context.read<AssetsCubit>().addAssetsData(
+                          barcode: barcode.text,
+                          name: name.text,
+                          floor: floor.text,
+                          place: place.text,
+                          type: typeTxt.value,
+                          branch: selectedBranchValue.value,
+                        );
                         addAccountLoading.value = false;
                       },
-                      child: Obx(
-                        () => addAccountLoading.value
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: AppColors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
+                      child: Obx(() {
+                        return addAccountLoading.value
+                            ? CircularProgressIndicator(color: AppColors.white)
                             : Text(
                                 'Add',
                                 style: AppTextStyle.latoBold26(context),
-                              ),
-                      ),
+                              );
+                      }),
                     ),
                   ),
                 ],

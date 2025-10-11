@@ -327,8 +327,20 @@ class HomeRepoImpl extends HomeRepo {
     } catch (e) {
       return Left(Failure.fromException(e));
     }
+  }
 
-    // TODO: implement addAssets
-    throw UnimplementedError();
+  @override
+  Future<Either<Failure, String>> deleteTicket({
+    required BigInt ticketID,
+  }) async {
+    try {
+      final res = await supabaseClient.tickets.delete().eq(
+        Tickets.c_id,
+        ticketID,
+      );
+      return Right('Deleted Successfully');
+    } catch (e) {
+      return Left(Failure.fromException(e));
+    }
   }
 }

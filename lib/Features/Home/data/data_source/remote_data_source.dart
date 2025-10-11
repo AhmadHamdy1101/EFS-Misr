@@ -43,6 +43,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
       *,
       branch(*,area(*))
     ''')
+        .order('created_at', ascending: false)
         .withConverter(Assets.converter);
 
     return assets;
@@ -119,6 +120,4 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
             .withConverter(AssetsRepair.converter);
     return data;
   }
-
-
 }

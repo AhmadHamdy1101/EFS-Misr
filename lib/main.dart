@@ -17,24 +17,26 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'constants/constants.dart';
 import 'core/utils/singelton.dart';
+import 'core/utils/theme_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(url: supbaseUrl, anonKey: supbaseKey);
+  final themeService = ThemeService();
+  final themeMode = await themeService.loadThemeFromBox();
   setup();
-  runApp(MyApp());
+  runApp(MyApp(themeMode: themeMode));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.themeMode});
+  final ThemeMode themeMode;
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  bool isDark = false;
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -108,7 +110,6 @@ class _MyAppState extends State<MyApp> {
         ),
         darkTheme: ThemeData(
           primaryColor: AppColors.scafolddark,
-
           colorScheme: ColorScheme.dark(
             primary: AppColors.white,
             tertiary: AppColors.gray,
@@ -148,7 +149,7 @@ class _MyAppState extends State<MyApp> {
             shadowColor: AppColors.white.withOpacity(0.25),
           ),
         ),
-        themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+        themeMode: widget.themeMode,
         home: SplashScreen(),
       ),
     );

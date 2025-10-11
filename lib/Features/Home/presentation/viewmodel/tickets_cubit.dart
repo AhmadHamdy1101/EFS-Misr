@@ -70,7 +70,10 @@ class TicketsCubit extends Cubit<TicketsState> {
       final branchName =
           ticket.branchObject?.name?.toLowerCase().contains(search) ?? false;
       final areaName =
-          ticket.branchObject?.areaObject?.name?.toLowerCase().contains(search) ?? false;
+          ticket.branchObject?.areaObject?.name?.toLowerCase().contains(
+            search,
+          ) ??
+          false;
       return idMatch || commentMatch || branchName || areaName;
     }).toList();
     searchedTickets.addAll(res);
@@ -235,6 +238,7 @@ class TicketsCubit extends Cubit<TicketsState> {
       emit(GetTicketsSuccess(tickets: updatedTickets));
     });
   }
+
   Future<void> addAssetsRepair({
     required BigInt assetsId,
     required BigInt ticketId,
@@ -308,6 +312,21 @@ class TicketsCubit extends Cubit<TicketsState> {
             },
           ),
         );
+        emit(GetTicketsSuccess(tickets: allTickets));
+      },
+    );
+  }
+
+  Future<void> deleteTicket({required BigInt ticketID}) async {
+    final res = await homeRepo.deleteTicket(ticketID: ticketID);
+    res.fold(
+      (l) {
+        print(l.message);
+        Get.snackbar('Error', l.message);
+      },
+      (r) {
+        getTickets();
+        Get.snackbar('Success', r);
         emit(GetTicketsSuccess(tickets: allTickets));
       },
     );

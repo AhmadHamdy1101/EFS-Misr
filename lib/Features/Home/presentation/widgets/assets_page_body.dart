@@ -25,19 +25,14 @@ class AssetsPageBody extends StatefulWidget {
 }
 
 class _AssetsPageBodyState extends State<AssetsPageBody> {
-  final List<Map<String, dynamic>> Data = [
-    {'name': 'North Cairo', 'value': 'North Cairo'},
-    {'name': 'South Cairo', 'value': 'South Cairo'},
-    {'name': 'Middle Cairo', 'value': 'Middle Cairo'},
-    {'name': 'New Cairo', 'value': 'New Cairo'},
-    {'name': 'Maadi', 'value': 'Maadi'},
-  ];
-  BigInt? selectedArea;
-  BigInt? selectedBranch;
+  final selectedArea = Rxn<BigInt>();
+  final selectedBranch = Rxn<BigInt>();
 
   String? selectedValue;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController search = TextEditingController();
+  final TextEditingController areaController = TextEditingController();
+  final TextEditingController branchController = TextEditingController();
 
   final areaRes = <Map<String, dynamic>>[].obs;
 
@@ -50,7 +45,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
 
   final branchRes = <Map<String, dynamic>>[].obs;
 
-  Future<void> loadbranch() async {
+  Future<void> loadBranch() async {
     final branchData = await supabaseClient.branch.select();
     branchRes.value = branchData.map<Map<String, dynamic>>((po) {
       return {"name": po["name"], "value": po["id"].toString()};
@@ -59,10 +54,9 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadArea();
-    loadbranch();
+    loadBranch();
   }
 
   @override
@@ -219,13 +213,13 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                               inbutIcon:
                                                   'assets/images/address.svg',
                                               inbutHintText: 'Area',
-
-                                              selectedValue: selectedValue,
+                                              textEditingController:
+                                                  areaController,
+                                              selectedValue: selectedArea.value
+                                                  ?.toString(),
                                               onChanged: (value) {
-                                                setState(() {
-                                                  selectedArea =
-                                                      BigInt.tryParse(value!);
-                                                });
+                                                selectedArea.value =
+                                                    BigInt.tryParse(value!);
                                               },
                                               Data: areaRes.isNotEmpty
                                                   ? areaRes.toList()
@@ -245,16 +239,18 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                               ),
                                             ),
                                             CustomDropdownWidget(
+                                              textEditingController:
+                                                  branchController,
                                               inbutIcon:
                                                   'assets/images/address.svg',
                                               inbutHintText: 'Branch',
-                                              selectedValue: selectedValue,
+                                              selectedValue: selectedBranch
+                                                  .value
+                                                  ?.toString(),
                                               Data: branchRes.toList(),
                                               onChanged: (value) {
-                                                setState(() {
-                                                  selectedBranch =
-                                                      BigInt.tryParse(value!);
-                                                });
+                                                selectedBranch.value =
+                                                    BigInt.tryParse(value!);
                                               },
                                             ),
                                           ],
@@ -262,7 +258,6 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                         SizedBox(height: 5),
                                         SizedBox(
                                           width: screenWidth,
-
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceEvenly,
@@ -290,9 +285,10 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                                     context
                                                         .read<AssetsCubit>()
                                                         .filterAssets(
-                                                          area: selectedArea,
-                                                          branch:
-                                                              selectedBranch,
+                                                          area: selectedArea
+                                                              .value,
+                                                          branch: selectedBranch
+                                                              .value,
                                                         );
                                                   },
                                                 ),
@@ -312,10 +308,13 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                                       ),
                                                   onPressed: () {
                                                     Navigator.pop(context);
+                                                    selectedArea.value = null;
+                                                    selectedBranch.value = null;
+                                                    areaController.clear();
+                                                    branchController.clear();
                                                     context
                                                         .read<AssetsCubit>()
                                                         .getAssets();
-
                                                   },
                                                 ),
                                               ),
@@ -342,13 +341,6 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                   child: ListView.builder(
                     itemCount: state.assets.length,
                     itemBuilder: (context, index) {
-                      // BigInt total = BigInt.zero;
-                      // for (final ticket in assets[index].tickets!) {
-                      //   if (ticket.amount != null) {
-                      //     total += ticket.amount!;
-                      //   }
-                      // }
-
                       return GestureDetector(
                         onTap: () async {
                           context

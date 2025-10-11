@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../../constants/constants.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
+import '../../../../core/utils/theme_service.dart';
 import '../../../../core/utils/widgets/custom_menu_button_widget.dart';
 import '../../../../core/utils/widgets/custome_back_shape_wedget.dart';
 
@@ -219,7 +220,7 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                                     ),
                               ),
                               onTap: () => {
-                                Get.changeThemeMode(ThemeMode.light),
+                                ThemeService().switchTheme(ThemeMode.light),
                               },
                             ),
                             ListTile(
@@ -233,7 +234,7 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                                     ),
                               ),
                               onTap: () => {
-                                Get.changeThemeMode(ThemeMode.dark),
+                                ThemeService().switchTheme(ThemeMode.dark),
                               },
                             ),
                           ],

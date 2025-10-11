@@ -1,11 +1,13 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
+import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
@@ -54,7 +56,10 @@ class AssetsCubit extends Cubit<AssetsState> {
       final branchName =
           asset.branchObject?.name?.toLowerCase().contains(search) ?? false;
       final areaName =
-          asset.branchObject?.areaObject?.name?.toLowerCase().contains(search) ?? false;
+          asset.branchObject?.areaObject?.name?.toLowerCase().contains(
+            search,
+          ) ??
+          false;
       final barcode = asset.barcode?.toLowerCase().contains(search) ?? false;
       return nameMatch || branchName || areaName || barcode;
     }).toList();
@@ -65,7 +70,9 @@ class AssetsCubit extends Cubit<AssetsState> {
   Future<void> convertAssetsToExcel() async {
     try {
       // final data = await supabaseClient.assets.select('id,barcode,name,branch(name),floor,place,created_at,area,type,amount');
-      final data = await supabaseClient.assetsAndTickets.select('id,tickets(orecal_id),assets(barcode,name,branch(name),floor,place,area,type),Ammount');
+      final data = await supabaseClient.assetsAndTickets.select(
+        'id,tickets(orecal_id),assets(barcode,name,branch(name),floor,place,area,type),Ammount',
+      );
       if (data.isEmpty) {
         return;
       }
@@ -81,11 +88,8 @@ class AssetsCubit extends Cubit<AssetsState> {
           'area': row['assets']?['area'] ?? '',
           'type': row['assets']?['type'] ?? '',
           'amount': row['Ammount'],
-
-
         };
       }).toList();
-
 
       final workbook = xlsio.Workbook();
       final sheet = workbook.worksheets[0];
@@ -98,8 +102,6 @@ class AssetsCubit extends Cubit<AssetsState> {
       headerStyle.hAlign = xlsio.HAlignType.center;
       headerStyle.backColor = '#008C43';
       headerStyle.fontColor = '#ffffff';
-
-
 
       for (var i = 0; i < headers.length; i++) {
         final cell = sheet.getRangeByIndex(1, i + 1);
@@ -139,7 +141,6 @@ class AssetsCubit extends Cubit<AssetsState> {
           fileExtension: "xlsx",
           mimeType: MimeType.microsoftExcel,
         );
-
       } else if (Platform.isAndroid) {
         if (await Permission.storage.request().isDenied) {
           return;
@@ -159,7 +160,6 @@ class AssetsCubit extends Cubit<AssetsState> {
         await SharePlus.instance.share(
           ShareParams(files: [XFile(file.path)], text: 'Assets Export'),
         );
-
       } else if (Platform.isIOS) {
         final dir = await getApplicationDocumentsDirectory();
         final filePath = "${dir.path}/$fileName";
@@ -172,51 +172,65 @@ class AssetsCubit extends Cubit<AssetsState> {
           ShareParams(files: [XFile(file.path)], text: 'Assets Export'),
         );
       }
-
     } catch (e) {
       print(e);
-
     }
   }
+
   void filterAssets({BigInt? area, BigInt? branch}) {
+    if (area == null && branch == null) {
+      emit(GetAssetsSuccess(assets: allAssets));
+      return;
+    }
     filterdAssets.clear();
-    print(area);
-    print(branch);
 
     final res = allAssets.where((asset) {
-      final matchArea = area == null || asset.branchObject?.areaObject?.id == area;
+      final matchArea =
+          area == null || asset.branchObject?.areaObject?.id == area;
       final matchBranch = branch == null || asset.branchObject?.id == branch;
 
-      // لو الاتنين موجودين لازم يتحققوا الاتنين
-      if (area != null && branch != null) {
-        return matchArea && matchBranch;
-      }
-      // لو واحد منهم بس موجود
       return matchArea && matchBranch;
     }).toList();
 
     filterdAssets.addAll(res);
     emit(GetAssetsSuccess(assets: filterdAssets));
-
   }
 
-
-}
-Future<Void> addAssets({
-  required String? barcode,
-  required String? name,
-  required String? floor,
-  required String? place,
-  required String? type,
-  required BigInt? branch,
-})async {
-  final result = await HomeRepo.addAssets(barcode: barcode, name: name, floor: floor, place: place, type: type, branch: branch);
-  result.fold(
-        (failure) {
-    },
-        (assets) {
-]
-
-    },
-  );
+  Future<void> addAssetsData({
+    required String? barcode,
+    required String? name,
+    required String? floor,
+    required String? place,
+    required String? type,
+    required BigInt? branch,
+  }) async {
+    final res = await homeRepo.addAssets(
+      barcode: barcode,
+      name: name,
+      floor: floor,
+      place: place,
+      type: type,
+      branch: branch,
+    );
+    res.fold(
+      (l) {
+        Get.snackbar(
+          'Error',
+          l.message,
+          backgroundColor: Colors.red,
+          colorText: AppColors.white,
+        );
+      },
+      (r) {
+        getAssets();
+        emit(GetAssetsSuccess(assets: allAssets));
+        Get.snackbar(
+          "Add Assets Success",
+          'Assets Added Successfully',
+          backgroundColor: AppColors.green,
+          colorText: AppColors.white,
+        );
+      },
+    );
+  }
 }

@@ -102,7 +102,7 @@ class Branch implements SupadartClass<Branch> {
           ? BigInt.parse(jsonn['branch_id'].toString())
           : null,
       name: jsonn['name'] != null ? jsonn['name'].toString() : null,
-      area: jsonn['area'] != null ? jsonn['area'].toString() : null,
+      // area: jsonn['area'] != null ? jsonn['area'].toString() : null,
       areaObject: jsonn['area'] is Map<String, dynamic>
           ? Area.fromJson(jsonn['area'])
           : null,
