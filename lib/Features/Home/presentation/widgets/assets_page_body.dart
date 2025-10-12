@@ -338,7 +338,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                   ),
                 ),
                 SliverFillRemaining(
-                  child: ListView.builder(
+                  child: RefreshIndicator(child: ListView.builder(
                     itemCount: state.assets.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
@@ -346,13 +346,13 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                           context
                               .read<AssetsTicketsCubit>()
                               .getTicketsWithAssetsId(
-                                assetId: assets[index].id,
-                              );
+                            assetId: assets[index].id,
+                          );
                           context
                               .read<AssetsRepairCubit>()
                               .getAssetsRepairDetailsWithAssetId(
-                                assetID: assets[index].id,
-                              );
+                            assetID: assets[index].id,
+                          );
                           Get.to(
                             AssetsDetailsPage(assets: state.assets[index]),
                           );
@@ -395,7 +395,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                   children: [
                                     Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         Text("${assets[index].type}".tr),
                                         Text('${assets[index].barcode}'),
@@ -439,21 +439,21 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                             Text(
                                               "${assets[index].amount ?? 0}",
                                               style:
-                                                  AppTextStyle.latoBold16(
-                                                    context,
-                                                  ).copyWith(
-                                                    color: AppColors.white,
-                                                  ),
+                                              AppTextStyle.latoBold16(
+                                                context,
+                                              ).copyWith(
+                                                color: AppColors.white,
+                                              ),
                                               textAlign: TextAlign.center,
                                             ),
                                             Text(
                                               "EGP".tr,
                                               style:
-                                                  AppTextStyle.latoBold16(
-                                                    context,
-                                                  ).copyWith(
-                                                    color: AppColors.white,
-                                                  ),
+                                              AppTextStyle.latoBold16(
+                                                context,
+                                              ).copyWith(
+                                                color: AppColors.white,
+                                              ),
                                               textAlign: TextAlign.center,
                                             ),
                                           ],
@@ -468,7 +468,9 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                         ),
                       );
                     },
-                  ),
+                  ), onRefresh: (){
+                    return context.read<AssetsCubit>().getAssets();
+                  }),
                 ),
               ],
             );

@@ -1099,7 +1099,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                             ).copyWith(color: AppColors.green),
                                           ),
                                           Text(
-                                            '${data[index].branchObject?.area}'
+                                            '${data[index].branchObject!.areaObject?.name}'
                                                 .tr,
                                             style: AppTextStyle.latoRegular16(
                                               context,

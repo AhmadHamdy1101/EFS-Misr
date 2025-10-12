@@ -1,6 +1,7 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/presentation/pages/ticket_details_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
+import 'package:efs_misr/core/Functions/Capitalize_Function.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -73,18 +74,18 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("${widget.assets.type}".tr),
+                              Text(capitalizeEachWord("${widget.assets.type}").tr),
                               Text('${widget.assets.barcode}'),
                             ],
                           ),
                           Text(
-                            '${widget.assets.branchObject?.name}'.tr,
+                            capitalizeEachWord('${widget.assets.branchObject?.name}').tr,
                             style: AppTextStyle.latoRegular16(
                               context,
                             ).copyWith(color: AppColors.green),
                           ),
                           Text(
-                            '${widget.assets.branchObject!.area}'.tr,
+                            capitalizeEachWord('${widget.assets.branchObject!.areaObject!.name}').tr,
                             style: AppTextStyle.latoRegular16(
                               context,
                             ).copyWith(color: AppColors.gray),

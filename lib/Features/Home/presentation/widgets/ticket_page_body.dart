@@ -162,7 +162,7 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                                       style: AppTextStyle.latoBold20(context),
                                     ),
                                     CustomDropdownWidget(
-                                      inbutIcon: 'assets/images/address',
+                                      inbutIcon: 'assets/images/address.svg',
                                       inbutHintText: 'Area',
                                       selectedValue: selectedValue,
                                       Data: Data,
@@ -178,7 +178,7 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                                       style: AppTextStyle.latoBold20(context),
                                     ),
                                     CustomDropdownWidget(
-                                      inbutIcon: 'assets/images/address',
+                                      inbutIcon: 'assets/images/address.svg',
                                       inbutHintText: 'Branch',
                                       selectedValue: selectedValue,
                                       Data: Data,
@@ -229,7 +229,7 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                 return Center(child: Text(state.errMsg));
               }
               if (state is GetTicketsSuccess) {
-                return ListView.builder(
+                return RefreshIndicator.adaptive(child: ListView.builder(
                   padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   itemCount: state.tickets.length,
@@ -239,15 +239,15 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                         context
                             .read<AssetsTicketsCubit>()
                             .getAssetsWithTicketId(
-                              ticketId: state.tickets[index].id,
-                            );
+                          ticketId: state.tickets[index].id,
+                        );
                         context
                             .read<AssetsRepairCubit>()
                             .getAssetsRepairDetails(
-                              ticketID: state.tickets[index].id,
-                            );
+                          ticketID: state.tickets[index].id,
+                        );
                         Get.to(
-                          () =>
+                              () =>
                               TicketDetailsPage(tickets: state.tickets[index]),
                         );
                       },
@@ -282,13 +282,13 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                                         child: Text(
                                           'Edit',
                                           style:
-                                              AppTextStyle.latoBold20(
-                                                context,
-                                              ).copyWith(
-                                                color: Theme.of(
-                                                  context,
-                                                ).colorScheme.primary,
-                                              ),
+                                          AppTextStyle.latoBold20(
+                                            context,
+                                          ).copyWith(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                          ),
                                         ),
                                       ),
                                       PopupMenuItem(
@@ -296,13 +296,13 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                                         child: Text(
                                           'Delete',
                                           style:
-                                              AppTextStyle.latoBold20(
-                                                context,
-                                              ).copyWith(
-                                                color: Theme.of(
-                                                  context,
-                                                ).colorScheme.primary,
-                                              ),
+                                          AppTextStyle.latoBold20(
+                                            context,
+                                          ).copyWith(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                          ),
                                         ),
                                       ),
                                     ];
@@ -322,7 +322,9 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                       ),
                     );
                   },
-                );
+                ), onRefresh: () {
+                  return context.read<TicketsCubit>().getTickets();
+                },);
               }
               return const Center(child: Text("No Tickets Found"));
             },

@@ -69,7 +69,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
   @override
   Future<List<Assets>> getAssetsWithTicketID({required BigInt ticketId}) async {
     final assetsAndTickets = await supabaseClient.assets
-        .select('*,branch(*), assets_tickets_details!inner(*)')
+        .select('*,branch(*,area(*)), assets_tickets_details!inner(*)')
         .eq('assets_tickets_details.Tickets_id', ticketId)
         .withConverter(Assets.converter);
     return assetsAndTickets;
