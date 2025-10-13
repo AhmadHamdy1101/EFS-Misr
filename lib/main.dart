@@ -1,11 +1,13 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:efs_misr/Features/Auth/domain/auth_repo.dart';
 import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
-import 'package:efs_misr/Features/Home/presentation/pages/SplashScreen.dart';
+import 'package:efs_misr/Features/Home/presentation/pages/splash_screen.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/accounts_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/check_internet_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/qrcode_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
@@ -57,6 +59,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(
           create: (context) => AssetsRepairCubit(getIt.get<HomeRepo>()),
         ),
+        BlocProvider(create: (context) => CheckInternetCubit(Connectivity())),
       ],
       child: GetMaterialApp(
         translations: AppTranslations(),

@@ -1,5 +1,4 @@
 import 'package:efs_misr/Features/Home/presentation/pages/add_Tickets_page.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
@@ -229,102 +228,105 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                 return Center(child: Text(state.errMsg));
               }
               if (state is GetTicketsSuccess) {
-                return RefreshIndicator.adaptive(child: ListView.builder(
-                  padding: EdgeInsets.zero,
-                  shrinkWrap: true,
-                  itemCount: state.tickets.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        context
-                            .read<AssetsTicketsCubit>()
-                            .getAssetsWithTicketId(
-                          ticketId: state.tickets[index].id,
-                        );
-                        context
-                            .read<AssetsRepairCubit>()
-                            .getAssetsRepairDetails(
-                          ticketID: state.tickets[index].id,
-                        );
-                        Get.to(
-                              () =>
-                              TicketDetailsPage(tickets: state.tickets[index]),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                PopupMenuButton(
-                                  icon: Icon(
-                                    Icons.more_horiz,
+                return RefreshIndicator.adaptive(
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    itemCount: state.tickets.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          context
+                              .read<AssetsTicketsCubit>()
+                              .getAssetsWithTicketId(
+                                ticketId: state.tickets[index].id,
+                              );
+                          Get.to(
+                            () => TicketDetailsPage(
+                              tickets: state.tickets[index],
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  PopupMenuButton(
+                                    icon: Icon(
+                                      Icons.more_horiz,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
+                                    onSelected: (value) {
+                                      if (value == 'edit') {
+                                        // Handle edit action
+                                      } else if (value == 'delete') {
+                                        context
+                                            .read<TicketsCubit>()
+                                            .deleteTicket(
+                                              ticketID: state.tickets[index].id,
+                                            );
+                                      }
+                                    },
+                                    itemBuilder: (BuildContext context) {
+                                      return [
+                                        PopupMenuItem(
+                                          value: 'edit',
+                                          child: Text(
+                                            'Edit',
+                                            style:
+                                                AppTextStyle.latoBold20(
+                                                  context,
+                                                ).copyWith(
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary,
+                                                ),
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          value: 'delete',
+                                          child: Text(
+                                            'Delete',
+                                            style:
+                                                AppTextStyle.latoBold20(
+                                                  context,
+                                                ).copyWith(
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary,
+                                                ),
+                                          ),
+                                        ),
+                                      ];
+                                    },
                                     color: Theme.of(
                                       context,
-                                    ).colorScheme.primary,
+                                    ).colorScheme.surface,
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
-                                  onSelected: (value) {
-                                    if (value == 'edit') {
-                                      // Handle edit action
-                                    } else if (value == 'delete') {
-                                      context.read<TicketsCubit>().deleteTicket(
-                                        ticketID: state.tickets[index].id,
-                                      );
-                                    }
-                                  },
-                                  itemBuilder: (BuildContext context) {
-                                    return [
-                                      PopupMenuItem(
-                                        value: 'edit',
-                                        child: Text(
-                                          'Edit',
-                                          style:
-                                          AppTextStyle.latoBold20(
-                                            context,
-                                          ).copyWith(
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.primary,
-                                          ),
-                                        ),
-                                      ),
-                                      PopupMenuItem(
-                                        value: 'delete',
-                                        child: Text(
-                                          'Delete',
-                                          style:
-                                          AppTextStyle.latoBold20(
-                                            context,
-                                          ).copyWith(
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.primary,
-                                          ),
-                                        ),
-                                      ),
-                                    ];
-                                  },
-                                  color: Theme.of(context).colorScheme.surface,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                TicketOverViewWidget(
-                                  screenWidth: screenWidth,
-                                  screenHeight: screenHeight,
-                                  ticketData: state.tickets[index],
-                                ),
-                              ],
+                                  TicketOverViewWidget(
+                                    screenWidth: screenWidth,
+                                    screenHeight: screenHeight,
+                                    ticketData: state.tickets[index],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
+                      );
+                    },
+                  ),
+                  onRefresh: () {
+                    return context.read<TicketsCubit>().getTickets();
                   },
-                ), onRefresh: () {
-                  return context.read<TicketsCubit>().getTickets();
-                },);
+                );
               }
               return const Center(child: Text("No Tickets Found"));
             },

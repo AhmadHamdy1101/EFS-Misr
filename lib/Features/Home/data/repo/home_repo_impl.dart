@@ -207,12 +207,12 @@ class HomeRepoImpl extends HomeRepo {
   }
 
   @override
-  Future<Either<Failure, List<AssetsRepair>>> getAssetsRepairWithTicketID({
-    required BigInt ticketID,
+  Future<Either<Failure, List<AssetsRepair>>> getAssetsRepairWithAssetId({
+    required BigInt assetID,
   }) async {
     try {
-      final res = await homeRemoteDataSource.getAssetsRepairDetailsWithTicketId(
-        ticketID: ticketID,
+      final res = await homeRemoteDataSource.getAssetsRepairWithAssetId(
+        assetID: assetID,
       );
       return Right(res);
     } catch (e) {
@@ -264,14 +264,17 @@ class HomeRepoImpl extends HomeRepo {
   }
 
   @override
-  Future<Either<Failure, List<AssetsRepair>>> getAssetsRepairWithAssetId({
+  Future<Either<Failure, List<AssetsRepair>>>
+  getAssetsRepairWithAssetIdAndTicketID({
     required BigInt assetID,
+    required BigInt ticketID,
   }) async {
     try {
-      final res = await homeRemoteDataSource.getAssetsRepairWithAssetId(
-        assetID: assetID,
-      );
-
+      final res = await homeRemoteDataSource
+          .getAssetsRepairWithAssetIdAndTicketID(
+            assetID: assetID,
+            ticketID: ticketID,
+          );
       return Right(res);
     } catch (e) {
       return Left(Failure.fromException(e));

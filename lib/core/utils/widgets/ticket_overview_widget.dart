@@ -97,7 +97,9 @@ class TicketOverViewWidget extends StatelessWidget {
                         FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
-                            capitalizeEachWord('${ticketData.branchObject?.name}'),
+                            capitalizeEachWord(
+                              '${ticketData.branchObject?.name}',
+                            ),
                             overflow: TextOverflow.clip,
                             style: AppTextStyle.latoBold16(
                               context,
@@ -110,7 +112,9 @@ class TicketOverViewWidget extends StatelessWidget {
                       height: 24,
                       width: screenWidth * 0.32,
                       child: Text(
-                        capitalizeEachWord('${ticketData.branchObject?.areaObject!.name}'),
+                        capitalizeEachWord(
+                          '${ticketData.branchObject?.areaObject?.name}',
+                        ),
                         style: AppTextStyle.latoRegular19(context),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,

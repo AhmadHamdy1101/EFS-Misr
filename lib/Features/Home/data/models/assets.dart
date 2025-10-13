@@ -18,8 +18,7 @@ class Assets implements SupadartClass<Assets> {
   final Branch? branchObject;
   final num? amount;
 
-
-  const Assets( {
+  const Assets({
     required this.id,
     this.barcode,
     this.name,

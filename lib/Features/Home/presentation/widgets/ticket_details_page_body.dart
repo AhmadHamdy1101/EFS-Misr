@@ -1,12 +1,10 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/widgets/QRViewTicket.dart';
 import 'package:efs_misr/core/Functions/GetDate_Function.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:efs_misr/core/utils/widgets/custom_button_widget.dart';
-import 'package:efs_misr/core/utils/widgets/custom_dropdown_widget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_inbut_wedget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_outline_button_widget.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +14,7 @@ import 'package:get/get.dart';
 
 import '../../../../core/Functions/Capitalize_Function.dart';
 import '../../../../core/utils/app_text_styles.dart';
+import '../../../../core/utils/widgets/custom_dropdown_widget.dart';
 
 class TicketDetailsPageBody extends StatefulWidget {
   final Tickets ticket;
@@ -353,7 +352,8 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                             ),
                                           ),
                                           Text(
-                                            widget.ticket.branchObject?.id.toString() ??
+                                            widget.ticket.branchObject?.id
+                                                    .toString() ??
                                                 '-',
                                             style: AppTextStyle.latoBold16(
                                               context,
@@ -362,7 +362,12 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                         ],
                                       ),
                                       Text(
-                                        widget.ticket.branchObject?.areaObject?.name ?? '-',
+                                        widget
+                                                .ticket
+                                                .branchObject
+                                                ?.areaObject
+                                                ?.name ??
+                                            '-',
                                         style: AppTextStyle.latoRegular19(
                                           context,
                                         ),
@@ -936,6 +941,8 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
               ),
             ),
           ),
+
+          //// ************ Assets ************ /////
           SliverFillRemaining(
             child: BlocBuilder<AssetsTicketsCubit, AssetsTicketsState>(
               builder: (context, state) {
@@ -949,11 +956,22 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                 }
                 if (state is GetAssetsTicketsSuccess) {
                   final data = state.assetsAndTickets;
+                  if (data.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No Assets Added Yet',
+                        style: AppTextStyle.latoBold23(
+                          context,
+                        ).copyWith(color: Colors.green),
+                      ),
+                    );
+                  }
                   return ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemCount: data.length,
                     itemBuilder: (context, index) {
+                      final asset = data[index].assets;
                       return GestureDetector(
                         onTap: () {
                           showDialog(
@@ -1010,16 +1028,17 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                                   variation:
                                                       selectedRepairValue.value,
                                                   comment: comment.text,
-                                                  assetsId: data[index].id,
+                                                  assetsId:
+                                                      data[index].assets.id,
                                                   ticketId: widget.ticket.id,
                                                   amount: num.parse(
                                                     amount.text,
                                                   ),
                                                 );
                                             await context
-                                                .read<AssetsRepairCubit>()
-                                                .getAssetsRepairDetails(
-                                                  ticketID: widget.ticket.id,
+                                                .read<AssetsTicketsCubit>()
+                                                .getAssetsWithTicketId(
+                                                  ticketId: widget.ticket.id,
                                                 );
                                           },
                                           text: 'Add',
@@ -1047,17 +1066,17 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                           ),
                           elevation: 4,
                           margin: const EdgeInsets.all(12),
-                          child: Container(
+                          child: Padding(
                             padding: EdgeInsets.symmetric(
                               vertical: 20,
                               horizontal: 20,
                             ),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // ===== Asset Info Row =====
                                 Row(
-                                  spacing: 15,
                                   crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Container(
                                       padding: EdgeInsets.all(
@@ -1069,37 +1088,29 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                         ),
                                         borderRadius: BorderRadius.circular(60),
                                       ),
-                                      child: ClipRRect(
-                                        child: SvgPicture.asset(
-                                          'assets/images/${data[index].type}.svg',
-                                          color: AppColors.green,
-                                          width: screenWidth * 0.1,
-                                          height: screenWidth * 0.1,
-                                        ),
+                                      child: SvgPicture.asset(
+                                        'assets/images/${asset.type}.svg',
+                                        color: AppColors.green,
+                                        width: screenWidth * 0.1,
+                                        height: screenWidth * 0.1,
                                       ),
                                     ),
+                                    SizedBox(width: 10),
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text("${data[index].type}".tr),
-                                              Text('${data[index].barcode}'),
-                                            ],
-                                          ),
+                                          Text("${asset.type}".tr),
+                                          Text('${asset.barcode}'),
                                           Text(
-                                            '${data[index].branchObject?.name}'
-                                                .tr,
+                                            '${asset.branchObject?.name}'.tr,
                                             style: AppTextStyle.latoRegular16(
                                               context,
                                             ).copyWith(color: AppColors.green),
                                           ),
                                           Text(
-                                            '${data[index].branchObject!.areaObject?.name}'
+                                            '${asset.branchObject?.areaObject?.name}'
                                                 .tr,
                                             style: AppTextStyle.latoRegular16(
                                               context,
@@ -1108,12 +1119,10 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                         ],
                                       ),
                                     ),
+                                    // ===== Total Repair Amount =====
                                     Column(
-                                      spacing: 5,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           'Total',
@@ -1122,96 +1131,59 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                           ),
                                         ),
                                         Container(
-                                          padding: EdgeInsets.all(8.0),
+                                          padding: EdgeInsets.all(8),
                                           decoration: BoxDecoration(
                                             color: AppColors.green,
                                             borderRadius: BorderRadius.circular(
                                               25,
                                             ),
                                           ),
-                                          child: BlocBuilder<TicketsCubit, TicketsState>(
-                                            builder: (context, state) {
-                                              if (state is GetTicketsSuccess) {
-                                                final currentTicket = state
-                                                    .tickets
-                                                    .firstWhere(
-                                                      (t) =>
-                                                          t.id ==
-                                                          widget.ticket.id,
-                                                      orElse: () =>
-                                                          widget.ticket,
-                                                    );
-                                                return Text(
-                                                  '${currentTicket.amount ?? 0} EGP',
-                                                  style:
-                                                      AppTextStyle.latoBold16(
-                                                        context,
-                                                      ).copyWith(
-                                                        color: AppColors.white,
-                                                      ),
-                                                );
-                                              }
-                                              return Text(
-                                                '${widget.ticket.amount ?? 0} EGP',
-                                                style:
-                                                    AppTextStyle.latoBold16(
-                                                      context,
-                                                    ).copyWith(
-                                                      color: AppColors.white,
-                                                    ),
-                                              );
-                                            },
+                                          child: Text(
+                                            '0 EGP',
+                                            style: AppTextStyle.latoBold16(
+                                              context,
+                                            ).copyWith(color: AppColors.white),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ],
                                 ),
+
                                 SizedBox(height: 10),
 
-                                // ***************** data assets repair here **************************//
-                                SizedBox(
-                                  width: Get.width,
-                                  child: BlocBuilder<AssetsRepairCubit, AssetsRepairState>(
-                                    buildWhen: (previous, current) =>
-                                        current is GetAssetsRepairDataSuccess ||
-                                        current is GetAssetsRepairDataLoading ||
-                                        current is GetAssetsRepairDataFailed,
-                                    builder: (context, state) {
-                                      if (state is GetAssetsRepairDataLoading) {
-                                        return CircularProgressIndicator();
-                                      }
-                                      if (state is GetAssetsRepairDataFailed) {
-                                        return Text(state.errMsg);
-                                      }
-                                      if (state is GetAssetsRepairDataSuccess) {
-                                        return ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          itemCount: state.assetsRepair.length,
-                                          itemBuilder: (context, index) {
-                                            return Row(
+                                // ===== Repairs List =====
+                                data[index].assetsRepair.isEmpty
+                                    ? Center(child: Text('No Spare parts'))
+                                    : ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount:
+                                            data[index].assetsRepair.length,
+                                        itemBuilder: (context, idx) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 5,
+                                            ),
+                                            child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment
                                                       .spaceBetween,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  state
-                                                          .assetsRepair[index]
+                                                  data[index]
+                                                          .assetsRepair[idx]
                                                           .comment ??
                                                       '-',
                                                 ),
                                                 Row(
-                                                  spacing: 5,
                                                   children: [
                                                     Text(
-                                                      state
-                                                          .assetsRepair[index]
-                                                          .amount
-                                                          .toString(),
+                                                      data[index]
+                                                              .assetsRepair[idx]
+                                                              .amount
+                                                              ?.toString() ??
+                                                          '0',
                                                       style:
                                                           AppTextStyle.latoBold20(
                                                             context,
@@ -1220,6 +1192,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                                                 AppColors.green,
                                                           ),
                                                     ),
+                                                    SizedBox(width: 5),
                                                     Text(
                                                       'EGP',
                                                       style:
@@ -1233,14 +1206,10 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                                   ],
                                                 ),
                                               ],
-                                            );
-                                          },
-                                        );
-                                      }
-                                      return Text('No Spare parts');
-                                    },
-                                  ),
-                                ),
+                                            ),
+                                          );
+                                        },
+                                      ),
                               ],
                             ),
                           ),
@@ -1249,16 +1218,333 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                     },
                   );
                 }
-                return Center(
-                  child: Text(
-                    'No Assets Added Yet',
-                    style: AppTextStyle.latoBold23(
-                      context,
-                    ).copyWith(color: Colors.green),
-                  ),
-                );
+                return SizedBox();
               },
             ),
+            // child: BlocBuilder<AssetsTicketsCubit, AssetsTicketsState>(
+            //   builder: (context, state) {
+            //     if (state is GetAssetsTicketsFailure) {
+            //       return Center(child: Text(state.message));
+            //     }
+            //     if (state is GetAssetsTicketsLoading) {
+            //       return Center(
+            //         child: CircularProgressIndicator(color: AppColors.green),
+            //       );
+            //     }
+            //     if (state is GetAssetsTicketsSuccess) {
+            //       final data = state.assetsAndTickets;
+            //       return ListView.builder(
+            //         physics: NeverScrollableScrollPhysics(),
+            //         shrinkWrap: true,
+            //         itemCount: data.length,
+            //         itemBuilder: (context, index) {
+            //           return GestureDetector(
+            //             onTap: () {
+            //               showDialog(
+            //                 context: context,
+            //                 builder: (BuildContext context) {
+            //                   return Dialog(
+            //                     child: Padding(
+            //                       padding: const EdgeInsets.all(8.0),
+            //                       child: Column(
+            //                         spacing: 20,
+            //                         mainAxisSize: MainAxisSize.min,
+            //                         children: [
+            //                           SizedBox(height: 3),
+            //                           Text(
+            //                             capitalizeEachWord('add Cost'),
+            //                             style: AppTextStyle.latoBold26(
+            //                               context,
+            //                             ).copyWith(color: AppColors.green),
+            //                           ),
+            //                           CustomInputWidget(
+            //                             inbutIcon: 'assets/images/id.svg',
+            //                             iconColor: AppColors.green,
+            //                             inbutHintText: 'Comment',
+            //                             changeToPass: false,
+            //                             textEditingController: comment,
+            //                           ),
+            //                           CustomDropdownWidget(
+            //                             inbutIcon: 'assets/images/repair.svg',
+            //                             iconColor: AppColors.green,
+            //                             inbutHintText: 'Repair Type',
+            //                             selectedValue: selectedValue,
+            //                             Data: Data,
+            //                             onChanged: (value) {
+            //                               selectedRepairValue.value = value!;
+            //                             },
+            //                           ),
+            //                           CustomInputWidget(
+            //                             inbutIcon:
+            //                                 'assets/images/deductions.svg',
+            //                             iconColor: AppColors.green,
+            //                             inbutHintText: 'Amount',
+            //                             changeToPass: false,
+            //                             textEditingController: amount,
+            //                           ),
+            //                           SizedBox(
+            //                             width: screenWidth,
+            //                             child: CustomButtonWidget(
+            //                               screenWidth: screenWidth * 0.5,
+            //                               toppadding: 10,
+            //                               onpressed: () async {
+            //                                 context
+            //                                     .read<TicketsCubit>()
+            //                                     .addAssetsRepair(
+            //                                       variation:
+            //                                           selectedRepairValue.value,
+            //                                       comment: comment.text,
+            //                                       assetsId: data[index].id,
+            //                                       ticketId: widget.ticket.id,
+            //                                       amount: num.parse(
+            //                                         amount.text,
+            //                                       ),
+            //                                     );
+            //                                 await context
+            //                                     .read<AssetsRepairCubit>()
+            //                                     .getAssetsRepairDetailsWithAssetIdInTicketPage(
+            //                                       assetID: data[index].id,
+            //                                       ticketID: widget.ticket.id,
+            //                                     );
+            //                               },
+            //                               text: 'Add',
+            //                               foregroundcolor: Theme.of(
+            //                                 context,
+            //                               ).buttonTheme.colorScheme?.primary,
+            //                               color: Theme.of(
+            //                                 context,
+            //                               ).buttonTheme.colorScheme?.secondary,
+            //                               textstyle: AppTextStyle.latoBold20(
+            //                                 context,
+            //                               ),
+            //                             ),
+            //                           ),
+            //                         ],
+            //                       ),
+            //                     ),
+            //                   );
+            //                 },
+            //               );
+            //             },
+            //             child: Card(
+            //               shape: RoundedRectangleBorder(
+            //                 borderRadius: BorderRadius.circular(16),
+            //               ),
+            //               elevation: 4,
+            //               margin: const EdgeInsets.all(12),
+            //               child: Container(
+            //                 padding: EdgeInsets.symmetric(
+            //                   vertical: 20,
+            //                   horizontal: 20,
+            //                 ),
+            //                 child: Column(
+            //                   children: [
+            //                     Row(
+            //                       spacing: 15,
+            //                       crossAxisAlignment: CrossAxisAlignment.center,
+            //                       mainAxisAlignment: MainAxisAlignment.start,
+            //                       children: [
+            //                         Container(
+            //                           padding: EdgeInsets.all(
+            //                             screenWidth * 0.03,
+            //                           ),
+            //                           decoration: BoxDecoration(
+            //                             color: AppColors.lightGreen.withOpacity(
+            //                               0.25,
+            //                             ),
+            //                             borderRadius: BorderRadius.circular(60),
+            //                           ),
+            //                           child: ClipRRect(
+            //                             child: SvgPicture.asset(
+            //                               'assets/images/${data[index].type}.svg',
+            //                               color: AppColors.green,
+            //                               width: screenWidth * 0.1,
+            //                               height: screenWidth * 0.1,
+            //                             ),
+            //                           ),
+            //                         ),
+            //                         Expanded(
+            //                           child: Column(
+            //                             crossAxisAlignment:
+            //                                 CrossAxisAlignment.start,
+            //                             children: [
+            //                               Column(
+            //                                 crossAxisAlignment:
+            //                                     CrossAxisAlignment.start,
+            //                                 children: [
+            //                                   Text("${data[index].type}".tr),
+            //                                   Text('${data[index].barcode}'),
+            //                                 ],
+            //                               ),
+            //                               Text(
+            //                                 '${data[index].branchObject?.name}'
+            //                                     .tr,
+            //                                 style: AppTextStyle.latoRegular16(
+            //                                   context,
+            //                                 ).copyWith(color: AppColors.green),
+            //                               ),
+            //                               Text(
+            //                                 '${data[index].branchObject!.areaObject?.name}'
+            //                                     .tr,
+            //                                 style: AppTextStyle.latoRegular16(
+            //                                   context,
+            //                                 ).copyWith(color: AppColors.gray),
+            //                               ),
+            //                             ],
+            //                           ),
+            //                         ),
+            //                         Column(
+            //                           spacing: 5,
+            //                           crossAxisAlignment:
+            //                               CrossAxisAlignment.center,
+            //                           mainAxisAlignment:
+            //                               MainAxisAlignment.center,
+            //                           children: [
+            //                             Text(
+            //                               'Total',
+            //                               style: AppTextStyle.latoBold26(
+            //                                 context,
+            //                               ),
+            //                             ),
+            //                             Container(
+            //                               padding: EdgeInsets.all(8.0),
+            //                               decoration: BoxDecoration(
+            //                                 color: AppColors.green,
+            //                                 borderRadius: BorderRadius.circular(
+            //                                   25,
+            //                                 ),
+            //                               ),
+            //                               child:
+            //                                   BlocBuilder<
+            //                                     AssetsRepairCubit,
+            //                                     AssetsRepairState
+            //                                   >(
+            //                                     builder: (context, state) {
+            //                                       final total = context
+            //                                           .watch<
+            //                                             AssetsRepairCubit
+            //                                           >()
+            //                                           .getTotalForAsset(
+            //                                             data[index].id,
+            //                                           );
+            //                                       return Text(
+            //                                         '$total EGP',
+            //                                         style:
+            //                                             AppTextStyle.latoBold16(
+            //                                               context,
+            //                                             ).copyWith(
+            //                                               color:
+            //                                                   AppColors.white,
+            //                                             ),
+            //                                       );
+            //                                     },
+            //                                   ),
+            //                             ),
+            //                           ],
+            //                         ),
+            //                       ],
+            //                     ),
+            //                     SizedBox(height: 10),
+            //
+            //                     // ***************** data assets repair here **************************//
+            //                     SizedBox(
+            //                       width: Get.width,
+            //                       child: BlocBuilder<AssetsRepairCubit, AssetsRepairState>(
+            //                         buildWhen: (previous, current) =>
+            //                             current is GetAssetsRepairDataSuccess ||
+            //                             current is GetAssetsRepairDataLoading ||
+            //                             current is GetAssetsRepairDataFailed,
+            //                         builder: (context, state) {
+            //                           final cubit = context
+            //                               .read<AssetsRepairCubit>();
+            //                           final assetId = data[index].id;
+            //                           final repairs = cubit.getRepairsForAsset(
+            //                             assetId,
+            //                           );
+            //                           if (state is GetAssetsRepairDataLoading) {
+            //                             return Center(
+            //                               child: CircularProgressIndicator(
+            //                                 color: AppColors.green,
+            //                               ),
+            //                             );
+            //                           }
+            //                           if (state is GetAssetsRepairDataFailed) {
+            //                             return Text(state.errMsg);
+            //                           }
+            //                           if (repairs.isEmpty) {
+            //                             cubit
+            //                                 .getAssetsRepairDetailsWithAssetIdInTicketPage(
+            //                                   assetID: data[index].id,
+            //                                   ticketID: widget.ticket.id,
+            //                                 );
+            //                             return Text('No Spare parts');
+            //                           }
+            //                           return ListView.builder(
+            //                             shrinkWrap: true,
+            //                             physics:
+            //                                 const NeverScrollableScrollPhysics(),
+            //                             itemCount: repairs.length,
+            //                             itemBuilder: (context, index) {
+            //                               return Row(
+            //                                 mainAxisAlignment:
+            //                                     MainAxisAlignment.spaceBetween,
+            //                                 crossAxisAlignment:
+            //                                     CrossAxisAlignment.start,
+            //                                 children: [
+            //                                   Text(
+            //                                     repairs[index].comment ?? '-',
+            //                                   ),
+            //                                   Row(
+            //                                     spacing: 5,
+            //                                     children: [
+            //                                       Text(
+            //                                         repairs[index].amount
+            //                                             .toString(),
+            //                                         style:
+            //                                             AppTextStyle.latoBold20(
+            //                                               context,
+            //                                             ).copyWith(
+            //                                               color:
+            //                                                   AppColors.green,
+            //                                             ),
+            //                                       ),
+            //                                       Text(
+            //                                         'EGP',
+            //                                         style:
+            //                                             AppTextStyle.latoBold20(
+            //                                               context,
+            //                                             ).copyWith(
+            //                                               color:
+            //                                                   AppColors.green,
+            //                                             ),
+            //                                       ),
+            //                                     ],
+            //                                   ),
+            //                                 ],
+            //                               );
+            //                             },
+            //                           );
+            //                         },
+            //                       ),
+            //                     ),
+            //                   ],
+            //                 ),
+            //               ),
+            //             ),
+            //           );
+            //         },
+            //       );
+            //     }
+            //     return Center(
+            //       child: Text(
+            //         'No Assets Added Yet',
+            //         style: AppTextStyle.latoBold23(
+            //           context,
+            //         ).copyWith(color: Colors.green),
+            //       ),
+            //     );
+            //   },
+            // ),
           ),
         ],
       ),

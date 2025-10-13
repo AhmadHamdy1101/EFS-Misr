@@ -14,11 +14,12 @@ abstract class HomeRemoteDataSource {
 
   Future<Assets> getAssetsByQrCode(String qrCode);
 
-  Future<List<AssetsRepair>> getAssetsRepairDetailsWithTicketId({
-    required BigInt ticketID,
-  });
   Future<List<AssetsRepair>> getAssetsRepairWithAssetId({
     required BigInt assetID,
+  });
+  Future<List<AssetsRepair>> getAssetsRepairWithAssetIdAndTicketID({
+    required BigInt assetID,
+    required BigInt ticketID,
   });
 }
 
@@ -89,21 +90,6 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
   }
 
   @override
-  Future<List<AssetsRepair>> getAssetsRepairDetailsWithTicketId({
-    required BigInt ticketID,
-  }) async {
-    final data = await supabaseClient.AssetsRepair.select('''
-      *,
-      ticket:tickets(
-        *,
-        engineer:users!tickets_engineer_fkey(*, positions(*)),
-        branch:branch(*)
-      )
-    ''').eq('ticket_id', ticketID).withConverter(AssetsRepair.converter);
-    return data;
-  }
-
-  @override
   Future<List<AssetsRepair>> getAssetsRepairWithAssetId({
     required BigInt assetID,
   }) async {
@@ -117,6 +103,26 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
       )
     ''')
             .eq(AssetsRepair.c_assetsId, assetID)
+            .withConverter(AssetsRepair.converter);
+    return data;
+  }
+
+  @override
+  Future<List<AssetsRepair>> getAssetsRepairWithAssetIdAndTicketID({
+    required BigInt assetID,
+    required BigInt ticketID,
+  }) async {
+    final data =
+        await supabaseClient.AssetsRepair.select('''
+      *,
+      ticket:tickets(
+        *,
+        engineer:users!tickets_engineer_fkey(*, positions(*)),
+        branch:branch(*)
+      )
+    ''')
+            .eq(AssetsRepair.c_assetsId, assetID)
+            .eq(AssetsRepair.c_TicketsId, ticketID)
             .withConverter(AssetsRepair.converter);
     return data;
   }

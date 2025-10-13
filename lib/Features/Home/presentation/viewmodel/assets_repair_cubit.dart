@@ -10,23 +10,33 @@ part 'assets_repair_state.dart';
 class AssetsRepairCubit extends Cubit<AssetsRepairState> {
   HomeRepo homeRepo;
   final List<AssetsRepair> assetsRepair = [];
+  final Map<BigInt, List<AssetsRepair>> repairsPerAsset = {};
 
   AssetsRepairCubit(this.homeRepo) : super(AssetsRepairInitial());
 
-  Future<void> getAssetsRepairDetails({required BigInt ticketID}) async {
-    emit(GetAssetsRepairDataLoading());
+  Future<void> getAssetsRepairDetailsWithAssetIdInTicketPage({
+    required BigInt assetID,
+    required BigInt ticketID,
+  }) async {
+    emit(GetAssetsRepairDataLoading(assetID: assetID));
 
-    final res = await homeRepo.getAssetsRepairWithTicketID(ticketID: ticketID);
-
+    final res = await homeRepo.getAssetsRepairWithAssetIdAndTicketID(
+      assetID: assetID,
+      ticketID: ticketID,
+    );
     res.fold(
       (fail) {
-        print(fail.message);
-        emit(GetAssetsRepairDataFailed(errMsg: fail.message));
+        emit(GetAssetsRepairDataFailed(assetID: assetID, errMsg: fail.message));
       },
       (data) {
-        emit(GetAssetsRepairDataSuccess(assetsRepair: data));
+        repairsPerAsset[assetID] = data;
+        emit(GetAssetsRepairDataSuccess(assetID: assetID, assetsRepair: data));
       },
     );
+  }
+
+  List<AssetsRepair> getRepairsForAsset(BigInt assetID) {
+    return repairsPerAsset[assetID] ?? [];
   }
 
   Future<void> getAssetsRepairDetailsWithAssetId({
@@ -64,7 +74,7 @@ class AssetsRepairCubit extends Cubit<AssetsRepairState> {
       (l) {
         print(l.message);
       },
-      (r) {
+      (r) async {
         Get.snackbar(
           'Success',
           'Details Added Successfully',
@@ -74,4 +84,26 @@ class AssetsRepairCubit extends Cubit<AssetsRepairState> {
       },
     );
   }
+
+  num getTotalForAsset(BigInt assetId) {
+    return assetsRepair
+        .where((e) => e.assetsId == assetId)
+        .fold<num>(0, (sum, e) => sum + (e.amount ?? 0));
+  }
 }
+
+// Future<void> getAssetsRepairDetails({required BigInt ticketID}) async {
+//   emit(GetAssetsRepairDataLoading());
+//
+//   final res = await homeRepo.getAssetsRepairWithTicketID(ticketID: ticketID);
+//
+//   res.fold(
+//     (fail) {
+//       print(fail.message);
+//       emit(GetAssetsRepairDataFailed(errMsg: fail.message));
+//     },
+//     (data) {
+//       emit(GetAssetsRepairDataSuccess(assetsRepair: data));
+//     },
+//   );
+// }

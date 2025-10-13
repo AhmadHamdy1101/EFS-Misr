@@ -68,12 +68,14 @@ abstract class HomeRepo {
     required BigInt? branch,
   });
 
-  Future<Either<Failure, List<AssetsRepair>>> getAssetsRepairWithTicketID({
-    required BigInt ticketID,
-  });
-
   Future<Either<Failure, List<AssetsRepair>>> getAssetsRepairWithAssetId({
     required BigInt assetID,
+  });
+
+  Future<Either<Failure, List<AssetsRepair>>>
+  getAssetsRepairWithAssetIdAndTicketID({
+    required BigInt assetID,
+    required BigInt ticketID,
   });
 
   Future<Either<Failure, List<Users>>> updateUserData({

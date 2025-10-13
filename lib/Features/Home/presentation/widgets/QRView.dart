@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+
 import '../pages/assets_details_page.dart';
 
 class QRScanPage extends StatefulWidget {
@@ -25,10 +26,15 @@ class _QRScanPageState extends State<QRScanPage> {
       body: BlocConsumer<QrcodeCubit, QrcodeState>(
         listener: (context, state) {
           if (state is QrcodeSuccess) {
-            Get.to(AssetsDetailsPage(assets: state.assets,));
+            Get.to(AssetsDetailsPage(assets: state.assets, assetsRepair: []));
           }
           if (state is QrcodeFailed) {
-            Get.snackbar('Error', state.errMsg,backgroundColor: Colors.red,colorText: Colors.white);
+            Get.snackbar(
+              'Error',
+              state.errMsg,
+              backgroundColor: Colors.red,
+              colorText: Colors.white,
+            );
           }
         },
         builder: (context, state) {
@@ -45,7 +51,9 @@ class _QRScanPageState extends State<QRScanPage> {
                     final List<Barcode> barcodes = capture.barcodes;
                     for (final barcode in barcodes) {
                       if (barcode.rawValue != null) {
-                        context.read<QrcodeCubit>().getAssetsByQrCode(barcode.rawValue!);
+                        context.read<QrcodeCubit>().getAssetsByQrCode(
+                          barcode.rawValue!,
+                        );
                       }
                     }
                     Future.delayed(const Duration(seconds: 2), () {
@@ -58,9 +66,10 @@ class _QRScanPageState extends State<QRScanPage> {
                 flex: 1,
                 child: Center(
                   child: Text(
-                      barcode != null ? 'Result: $barcode' : 'Scan a code'),
+                    barcode != null ? 'Result: $barcode' : 'Scan a code',
+                  ),
                 ),
-              )
+              ),
             ],
           );
         },

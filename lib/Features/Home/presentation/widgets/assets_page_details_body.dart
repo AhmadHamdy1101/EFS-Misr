@@ -13,10 +13,14 @@ import '../../../../core/utils/app_text_styles.dart';
 import '../viewmodel/assets_tickets_cubit.dart';
 
 class AssetsDetailsPageBody extends StatefulWidget {
-  const AssetsDetailsPageBody({super.key, required this.assets});
+  const AssetsDetailsPageBody({
+    super.key,
+    required this.assets,
+    required this.assetsRepair,
+  });
 
   final Assets assets;
-
+  final List<AssetsRepair> assetsRepair;
   @override
   State<AssetsDetailsPageBody> createState() => _AssetsDetailsPageBodyState();
 }
@@ -74,18 +78,24 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(capitalizeEachWord("${widget.assets.type}").tr),
+                              Text(
+                                capitalizeEachWord("${widget.assets.type}").tr,
+                              ),
                               Text('${widget.assets.barcode}'),
                             ],
                           ),
                           Text(
-                            capitalizeEachWord('${widget.assets.branchObject?.name}').tr,
+                            capitalizeEachWord(
+                              '${widget.assets.branchObject?.name}',
+                            ).tr,
                             style: AppTextStyle.latoRegular16(
                               context,
                             ).copyWith(color: AppColors.green),
                           ),
                           Text(
-                            capitalizeEachWord('${widget.assets.branchObject!.areaObject!.name}').tr,
+                            capitalizeEachWord(
+                              '${widget.assets.branchObject!.areaObject!.name}',
+                            ).tr,
                             style: AppTextStyle.latoRegular16(
                               context,
                             ).copyWith(color: AppColors.gray),
@@ -168,11 +178,11 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
           ),
         ),
         SliverFillRemaining(
-          child: BlocBuilder<AssetsRepairCubit, AssetsRepairState>(
-            buildWhen: (previous, current) =>
-                current is GetAssetsRepairDataInAssetsPageLoading ||
-                current is GetAssetsRepairDataInAssetsPageFailed ||
-                current is GetAssetsRepairDataInAssetsPageSuccess,
+          child: BlocBuilder<AssetsTicketsCubit, AssetsTicketsState>(
+            // buildWhen: (previous, current) =>
+            //     current is GetAssetsRepairDataInAssetsPageLoading ||
+            //     current is GetAssetsRepairDataInAssetsPageFailed ||
+            //     current is GetAssetsRepairDataInAssetsPageSuccess,
             builder: (context, state) {
               if (state is GetAssetsRepairDataInAssetsPageSuccess) {
                 return ListView.builder(
@@ -198,9 +208,8 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                                 );
                             context
                                 .read<AssetsRepairCubit>()
-                                .getAssetsRepairDetails(
-                                  ticketID:
-                                      state.assetsRepair[index].tickets!.id,
+                                .getAssetsRepairDetailsWithAssetId(
+                                  assetID: state.assetsRepair[index].id,
                                 );
                             return TicketDetailsPage(
                               tickets: state.assetsRepair[index].tickets!,

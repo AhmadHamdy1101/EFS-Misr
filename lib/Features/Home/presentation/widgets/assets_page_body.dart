@@ -338,139 +338,147 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                   ),
                 ),
                 SliverFillRemaining(
-                  child: RefreshIndicator(child: ListView.builder(
-                    itemCount: state.assets.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () async {
-                          context
-                              .read<AssetsTicketsCubit>()
-                              .getTicketsWithAssetsId(
-                            assetId: assets[index].id,
-                          );
-                          context
-                              .read<AssetsRepairCubit>()
-                              .getAssetsRepairDetailsWithAssetId(
-                            assetID: assets[index].id,
-                          );
-                          Get.to(
-                            AssetsDetailsPage(assets: state.assets[index]),
-                          );
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 4,
-                          margin: const EdgeInsets.all(12),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 20,
-                              horizontal: 20,
+                  child: RefreshIndicator(
+                    child: ListView.builder(
+                      itemCount: state.assets.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () async {
+                            context
+                                .read<AssetsTicketsCubit>()
+                                .getTicketsWithAssetsId(
+                                  assetId: assets[index].id,
+                                );
+                            context
+                                .read<AssetsRepairCubit>()
+                                .getAssetsRepairDetailsWithAssetId(
+                                  assetID: assets[index].id,
+                                );
+                            Get.to(
+                              AssetsDetailsPage(
+                                assets: state.assets[index],
+                                assetsRepair: [],
+                              ),
+                            );
+                          },
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                            child: Row(
-                              spacing: 15,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(screenWidth * 0.03),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.lightGreen.withOpacity(
-                                      0.25,
+                            elevation: 4,
+                            margin: const EdgeInsets.all(12),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 20,
+                                horizontal: 20,
+                              ),
+                              child: Row(
+                                spacing: 15,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(screenWidth * 0.03),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.lightGreen.withOpacity(
+                                        0.25,
+                                      ),
+                                      borderRadius: BorderRadius.circular(60),
                                     ),
-                                    borderRadius: BorderRadius.circular(60),
+                                    child: ClipRRect(
+                                      child: SvgPicture.asset(
+                                        'assets/images/${assets[index].type}.svg',
+                                        color: AppColors.green,
+                                        width: screenWidth * 0.1,
+                                        height: screenWidth * 0.1,
+                                      ),
+                                    ),
                                   ),
-                                  child: ClipRRect(
-                                    child: SvgPicture.asset(
-                                      'assets/images/${assets[index].type}.svg',
-                                      color: AppColors.green,
-                                      width: screenWidth * 0.1,
-                                      height: screenWidth * 0.1,
-                                    ),
-                                  ),
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Text("${assets[index].type}".tr),
-                                        Text('${assets[index].barcode}'),
-                                      ],
-                                    ),
-                                    Text(
-                                      '${assets[index].branchObject?.name}'.tr,
-                                      style: AppTextStyle.latoRegular16(
-                                        context,
-                                      ).copyWith(color: AppColors.green),
-                                    ),
-                                    Text(
-                                      '${assets[index].branchObject?.areaObject?.name}'
-                                          .tr,
-                                      style: AppTextStyle.latoRegular16(
-                                        context,
-                                      ).copyWith(color: AppColors.gray),
-                                    ),
-                                  ],
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    spacing: 10,
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text("Total Spend".tr),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: screenHeight * 0.01,
-                                          horizontal: screenWidth * 0.04,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xff8FCFAD),
-                                          borderRadius: BorderRadius.circular(
-                                            50,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          spacing: 4,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              "${assets[index].amount ?? 0}",
-                                              style:
-                                              AppTextStyle.latoBold16(
-                                                context,
-                                              ).copyWith(
-                                                color: AppColors.white,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            Text(
-                                              "EGP".tr,
-                                              style:
-                                              AppTextStyle.latoBold16(
-                                                context,
-                                              ).copyWith(
-                                                color: AppColors.white,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ],
-                                        ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("${assets[index].type}".tr),
+                                          Text('${assets[index].barcode}'),
+                                        ],
+                                      ),
+                                      Text(
+                                        '${assets[index].branchObject?.name}'
+                                            .tr,
+                                        style: AppTextStyle.latoRegular16(
+                                          context,
+                                        ).copyWith(color: AppColors.green),
+                                      ),
+                                      Text(
+                                        '${assets[index].branchObject?.areaObject?.name}'
+                                            .tr,
+                                        style: AppTextStyle.latoRegular16(
+                                          context,
+                                        ).copyWith(color: AppColors.gray),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ],
+                                  Expanded(
+                                    child: Column(
+                                      spacing: 10,
+                                      children: [
+                                        Text("Total Spend".tr),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: screenHeight * 0.01,
+                                            horizontal: screenWidth * 0.04,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Color(0xff8FCFAD),
+                                            borderRadius: BorderRadius.circular(
+                                              50,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            spacing: 4,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                "${assets[index].amount ?? 0}",
+                                                style:
+                                                    AppTextStyle.latoBold16(
+                                                      context,
+                                                    ).copyWith(
+                                                      color: AppColors.white,
+                                                    ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              Text(
+                                                "EGP".tr,
+                                                style:
+                                                    AppTextStyle.latoBold16(
+                                                      context,
+                                                    ).copyWith(
+                                                      color: AppColors.white,
+                                                    ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
+                        );
+                      },
+                    ),
+                    onRefresh: () {
+                      return context.read<AssetsCubit>().getAssets();
                     },
-                  ), onRefresh: (){
-                    return context.read<AssetsCubit>().getAssets();
-                  }),
+                  ),
                 ),
               ],
             );
