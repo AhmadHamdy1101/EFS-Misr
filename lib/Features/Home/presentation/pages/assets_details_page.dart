@@ -7,13 +7,8 @@ import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 
 class AssetsDetailsPage extends StatelessWidget {
-  const AssetsDetailsPage({
-    super.key,
-    required this.assets,
-    required this.assetsRepair,
-  });
+  const AssetsDetailsPage({super.key, required this.assets});
   final Assets assets;
-  final List<AssetsRepair> assetsRepair;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +22,7 @@ class AssetsDetailsPage extends StatelessWidget {
           ).copyWith(color: AppColors.green),
         ),
       ),
-      body: AssetsDetailsPageBody(assets: assets, assetsRepair: assetsRepair),
+      body: AssetsDetailsPageBody(assets: assets),
     );
   }
 }

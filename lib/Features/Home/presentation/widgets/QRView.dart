@@ -26,7 +26,7 @@ class _QRScanPageState extends State<QRScanPage> {
       body: BlocConsumer<QrcodeCubit, QrcodeState>(
         listener: (context, state) {
           if (state is QrcodeSuccess) {
-            Get.to(AssetsDetailsPage(assets: state.assets, assetsRepair: []));
+            Get.to(AssetsDetailsPage(assets: state.assets));
           }
           if (state is QrcodeFailed) {
             Get.snackbar(

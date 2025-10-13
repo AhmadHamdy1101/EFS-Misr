@@ -15,7 +15,6 @@ import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_button_widget.dart';
 import '../../../../core/utils/widgets/custom_dropdown_widget.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
-import '../viewmodel/assets_tickets_cubit.dart';
 
 class AssetsPageBody extends StatefulWidget {
   const AssetsPageBody({super.key});
@@ -344,21 +343,13 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () async {
-                            context
-                                .read<AssetsTicketsCubit>()
-                                .getTicketsWithAssetsId(
-                                  assetId: assets[index].id,
-                                );
-                            context
+                            await context
                                 .read<AssetsRepairCubit>()
                                 .getAssetsRepairDetailsWithAssetId(
-                                  assetID: assets[index].id,
+                                  assetID: state.assets[index].id,
                                 );
                             Get.to(
-                              AssetsDetailsPage(
-                                assets: state.assets[index],
-                                assetsRepair: [],
-                              ),
+                              AssetsDetailsPage(assets: state.assets[index]),
                             );
                           },
                           child: Card(
