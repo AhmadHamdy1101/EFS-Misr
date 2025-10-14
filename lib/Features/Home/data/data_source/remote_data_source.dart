@@ -53,7 +53,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
   @override
   Future<Assets> getAssetsByQrCode(String qrCode) async {
     final asset = await supabaseClient.assets
-        .select('*,branch(*)')
+        .select('*,branch(*,area(*))')
         .eq('barcode', qrCode)
         .withConverter(Assets.converter);
     return asset[0];
@@ -82,7 +82,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
   }) async {
     final assetsAndTickets = await supabaseClient.tickets
         .select(
-          '*, engineer:users!tickets_engineer_fkey(*,positions(*)), branch:branch(*),assets_tickets_details!inner(*)',
+          '*, engineer:users!tickets_engineer_fkey(*,positions(*)), branch:branch(*,area(*)),assets_tickets_details!inner(*)',
         )
         .eq('assets_tickets_details.assets_id', assetId)
         .withConverter(Tickets.converter);
@@ -99,7 +99,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
       ticket:tickets(
         *,
         engineer:users!tickets_engineer_fkey(*, positions(*)),
-        branch:branch(*)
+        branch:branch(*,area(*))
       )
     ''')
             .eq(AssetsRepair.c_assetsId, assetID)
@@ -118,7 +118,7 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
       ticket:tickets(
         *,
         engineer:users!tickets_engineer_fkey(*, positions(*)),
-        branch:branch(*)
+        branch:branch(*,area(*))
       )
     ''')
             .eq(AssetsRepair.c_assetsId, assetID)

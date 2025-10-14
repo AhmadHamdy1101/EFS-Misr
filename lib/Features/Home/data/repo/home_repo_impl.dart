@@ -68,7 +68,7 @@ class HomeRepoImpl extends HomeRepo {
           .eq('id', ticketID)
           .select('''
       *,
-      branch(*),
+      branch(*,area(*)),
       engineer:users!tickets_engineer_fkey(*,positions(*))
     ''')
           .single()
@@ -161,7 +161,7 @@ class HomeRepoImpl extends HomeRepo {
           .eq('id', ticketID)
           .select('''
       *,
-      branch(*),
+      branch(*,area(*)),
       engineer:users!tickets_engineer_fkey(*,positions(*))
     ''')
           .single()
@@ -194,7 +194,7 @@ class HomeRepoImpl extends HomeRepo {
       final ticketAmount = await supabaseClient.tickets
           .select('''
       *,
-      branch(*),
+      branch(*,area(*)),
       engineer:users!tickets_engineer_fkey(*,positions(*))
     ''')
           .eq('id', ticketId)
@@ -292,7 +292,7 @@ class HomeRepoImpl extends HomeRepo {
           .eq('id', ticketID)
           .select('''
       *,
-      branch(*),
+      branch(*,area(*)),
       engineer:users!tickets_engineer_fkey(*,positions(*))
     ''')
           .single()

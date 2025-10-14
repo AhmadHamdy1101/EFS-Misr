@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/domain/entities/asset_with_asset_repair_entitiy.dart';
@@ -16,7 +14,6 @@ class AssetsTicketsCubit extends Cubit<AssetsTicketsState> {
 
   final List<Tickets> tickets = [];
   List<AssetsWithAssetsRepairEntity> assetsDetails = [];
-  num totalAmount = 0;
 
   Future<void> addAssetsAndTickets({
     required BigInt assetsId,
@@ -51,11 +48,10 @@ class AssetsTicketsCubit extends Cubit<AssetsTicketsState> {
               .eq(AssetsRepair.c_assetsId, p.id)
               .eq(AssetsRepair.c_TicketsId, ticketId)
               .withConverter(AssetsRepair.converter);
-          assetsRepair.map((a) {
-            print(a.amount);
-            totalAmount += a.amount ?? 0;
-            log(totalAmount);
-          });
+          final num totalAmount = assetsRepair.fold<num>(
+            0,
+            (sum, repair) => sum + (repair.amount ?? 0),
+          );
           return AssetsWithAssetsRepairEntity(
             assets: p,
             assetsRepair: assetsRepair,
