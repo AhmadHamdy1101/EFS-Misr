@@ -181,7 +181,7 @@ class HomeRepoImpl extends HomeRepo {
     required num amount,
   }) async {
     try {
-      final data = await supabaseClient.AssetsRepair.insert(
+      await supabaseClient.AssetsRepair.insert(
         AssetsRepair.insert(
           amount: amount,
           TicketsId: ticketId,
@@ -235,7 +235,7 @@ class HomeRepoImpl extends HomeRepo {
     required String? password,
   }) async {
     try {
-      final res = await supabaseClient.functions.invoke(
+      await supabaseClient.functions.invoke(
         'update-user',
         body: {'userId': userID, 'email': email, 'password': password},
       );
@@ -337,11 +337,26 @@ class HomeRepoImpl extends HomeRepo {
     required BigInt ticketID,
   }) async {
     try {
-      final res = await supabaseClient.tickets.delete().eq(
-        Tickets.c_id,
-        ticketID,
-      );
+      await supabaseClient.tickets.delete().eq(Tickets.c_id, ticketID);
       return Right('Deleted Successfully');
+    } catch (e) {
+      return Left(Failure.fromException(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Users>> updateUserImage({
+    required BigInt userID,
+    required String? image,
+  }) async {
+    try {
+      final user = await supabaseClient.users
+          .update(Users.update(image: image))
+          .eq(Users.c_id, userID)
+          .select('*,positions(*)')
+          .single()
+          .withConverter(Users.converterSingle);
+      return Right(user);
     } catch (e) {
       return Left(Failure.fromException(e));
     }

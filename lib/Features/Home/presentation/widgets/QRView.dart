@@ -1,3 +1,4 @@
+import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/qrcode_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,13 @@ class QRScanPage extends StatefulWidget {
 class _QRScanPageState extends State<QRScanPage> {
   String? barcode;
   bool isProcessing = false;
+  final MobileScannerController controller = MobileScannerController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +32,12 @@ class _QRScanPageState extends State<QRScanPage> {
       backgroundColor: AppColors.appBackground,
       appBar: AppBar(title: Text('Scan barcode/QR')),
       body: BlocConsumer<QrcodeCubit, QrcodeState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is QrcodeSuccess) {
+            await context
+                .read<AssetsRepairCubit>()
+                .getAssetsRepairDetailsWithAssetId(assetID: state.assets.id);
+            controller.stop();
             Get.to(AssetsDetailsPage(assets: state.assets));
           }
           if (state is QrcodeFailed) {
@@ -36,6 +48,7 @@ class _QRScanPageState extends State<QRScanPage> {
               colorText: Colors.white,
             );
           }
+          controller.start();
         },
         builder: (context, state) {
           return Column(
@@ -43,6 +56,7 @@ class _QRScanPageState extends State<QRScanPage> {
               Expanded(
                 flex: 4,
                 child: MobileScanner(
+                  controller: controller,
                   fit: BoxFit.contain,
                   // allowDuplicates: true,
                   onDetect: (BarcodeCapture capture) async {

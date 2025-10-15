@@ -33,6 +33,7 @@ class TicketsCubit extends Cubit<TicketsState> {
 
   final List<Tickets> allTickets = [];
   final List<Tickets> searchedTickets = [];
+  final List<Tickets> filterdTickets = [];
   final List<Users> engineers = [];
 
   Future<void> getTickets() async {
@@ -57,7 +58,7 @@ class TicketsCubit extends Cubit<TicketsState> {
     );
   }
 
-  searchTickets(String? search) {
+  void searchTickets(String? search) {
     if (search == null || search.isEmpty) {
       emit(GetTicketsSuccess(tickets: allTickets));
       return;
@@ -178,7 +179,6 @@ class TicketsCubit extends Cubit<TicketsState> {
         );
       }
     } catch (e) {
-      print(e);
       Get.snackbar('Error', e.toString());
     }
   }
@@ -255,7 +255,7 @@ class TicketsCubit extends Cubit<TicketsState> {
     );
     result.fold(
       (l) {
-        print(l.message);
+        Get.snackbar('Error', l.message);
       },
       (ticket) {
         final updatedTickets = allTickets.map((e) {
@@ -321,7 +321,6 @@ class TicketsCubit extends Cubit<TicketsState> {
     final res = await homeRepo.deleteTicket(ticketID: ticketID);
     res.fold(
       (l) {
-        print(l.message);
         Get.snackbar('Error', l.message);
       },
       (r) {
@@ -330,5 +329,24 @@ class TicketsCubit extends Cubit<TicketsState> {
         emit(GetTicketsSuccess(tickets: allTickets));
       },
     );
+  }
+
+  void filterTickets({BigInt? area, BigInt? branch}) {
+    if (area == null && branch == null) {
+      emit(GetTicketsSuccess(tickets: allTickets));
+      return;
+    }
+    filterdTickets.clear();
+
+    final res = allTickets.where((asset) {
+      final matchArea =
+          area == null || asset.branchObject?.areaObject?.id == area;
+      final matchBranch = branch == null || asset.branchObject?.id == branch;
+
+      return matchArea && matchBranch;
+    }).toList();
+
+    filterdTickets.addAll(res);
+    emit(GetTicketsSuccess(tickets: filterdTickets));
   }
 }

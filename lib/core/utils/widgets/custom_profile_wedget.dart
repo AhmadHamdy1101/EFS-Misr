@@ -18,8 +18,6 @@ class CustomProfileWidget extends StatelessWidget {
   final VoidCallback? onPress;
 
 
-
-
   @override
   Widget build(BuildContext context) {
     return Positioned(

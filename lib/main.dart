@@ -8,6 +8,7 @@ import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart'
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/check_internet_cubit.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/image_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/qrcode_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
@@ -59,6 +60,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(
           create: (context) => AssetsRepairCubit(getIt.get<HomeRepo>()),
         ),
+        BlocProvider(create: (context) => ImageCubit(getIt.get<HomeRepo>())),
         BlocProvider(create: (context) => CheckInternetCubit(Connectivity())),
       ],
       child: GetMaterialApp(

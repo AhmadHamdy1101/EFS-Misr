@@ -22,8 +22,7 @@ class Users implements SupadartClass<Users> {
   final String? company;
   final String? image;
 
-
-  const Users( {
+  const Users({
     this.image,
     required this.id,
     this.userid,
@@ -38,7 +37,6 @@ class Users implements SupadartClass<Users> {
     required this.createdAt,
     this.position,
     this.companyEmail,
-
     this.company,
   });
 
@@ -55,9 +53,8 @@ class Users implements SupadartClass<Users> {
   static String get c_status => 'status';
   static String get c_createdAt => 'created_at';
   static String get c_companyEmail => 'company_email';
-
   static String get c_company => 'Company';
-  static String get c_image => 'Image';
+  static String get c_image => 'image';
 
   static List<Users> converter(List<Map<String, dynamic>> data) {
     return data.map(Users.fromJson).toList();
@@ -82,7 +79,6 @@ class Users implements SupadartClass<Users> {
     String? companyEmail,
     String? company,
     String? image,
-
   }) {
     return {
       if (id != null) 'id': id.toString(),
@@ -97,9 +93,8 @@ class Users implements SupadartClass<Users> {
       if (status != null) 'status': status,
       if (createdAt != null) 'created_at': createdAt.toUtc().toIso8601String(),
       if (companyEmail != null) 'company_email': companyEmail,
-
       if (company != null) 'Company': company,
-      if (image != null) 'Image': image,
+      if (image != null) 'image': image,
     };
   }
 
@@ -116,7 +111,6 @@ class Users implements SupadartClass<Users> {
     int? status,
     DateTime? createdAt,
     String? companyEmail,
-
     String? company,
     String? image,
   }) {
@@ -199,7 +193,7 @@ class Users implements SupadartClass<Users> {
           ? jsonn['company_email'].toString()
           : null,
       company: jsonn['Company'] != null ? jsonn['Company'].toString() : null,
-      image: jsonn['Image'] != null ? jsonn['Image'].toString() : null,
+      image: jsonn['image'] != null ? jsonn['image'].toString() : null,
     );
   }
 
@@ -234,7 +228,7 @@ class Users implements SupadartClass<Users> {
       if (createdAt != null) 'created_at': createdAt,
       if (companyEmail != null) 'company_email': companyEmail,
       if (company != null) 'Company': company,
-      if (image != null) 'Image': image,
+      if (image != null) 'image': image,
     };
   }
 
@@ -283,14 +277,17 @@ class Users implements SupadartClass<Users> {
       password: password == _unset ? this.password : password as String?,
       phone: phone == _unset ? this.phone : phone as String?,
       address: address == _unset ? this.address : address as String?,
-      positionId: positionId == _unset ? this.positionId : positionId as BigInt?,
+      positionId: positionId == _unset
+          ? this.positionId
+          : positionId as BigInt?,
       role: role == _unset ? this.role : role as String?,
       status: status == _unset ? this.status : status as int?,
       createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
-      companyEmail: companyEmail == _unset ? this.companyEmail : companyEmail as String?,
+      companyEmail: companyEmail == _unset
+          ? this.companyEmail
+          : companyEmail as String?,
       company: company == _unset ? this.company : company as String?,
       image: image == _unset ? this.image : image as String?,
-
     );
   }
 }

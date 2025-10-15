@@ -91,4 +91,8 @@ abstract class HomeRepo {
     required String? email,
     required String? password,
   });
+  Future<Either<Failure, Users>> updateUserImage({
+    required BigInt userID,
+    required String? image,
+  });
 }

@@ -101,13 +101,9 @@ class _HomePageBodyState extends State<HomePageBody> {
             ],
           ),
         ),
-
-        /// مسافة ديناميكية بدل 190px ثابتة
         SliverToBoxAdapter(
           child: SizedBox(height: screenHeight >= 600 ? 150 : 15),
         ),
-
-        /// Tickets Overview Card
         SliverToBoxAdapter(
           child: Card(
             shape: RoundedRectangleBorder(
@@ -135,7 +131,6 @@ class _HomePageBodyState extends State<HomePageBody> {
                   ),
                   const SizedBox(height: 20),
 
-                  /// Tickets List
                   BlocBuilder<TicketsCubit, TicketsState>(
                     builder: (context, state) {
                       if (state is GetTicketsLoading) {

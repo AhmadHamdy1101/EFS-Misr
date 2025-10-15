@@ -1,6 +1,12 @@
+import 'dart:io';
+
 import 'package:efs_misr/Features/Home/data/models/user.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/image_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../constants/constants.dart';
 import '../../../../core/utils/app_colors.dart';
@@ -19,18 +25,18 @@ class MenuPageBody extends StatefulWidget {
 }
 
 class _MenuPageBodyState extends State<MenuPageBody> {
-  String? _userImage;
+  final picker = ImagePicker();
+  final file = Rxn<File>();
+
   @override
   void initState() {
     super.initState();
-    _userImage = widget.user.image;
   }
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    print(widget.user.image.toString());
 
     return CustomScrollView(
       slivers: [
@@ -59,7 +65,6 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                 screenHeight: screenHeight,
               ),
 
-              // عناصر البروفايل فوق الخلفية
               Positioned(
                 top: screenHeight * 0.06,
                 child: SizedBox(
@@ -80,26 +85,68 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                         },
                         child: Stack(
                           children: [
-                            CircleAvatar(
-                              radius: 40,
-                              backgroundImage:
-                                  (_userImage != null && _userImage!.isNotEmpty)
-                                  ? NetworkImage(_userImage!)
-                                  : const AssetImage('assets/images/user.png')
-                                        as ImageProvider,
+                            BlocBuilder<ImageCubit, ImageState>(
+                              builder: (context, state) {
+                                if (state is ImageUpdateLoading) {
+                                  return Shimmer.fromColors(
+                                    baseColor: Colors.black.withOpacity(0.4),
+                                    highlightColor: Colors.white.withOpacity(
+                                      0.2,
+                                    ),
+                                    child: CircleAvatar(
+                                      radius: 40,
+                                      backgroundColor: Colors.black.withOpacity(
+                                        0.3,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                if (state is ImageUpdateSuccess) {
+                                  return CircleAvatar(
+                                    radius: 40,
+                                    backgroundImage:
+                                        (state.image != null &&
+                                            state.image!.isNotEmpty)
+                                        ? NetworkImage(state.image!)
+                                        : const AssetImage(
+                                                'assets/images/user.png',
+                                              )
+                                              as ImageProvider,
+                                  );
+                                }
+                                return CircleAvatar(
+                                  radius: 40,
+                                  backgroundImage:
+                                      (widget.user.image != null &&
+                                          widget.user.image!.isNotEmpty)
+                                      ? NetworkImage(widget.user.image!)
+                                      : const AssetImage(
+                                              'assets/images/user.png',
+                                            )
+                                            as ImageProvider,
+                                );
+                              },
                             ),
                             Positioned(
                               bottom: 0,
                               right: 0,
-                              child: CircleAvatar(
-                                radius: 15,
-                                backgroundColor: AppColors.green,
-                                child: Icon(
-                                  Icons.camera_alt,
-                                  color: AppColors.white,
-                                  size: 18.0,
-                                  semanticLabel:
-                                      'Text to announce in accessibility modes',
+                              child: InkWell(
+                                onTap: () async {
+                                  context.read<ImageCubit>().updateImage(
+                                    userId: widget.user.id,
+                                    userName: widget.user.name,
+                                  );
+                                },
+                                child: CircleAvatar(
+                                  radius: 15,
+                                  backgroundColor: AppColors.green,
+                                  child: Icon(
+                                    Icons.camera_alt,
+                                    color: AppColors.white,
+                                    size: 18.0,
+                                    semanticLabel:
+                                        'Text to announce in accessibility modes',
+                                  ),
                                 ),
                               ),
                             ),
@@ -143,7 +190,6 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                   ),
                 ),
               ),
-              // الجزء اللي في نص Stack
             ],
           ),
         ),

@@ -1,3 +1,4 @@
+import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/presentation/pages/add_Tickets_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
+import '../../../../constants/constants.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
 import '../../../../core/utils/widgets/ticket_overview_widget.dart';
@@ -24,6 +26,28 @@ class TicketPageBody extends StatefulWidget {
 class _TicketPageBodyState extends State<TicketPageBody> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController search = TextEditingController();
+  final TextEditingController areaController = TextEditingController();
+  final TextEditingController branchController = TextEditingController();
+  final selectedArea = Rxn<BigInt>();
+  final selectedBranch = Rxn<BigInt>();
+  final areaRes = <Map<String, dynamic>>[].obs;
+
+  Future<void> loadArea() async {
+    final areaData = await supabaseClient.area.select();
+    areaRes.value = areaData.map<Map<String, dynamic>>((po) {
+      return {"name": po["name"], "value": po["id"].toString()};
+    }).toList();
+  }
+
+  final branchRes = <Map<String, dynamic>>[].obs;
+
+  Future<void> loadBranch() async {
+    final branchData = await supabaseClient.branch.select();
+    branchRes.value = branchData.map<Map<String, dynamic>>((po) {
+      return {"name": po["name"], "value": po["id"].toString()};
+    }).toList();
+  }
+
   final List<Map<String, dynamic>> Data = [
     {'name': 'North Cairo', 'value': 'North Cairo'},
     {'name': 'South Cairo', 'value': 'South Cairo'},
@@ -31,6 +55,13 @@ class _TicketPageBodyState extends State<TicketPageBody> {
     {'name': 'New Cairo', 'value': 'New Cairo'},
   ];
   String? selectedValue;
+
+  @override
+  void initState() {
+    super.initState();
+    loadArea();
+    loadBranch();
+  }
 
   @override
   void dispose() {
@@ -61,9 +92,8 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                       textEditingController: search,
                       textInputType: TextInputType.text,
                       onChanged: (search) {
-                        return context.read<TicketsCubit>().searchTickets(
-                          search,
-                        );
+                        context.read<TicketsCubit>().searchTickets(search);
+                        return null;
                       },
                     ),
                   ),
@@ -161,10 +191,17 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                                       style: AppTextStyle.latoBold20(context),
                                     ),
                                     CustomDropdownWidget(
+                                      textEditingController: areaController,
                                       inbutIcon: 'assets/images/address.svg',
                                       inbutHintText: 'Area',
-                                      selectedValue: selectedValue,
-                                      Data: Data,
+                                      selectedValue: selectedArea.value
+                                          ?.toString(),
+                                      Data: areaRes.toList(),
+                                      onChanged: (value) {
+                                        selectedArea.value = BigInt.tryParse(
+                                          value!,
+                                        );
+                                      },
                                     ),
                                   ],
                                 ),
@@ -177,10 +214,17 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                                       style: AppTextStyle.latoBold20(context),
                                     ),
                                     CustomDropdownWidget(
+                                      textEditingController: branchController,
                                       inbutIcon: 'assets/images/address.svg',
                                       inbutHintText: 'Branch',
-                                      selectedValue: selectedValue,
-                                      Data: Data,
+                                      selectedValue: selectedBranch.value
+                                          ?.toString(),
+                                      Data: branchRes.toList(),
+                                      onChanged: (value) {
+                                        selectedBranch.value = BigInt.tryParse(
+                                          value!,
+                                        );
+                                      },
                                     ),
                                   ],
                                 ),
@@ -188,6 +232,15 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                                 SizedBox(
                                   width: screenWidth,
                                   child: CustomButtonWidget(
+                                    onpressed: () {
+                                      Navigator.pop(context);
+                                      context
+                                          .read<TicketsCubit>()
+                                          .filterTickets(
+                                            area: selectedArea.value,
+                                            branch: selectedBranch.value,
+                                          );
+                                    },
                                     screenWidth: screenWidth,
                                     toppadding: 10,
                                     textstyle: AppTextStyle.latoBold26(context),
