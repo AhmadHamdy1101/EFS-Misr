@@ -67,13 +67,125 @@ class AssetsCubit extends Cubit<AssetsState> {
     emit(GetAssetsSuccess(assets: searchedAssets));
   }
 
+  // Future<void> convertAssetsToExcel() async {
+  //   try {
+  //     // final data = await supabaseClient.assets.select('id,barcode,name,branch(name),floor,place,created_at,area,type,amount');
+  //     final data = await supabaseClient.assetsAndTickets.select(
+  //       'id,tickets(orecal_id),assets(barcode,name,branch(name),floor,place,area,type),Ammount',
+  //     );
+  //     if (data.isEmpty) {
+  //       return;
+  //     }
+  //
+  //     final combined = data.map((row) {
+  //       return {
+  //         'id': row['id'],
+  //         'barcode': row['assets']?['barcode'] ?? '',
+  //         'name': row['assets']?['name'] ?? '',
+  //         'branch': row['assets']?['branch']?['name'] ?? '',
+  //         'floor': row['assets']?['floor'] ?? '',
+  //         'place': row['assets']?['place'] ?? '',
+  //         'area': row['assets']?['area'] ?? '',
+  //         'type': row['assets']?['type'] ?? '',
+  //         'amount': row['Ammount'],
+  //       };
+  //     }).toList();
+  //
+  //     final workbook = xlsio.Workbook();
+  //     final sheet = workbook.worksheets[0];
+  //
+  //     final headers = combined.first.keys.toList();
+  //
+  //     final headerStyle = workbook.styles.add('HeaderStyle');
+  //     headerStyle.bold = true;
+  //     headerStyle.fontSize = 14;
+  //     headerStyle.hAlign = xlsio.HAlignType.center;
+  //     headerStyle.backColor = '#008C43';
+  //     headerStyle.fontColor = '#ffffff';
+  //
+  //     for (var i = 0; i < headers.length; i++) {
+  //       final cell = sheet.getRangeByIndex(1, i + 1);
+  //       cell.setText(headers[i].toString());
+  //       cell.cellStyle = headerStyle;
+  //     }
+  //
+  //     for (var rowIndex = 0; rowIndex < combined.length; rowIndex++) {
+  //       final row = combined[rowIndex];
+  //       for (var colIndex = 0; colIndex < headers.length; colIndex++) {
+  //         final value = row[headers[colIndex]]?.toString() ?? '';
+  //         final cell = sheet.getRangeByIndex(rowIndex + 2, colIndex + 1);
+  //         cell.setText(value);
+  //       }
+  //     }
+  //
+  //     final lastRow = data.length + 1;
+  //     sheet.getRangeByIndex(1, 1, lastRow, headers.length).autoFitColumns();
+  //
+  //     final List<int> bytes = workbook.saveAsStream();
+  //     workbook.dispose();
+  //
+  //     final Uint8List fileBytes = Uint8List.fromList(bytes);
+  //
+  //     final timestamp = DateTime.now();
+  //     DateFormat('d - MMM - yyyy').format(timestamp);
+  //     final fileName = "Assets $timestamp.xlsx";
+  //
+  //     // Platform Check
+  //     if (kIsWeb ||
+  //         Platform.isWindows ||
+  //         Platform.isLinux ||
+  //         Platform.isMacOS) {
+  //       await FileSaver.instance.saveFile(
+  //         name: fileName,
+  //         bytes: fileBytes,
+  //         fileExtension: "xlsx",
+  //         mimeType: MimeType.microsoftExcel,
+  //       );
+  //     } else if (Platform.isAndroid) {
+  //       if (await Permission.storage.request().isDenied) {
+  //         return;
+  //       }
+  //       if (await Permission.storage.request().isDenied) {
+  //         return;
+  //       }
+  //
+  //       final downloadsDir = await getExternalStorageDirectory();
+  //       if (!downloadsDir!.existsSync()) {
+  //         downloadsDir.createSync(recursive: true);
+  //       }
+  //       final filePath = "${downloadsDir.path}/$fileName";
+  //       final file = File(filePath);
+  //       await file.writeAsBytes(fileBytes);
+  //       await OpenFilex.open(filePath);
+  //       await SharePlus.instance.share(
+  //         ShareParams(files: [XFile(file.path)], text: 'Assets Export'),
+  //       );
+  //     } else if (Platform.isIOS) {
+  //       final dir = await getApplicationDocumentsDirectory();
+  //       final filePath = "${dir.path}/$fileName";
+  //
+  //       final file = File(filePath);
+  //       await file.writeAsBytes(fileBytes);
+  //
+  //       await OpenFilex.open(file.path);
+  //       await SharePlus.instance.share(
+  //         ShareParams(files: [XFile(file.path)], text: 'Assets Export'),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
+
   Future<void> convertAssetsToExcel() async {
     try {
-      // final data = await supabaseClient.assets.select('id,barcode,name,branch(name),floor,place,created_at,area,type,amount');
+      // ---------------- Fetch Data ----------------
       final data = await supabaseClient.assetsAndTickets.select(
-        'id,tickets(orecal_id),assets(barcode,name,branch(name),floor,place,area,type),Ammount',
+        'id,tickets(orecal_id),assets(barcode,name,branch(name,area(name)),floor,place,type),Ammount',
       );
+
       if (data.isEmpty) {
+        print("No data to export");
         return;
       }
 
@@ -85,17 +197,18 @@ class AssetsCubit extends Cubit<AssetsState> {
           'branch': row['assets']?['branch']?['name'] ?? '',
           'floor': row['assets']?['floor'] ?? '',
           'place': row['assets']?['place'] ?? '',
-          'area': row['assets']?['area'] ?? '',
+          'area': row['assets']?['branch']?['area']?['name']  ?? '',
           'type': row['assets']?['type'] ?? '',
-          'amount': row['Ammount'],
+          'amount': row['Ammount'] ?? '',
         };
       }).toList();
 
+      // ---------------- Create Excel ----------------
       final workbook = xlsio.Workbook();
       final sheet = workbook.worksheets[0];
-
       final headers = combined.first.keys.toList();
 
+      // Header style
       final headerStyle = workbook.styles.add('HeaderStyle');
       headerStyle.bold = true;
       headerStyle.fontSize = 14;
@@ -103,12 +216,14 @@ class AssetsCubit extends Cubit<AssetsState> {
       headerStyle.backColor = '#008C43';
       headerStyle.fontColor = '#ffffff';
 
+      // Headers
       for (var i = 0; i < headers.length; i++) {
         final cell = sheet.getRangeByIndex(1, i + 1);
-        cell.setText(headers[i].toString());
+        cell.setText(headers[i].toUpperCase());
         cell.cellStyle = headerStyle;
       }
 
+      // Data rows
       for (var rowIndex = 0; rowIndex < combined.length; rowIndex++) {
         final row = combined[rowIndex];
         for (var colIndex = 0; colIndex < headers.length; colIndex++) {
@@ -118,52 +233,55 @@ class AssetsCubit extends Cubit<AssetsState> {
         }
       }
 
+      // Auto-fit columns
       final lastRow = data.length + 1;
       sheet.getRangeByIndex(1, 1, lastRow, headers.length).autoFitColumns();
 
+      // ---------------- Save File ----------------
       final List<int> bytes = workbook.saveAsStream();
       workbook.dispose();
 
       final Uint8List fileBytes = Uint8List.fromList(bytes);
+      final timestamp = DateFormat('d-MMM-yyyy').format(DateTime.now());
+      final fileName = "Assets-$timestamp.xlsx";
 
-      final timestamp = DateTime.now();
-      DateFormat('d - MMM - yyyy').format(timestamp);
-      final fileName = "Assets $timestamp.xlsx";
-
-      // Platform Check
-      if (kIsWeb ||
-          Platform.isWindows ||
-          Platform.isLinux ||
-          Platform.isMacOS) {
+      // ---------------- Platform Handling ----------------
+      if (kIsWeb || Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+        // ---- Web/Desktop ----
         await FileSaver.instance.saveFile(
           name: fileName,
           bytes: fileBytes,
           fileExtension: "xlsx",
           mimeType: MimeType.microsoftExcel,
         );
-      } else if (Platform.isAndroid) {
-        if (await Permission.storage.request().isDenied) {
-          return;
-        }
-        if (await Permission.storage.request().isDenied) {
-          return;
-        }
+      }
 
+      else if (Platform.isAndroid) {
+        // ---- Android ----
+        if (await Permission.storage.request().isDenied) {
+          return;
+        }else{}
+
+        // استخدم مجلد التنزيلات الرسمي
         final downloadsDir = await getExternalStorageDirectory();
         if (!downloadsDir!.existsSync()) {
           downloadsDir.createSync(recursive: true);
         }
+
         final filePath = "${downloadsDir.path}/$fileName";
         final file = File(filePath);
         await file.writeAsBytes(fileBytes);
+
         await OpenFilex.open(filePath);
         await SharePlus.instance.share(
           ShareParams(files: [XFile(file.path)], text: 'Assets Export'),
         );
-      } else if (Platform.isIOS) {
+      }
+
+      else if (Platform.isIOS) {
+        // ---- iOS ----
         final dir = await getApplicationDocumentsDirectory();
         final filePath = "${dir.path}/$fileName";
-
         final file = File(filePath);
         await file.writeAsBytes(fileBytes);
 
@@ -172,8 +290,11 @@ class AssetsCubit extends Cubit<AssetsState> {
           ShareParams(files: [XFile(file.path)], text: 'Assets Export'),
         );
       }
-    } catch (e) {
-      print(e);
+
+      print("✅ File exported successfully: $fileName");
+    } catch (e, st) {
+      print("❌ Error while exporting assets: $e");
+      print(st);
     }
   }
 
@@ -233,4 +354,21 @@ class AssetsCubit extends Cubit<AssetsState> {
       },
     );
   }
+  Future<void> deleteAsset(
+      BigInt? id,
+      ) async {
+    try {
+      await supabaseClient.assets.delete().eq('id', id!);
+
+      getAssets();
+      emit(GetAssetsSuccess(assets: allAssets));
+      Get.snackbar("Delete Success", ' Asset deleted successfully');
+    } catch (e) {
+      print(e);
+    }
+  }
+
+
+
+
 }

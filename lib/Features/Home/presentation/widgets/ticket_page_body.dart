@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import '../../../../constants/constants.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
+import '../../../../core/utils/widgets/custom_outline_button_widget.dart';
 import '../../../../core/utils/widgets/ticket_overview_widget.dart';
 import '../pages/ticket_details_page.dart';
 
@@ -231,24 +232,65 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                                 SizedBox(height: 5),
                                 SizedBox(
                                   width: screenWidth,
-                                  child: CustomButtonWidget(
-                                    onpressed: () {
-                                      Navigator.pop(context);
-                                      context
-                                          .read<TicketsCubit>()
-                                          .filterTickets(
-                                            area: selectedArea.value,
-                                            branch: selectedBranch.value,
-                                          );
-                                    },
-                                    screenWidth: screenWidth,
-                                    toppadding: 10,
-                                    textstyle: AppTextStyle.latoBold26(context),
-                                    text: 'Filter',
-                                    color: AppColors.green,
-                                    foregroundcolor: Theme.of(
-                                      context,
-                                    ).primaryColor,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+
+                                    children: [
+                                      SizedBox(
+                                        width: screenWidth * 0.4,
+                                        child: CustomButtonWidget(
+                                          screenWidth: screenWidth,
+                                          toppadding: 10,
+                                          textstyle:
+                                          AppTextStyle.latoBold26(
+                                            context,
+                                          ),
+                                          text: 'Filter',
+                                          color: AppColors.green,
+                                          foregroundcolor: Theme.of(
+                                            context,
+                                          ).primaryColor,
+                                          onpressed: () {
+                                            Navigator.pop(context);
+                                            context
+                                                .read<TicketsCubit>()
+                                                .filterTickets(
+                                              area: selectedArea.value,
+                                              branch: selectedBranch.value,
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: screenWidth * 0.4,
+                                        child: CustomOutlineButtonWidget(
+                                          screenWidth: screenWidth,
+                                          borderColor: AppColors.green,
+                                          topPadding: 10,
+                                          foregroundColor:
+                                          AppColors.green,
+                                          text: 'Clear',
+                                          textStyle:
+                                          AppTextStyle.latoBold26(
+                                            context,
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            selectedArea.value = null;
+                                            selectedBranch.value = null;
+                                            areaController.clear();
+                                            branchController.clear();
+                                            context
+                                                .read<TicketsCubit>()
+                                                .getTickets();
+                                          },
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],

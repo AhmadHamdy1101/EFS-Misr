@@ -1,11 +1,13 @@
 import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 import 'package:efs_misr/Features/Home/presentation/pages/add_assets_page.dart';
 import 'package:efs_misr/Features/Home/presentation/pages/assets_details_page.dart';
+import 'package:efs_misr/Features/Home/presentation/pages/edit_assets_page.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
 import 'package:efs_misr/core/utils/widgets/custom_outline_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
@@ -358,7 +360,44 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                             ),
                             elevation: 4,
                             margin: const EdgeInsets.all(12),
-                            child: Container(
+                            clipBehavior: Clip.hardEdge,
+                            child: Slidable(
+                              key: ValueKey(assets[index].id), // لازم key فريد
+                              endActionPane: ActionPane(
+                                motion: const DrawerMotion(),
+
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (context) {
+                                      context.read<AssetsCubit>().deleteAsset(
+                                        assets[index].id,
+                                      );
+                                    },
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.delete,
+                                    label: 'Delete'.tr,
+                                  ),
+                                ],
+                              ),
+                              startActionPane: ActionPane(
+                                motion: const DrawerMotion(),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (context) async {
+                                      Get.to(
+                                            () => EditAssetsPage(assets: assets[index]),
+                                      );
+                                    },
+                                    backgroundColor: AppColors.green,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.edit,
+                                    label: 'Edit'.tr,
+                                  ),
+                                ],
+                              ),
+
+                              child: Container(
                               padding: EdgeInsets.symmetric(
                                 vertical: 20,
                                 horizontal: 20,
@@ -387,11 +426,11 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                   ),
                                   Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           Text("${assets[index].type}".tr),
                                           Text('${assets[index].barcode}'),
@@ -436,21 +475,21 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                               Text(
                                                 "${assets[index].amount ?? 0}",
                                                 style:
-                                                    AppTextStyle.latoBold16(
-                                                      context,
-                                                    ).copyWith(
-                                                      color: AppColors.white,
-                                                    ),
+                                                AppTextStyle.latoBold16(
+                                                  context,
+                                                ).copyWith(
+                                                  color: AppColors.white,
+                                                ),
                                                 textAlign: TextAlign.center,
                                               ),
                                               Text(
                                                 "EGP".tr,
                                                 style:
-                                                    AppTextStyle.latoBold16(
-                                                      context,
-                                                    ).copyWith(
-                                                      color: AppColors.white,
-                                                    ),
+                                                AppTextStyle.latoBold16(
+                                                  context,
+                                                ).copyWith(
+                                                  color: AppColors.white,
+                                                ),
                                                 textAlign: TextAlign.center,
                                               ),
                                             ],
@@ -461,7 +500,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                                   ),
                                 ],
                               ),
-                            ),
+                            ),)
                           ),
                         );
                       },
