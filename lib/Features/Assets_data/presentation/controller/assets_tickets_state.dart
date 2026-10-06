@@ -13,7 +13,7 @@ final class AddAssetsTicketsLoading extends AssetsTicketsState {}
 final class GetAssetsTicketsLoading extends AssetsTicketsState {}
 
 final class GetAssetsTicketsSuccess extends AssetsTicketsState {
-  final List<Assets> assetsAndTickets;
+  final List<AssetsWithAssetsRepairEntity> assetsAndTickets;
   GetAssetsTicketsSuccess({required this.assetsAndTickets});
 }
 

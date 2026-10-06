@@ -35,6 +35,7 @@ class TicketsCubit extends Cubit<TicketsState> {
 
   final List<Tickets> allTickets = [];
   final List<Tickets> searchedTickets = [];
+  final List<Tickets> filterdTickets = [];
   final List<Users> engineers = [];
 
   Future<void> getTickets() async {
@@ -59,7 +60,7 @@ class TicketsCubit extends Cubit<TicketsState> {
     );
   }
 
-  searchTickets(String? search) {
+  void searchTickets(String? search) {
     if (search == null || search.isEmpty) {
       emit(GetTicketsSuccess(tickets: allTickets));
       return;
@@ -72,7 +73,10 @@ class TicketsCubit extends Cubit<TicketsState> {
       final branchName =
           ticket.branchObject?.name?.toLowerCase().contains(search) ?? false;
       final areaName =
-          ticket.branchObject?.areaObject?.name?.toLowerCase().contains(search) ?? false;
+          ticket.branchObject?.areaObject?.name?.toLowerCase().contains(
+            search,
+          ) ??
+          false;
       return idMatch || commentMatch || branchName || areaName;
     }).toList();
     searchedTickets.addAll(res);
@@ -177,7 +181,6 @@ class TicketsCubit extends Cubit<TicketsState> {
         );
       }
     } catch (e) {
-      print(e);
       Get.snackbar('Error', e.toString());
     }
   }
@@ -218,6 +221,58 @@ class TicketsCubit extends Cubit<TicketsState> {
       allTickets.addAll(updatedTickets);
       emit(GetTicketsSuccess(tickets: updatedTickets));
     });
+  }
+
+  Future<void> updateTicketResponseDate({
+    required String ticketId,
+    required DateTime responseDate,
+  }) async {
+    final result = await homeRepo.updateTicketResponseDate(
+      ticketID: ticketId,
+      responseDate: responseDate,
+    );
+    result.fold((l) {}, (ticket) {
+      final updatedTickets = allTickets.map((e) {
+        return e.id == ticket.id ? ticket : e;
+      }).toList();
+      allTickets.clear();
+      allTickets.addAll(updatedTickets);
+      emit(GetTicketsSuccess(tickets: updatedTickets));
+    });
+  }
+
+  Future<void> addAssetsRepair({
+    required BigInt assetsId,
+    required BigInt ticketId,
+    required String variation,
+    required String comment,
+    required num amount,
+  }) async {
+    final result = await homeRepo.addAssetsRepairs(
+      assetsId: assetsId,
+      ticketId: ticketId,
+      variation: variation,
+      comment: comment,
+      amount: amount,
+    );
+    result.fold(
+      (l) {
+        Get.snackbar('Error', l.message);
+      },
+      (ticket) {
+        final updatedTickets = allTickets.map((e) {
+          return e.id == ticket.id ? ticket : e;
+        }).toList();
+        allTickets.clear();
+        allTickets.addAll(updatedTickets);
+        emit(GetTicketsSuccess(tickets: updatedTickets));
+      },
+    );
+    Get.snackbar(
+      'Success',
+      'Details Added Successfully',
+      backgroundColor: AppColors.green,
+    );
   }
 
   Future<void> addTicket({
@@ -262,5 +317,38 @@ class TicketsCubit extends Cubit<TicketsState> {
         emit(GetTicketsSuccess(tickets: allTickets));
       },
     );
+  }
+
+  Future<void> deleteTicket({required BigInt ticketID}) async {
+    final res = await homeRepo.deleteTicket(ticketID: ticketID);
+    res.fold(
+      (l) {
+        Get.snackbar('Error', l.message);
+      },
+      (r) {
+        getTickets();
+        Get.snackbar('Success', r);
+        emit(GetTicketsSuccess(tickets: allTickets));
+      },
+    );
+  }
+
+  void filterTickets({BigInt? area, BigInt? branch}) {
+    if (area == null && branch == null) {
+      emit(GetTicketsSuccess(tickets: allTickets));
+      return;
+    }
+    filterdTickets.clear();
+
+    final res = allTickets.where((asset) {
+      final matchArea =
+          area == null || asset.branchObject?.areaObject?.id == area;
+      final matchBranch = branch == null || asset.branchObject?.id == branch;
+
+      return matchArea && matchBranch;
+    }).toList();
+
+    filterdTickets.addAll(res);
+    emit(GetTicketsSuccess(tickets: filterdTickets));
   }
 }

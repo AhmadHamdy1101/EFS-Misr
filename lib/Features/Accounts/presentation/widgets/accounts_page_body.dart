@@ -166,7 +166,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                 }
                 if (state is GetAccountsSuccess) {
                   final users = state.accounts;
-                  return ListView.builder(
+                  return RefreshIndicator(child: ListView.builder(
                     itemCount: users.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
@@ -205,7 +205,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                 SlidableAction(
                                   onPressed: (context) async {
                                     Get.to(
-                                      () => EditAccountPage(user: users[index]),
+                                          () => EditAccountPage(user: users[index]),
                                     );
                                   },
                                   backgroundColor: AppColors.green,
@@ -228,7 +228,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                   Row(
                                     spacing: 15,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Container(
@@ -263,19 +263,19 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                         width: screenWidth * 0.31,
                                         child: Column(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                           spacing: 5,
                                           children: [
                                             Column(
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                               children: [
                                                 Text("${users[index].name}".tr),
                                                 Text(
                                                   capitalizeEachWord(
                                                     users[index]
-                                                            .position
-                                                            ?.name ??
+                                                        .position
+                                                        ?.name ??
                                                         'No Possition',
                                                   ),
                                                 ),
@@ -284,11 +284,11 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                             Text(
                                               (users[index].company ?? '').tr,
                                               style:
-                                                  AppTextStyle.latoBold20(
-                                                    context,
-                                                  ).copyWith(
-                                                    color: AppColors.green,
-                                                  ),
+                                              AppTextStyle.latoBold20(
+                                                context,
+                                              ).copyWith(
+                                                color: AppColors.green,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -306,7 +306,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                               decoration: BoxDecoration(
                                                 color: Color(0xff8FCFAD),
                                                 borderRadius:
-                                                    BorderRadius.circular(50),
+                                                BorderRadius.circular(50),
                                               ),
                                               child: Row(
                                                 spacing: 4,
@@ -317,12 +317,12 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                                       users[index].status,
                                                     ).tr,
                                                     style:
-                                                        AppTextStyle.latoBold16(
-                                                          context,
-                                                        ).copyWith(
-                                                          color:
-                                                              AppColors.white,
-                                                        ),
+                                                    AppTextStyle.latoBold16(
+                                                      context,
+                                                    ).copyWith(
+                                                      color:
+                                                      AppColors.white,
+                                                    ),
                                                     textAlign: TextAlign.center,
                                                   ),
                                                 ],
@@ -335,12 +335,12 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                   ),
                                   Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     spacing: 10,
                                     children: [
                                       Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         spacing: 10,
                                         children: [
                                           SvgPicture.asset(
@@ -357,7 +357,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                       ),
                                       Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         spacing: 10,
                                         children: [
                                           SvgPicture.asset(
@@ -375,7 +375,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                       ),
                                       Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         spacing: 10,
                                         children: [
                                           SvgPicture.asset(
@@ -392,7 +392,7 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                                       ),
                                       Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         spacing: 10,
                                         children: [
                                           SvgPicture.asset(
@@ -418,7 +418,9 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                         ),
                       );
                     },
-                  );
+                  ), onRefresh: (){
+                    return context.read<AccountsCubit>().getAccounts();
+                  });
                 }
                 return Text('No Accounts');
               },
