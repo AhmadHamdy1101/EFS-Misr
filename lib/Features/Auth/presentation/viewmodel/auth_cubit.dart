@@ -1,14 +1,13 @@
 import 'dart:async';
 
-import 'package:efs_misr/Features/Home/presentation/pages/add_success_page.dart';
+import 'package:efs_misr/Features/Accounts/presentation/screens/add_success_page.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../../../constants/constants.dart';
-import '../../../Home/data/models/user.dart';
+import '../../../../core/models/user.dart';
 import '../../domain/auth_repo.dart';
 
 part 'auth_state.dart';

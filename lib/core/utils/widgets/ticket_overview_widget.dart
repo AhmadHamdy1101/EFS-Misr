@@ -1,8 +1,8 @@
-import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../Functions/GetDate_Function.dart';
+import '../../models/tickets.dart';
 import '../app_colors.dart';
 import '../app_text_styles.dart';
 
@@ -113,7 +113,7 @@ class TicketOverViewWidget extends StatelessWidget {
                       height: 24,
                       width: screenWidth * 0.32,
                       child: Text(
-                        '${ticketData.branchObject?.areaObject?.name ?? '-'}',
+                        ticketData.branchObject?.areaObject?.name ?? '-',
                         style: AppTextStyle.latoRegular19(context),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,

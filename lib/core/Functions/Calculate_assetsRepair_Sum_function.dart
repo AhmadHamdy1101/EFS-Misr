@@ -1,4 +1,5 @@
-import '../../Features/Home/data/models/assets_repair.dart';
+
+import '../models/assets_repair.dart';
 
 num? calculateTotalAmount(List<AssetsRepair> assetsRepair) {
   num total = 0;

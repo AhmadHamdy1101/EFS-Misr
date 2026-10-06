@@ -1,13 +1,14 @@
-import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
+import '../../../../core/models/user.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/widgets/custom_profile_wedget.dart';
 import '../../../../core/utils/widgets/custome_back_shape_wedget.dart';
 import '../../../../core/utils/widgets/custome_overview_widget.dart';
 import '../../../../core/utils/widgets/ticket_overview_widget.dart';
+import '../../../Tickets/presentation/controller/tickets_cubit.dart';
 
 class HomePageBody extends StatefulWidget {
   const HomePageBody({super.key, required this.user});

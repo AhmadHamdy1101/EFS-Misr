@@ -1,7 +1,7 @@
-import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
 import 'package:flutter/material.dart';
 
 import '../../Features/Home/presentation/pages/home_page.dart';
+import '../models/user.dart';
 
 class MobileLayout extends StatelessWidget {
   const MobileLayout({super.key, required this.user});

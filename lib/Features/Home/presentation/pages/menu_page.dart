@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/models/user.dart';
+import '../../../../core/models/user.dart';
 import '../widgets/menu_page_body.dart';
 
 class MenuPage extends StatelessWidget {

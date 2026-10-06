@@ -1,20 +1,21 @@
+import 'package:efs_misr/Features/Assets_data/domain/repo/assets_data_repo.dart';
 import 'package:efs_misr/Features/Auth/domain/auth_repo.dart';
 import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
-import 'package:efs_misr/Features/Home/presentation/pages/SplashScreen.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/accounts_cubit.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_repair_cubit.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_tickets_cubit.dart';
+import 'package:efs_misr/Features/Splash/presentation/splash_screen.dart';
+import 'package:efs_misr/Features/Accounts/presentation/controller/accounts_cubit.dart';
+import 'package:efs_misr/Features/Assets_data/presentation/controller/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/qrcode_cubit.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
+import 'package:efs_misr/Features/Tickets/domain/repo/tickets_repo.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:efs_misr/core/utils/app_translations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'Features/Assets_data/presentation/controller/assets_cubit.dart';
+import 'Features/Assets_data/presentation/controller/assets_repair_cubit.dart';
+import 'Features/Tickets/presentation/controller/tickets_cubit.dart';
 import 'constants/constants.dart';
 import 'core/utils/singelton.dart';
 
@@ -42,18 +43,18 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => AuthCubit(getIt.get<AuthRepo>())),
         BlocProvider(
           create: (context) =>
-              TicketsCubit(getIt.get<HomeRepo>())..getTickets(),
+              TicketsCubit(getIt.get<TicketsRepo>())..getTickets(),
         ),
         BlocProvider(
-          create: (context) => AssetsCubit(getIt.get<HomeRepo>())..getAssets(),
+          create: (context) => AssetsCubit(getIt.get<AssetsDataRepo>())..getAssets(),
         ),
-        BlocProvider(create: (context) => QrcodeCubit(getIt.get<HomeRepo>())),
+        BlocProvider(create: (context) => QrcodeCubit(getIt.get<AssetsDataRepo>())),
         BlocProvider(create: (context) => AccountsCubit(getIt.get<HomeRepo>())),
         BlocProvider(
-          create: (context) => AssetsTicketsCubit(getIt.get<HomeRepo>()),
+          create: (context) => AssetsTicketsCubit(getIt.get<AssetsDataRepo>(),getIt.get<TicketsRepo>()),
         ),
         BlocProvider(
-          create: (context) => AssetsRepairCubit(getIt.get<HomeRepo>()),
+          create: (context) => AssetsRepairCubit(getIt.get<AssetsDataRepo>()),
         ),
       ],
       child: GetMaterialApp(

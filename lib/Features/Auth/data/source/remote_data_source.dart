@@ -1,8 +1,9 @@
 
-import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
 
 import '../../../../constants/constants.dart';
-import '../../../Home/data/models/user.dart';
+import '../../../../core/models/supadart_header.dart';
+import '../../../../core/models/user.dart';
+
 
 abstract class AuthRemoteData{
   Future<Users> getUserData({required String userId});

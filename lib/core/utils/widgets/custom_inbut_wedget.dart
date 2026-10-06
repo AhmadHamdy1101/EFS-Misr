@@ -18,7 +18,7 @@ class CustomInputWidget extends StatelessWidget {
     this.onTap,
     this.iconColor,
   });
-  final iconColor;
+  final Color? iconColor;
   final String inbutIcon;
   final String? inbutHintText;
   final bool changeToPass;

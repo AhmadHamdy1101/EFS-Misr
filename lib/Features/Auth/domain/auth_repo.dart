@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../core/Errors/failure.dart';
-import '../../Home/data/models/user.dart';
+import '../../../core/models/user.dart';
 
 abstract class AuthRepo {
   Future<Either<Failure, String>> saveUsersData({

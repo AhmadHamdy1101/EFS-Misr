@@ -1,15 +1,15 @@
-import 'package:efs_misr/Features/Home/presentation/pages/ticket_page.dart';
-import 'package:efs_misr/Features/Home/presentation/widgets/QRView.dart';
+import 'package:efs_misr/Features/Home/presentation/widgets/qr_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/models/user.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/widgets/custom_navigation_bar.dart';
-import '../../data/models/user.dart';
+import '../../../Tickets/presentation/screens/ticket_page.dart';
 import '../widgets/home_page_body.dart';
-import 'acounts_page.dart';
-import 'assets_page.dart';
+import '../../../Accounts/presentation/screens/acounts_page.dart';
+import '../../../Assets_data/presentation/screens/assets_page.dart';
 import 'menu_page.dart';
 
 class HomePage extends StatefulWidget {
