@@ -56,6 +56,7 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
         ],
       ),
       child: DropdownButtonFormField<String>(
+
         dropdownColor: Theme.of(context).primaryColor,
         borderRadius: BorderRadius.circular(10),
         isExpanded: true,
@@ -87,6 +88,12 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
           }
         },
         decoration: InputDecoration(
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(
+              color: Colors.red,
+            ),
+          ),
           prefixIconConstraints: const BoxConstraints(
             minWidth: 30,
             minHeight: 30,

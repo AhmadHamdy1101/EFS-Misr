@@ -23,11 +23,11 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(url: supbaseUrl, anonKey: supbaseKey);
   setup();
-  runApp(MyApp());
+  runApp(MyApp(themeMode: ThemeMode.system,));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required ThemeMode themeMode});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => AuthCubit(getIt.get<AuthRepo>())),
         BlocProvider(
           create: (context) =>
-              TicketsCubit(getIt.get<TicketsRepo>())..getTickets(),
+              TicketsCubit(ticketsRepo: getIt.get<TicketsRepo>(), assetsDataRepo: getIt.get<AssetsDataRepo>())..getTickets(),
         ),
         BlocProvider(
           create: (context) => AssetsCubit(getIt.get<AssetsDataRepo>())..getAssets(),

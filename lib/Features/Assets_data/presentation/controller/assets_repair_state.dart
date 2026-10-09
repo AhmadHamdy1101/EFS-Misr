@@ -15,8 +15,8 @@ final class GetAssetsRepairDataSuccess extends AssetsRepairState {
 
 final class GetAssetsRepairDataFailed extends AssetsRepairState {
   final String errMsg;
-  final BigInt assetID;
-  GetAssetsRepairDataFailed({required this.errMsg, required this.assetID});
+
+  GetAssetsRepairDataFailed({required this.errMsg,});
 }
 
 final class GetAssetsRepairDataLoading extends AssetsRepairState {

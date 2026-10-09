@@ -1,18 +1,13 @@
-import 'dart:io';
-
+import 'dart:developer';
+import 'package:efs_misr/Features/Assets_data/domain/entities/assets_entity.dart';
 import 'package:efs_misr/Features/Assets_data/domain/repo/assets_data_repo.dart';
-import 'package:file_saver/file_saver.dart';
-import 'package:flutter/foundation.dart';
+import 'package:efs_misr/core/Functions/convert_to_excel_function.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
+import 'package:get/get.dart';
 import '../../../../constants/constants.dart';
-import '../../../../core/models/assets.dart';
 import '../../../../core/models/supadart_header.dart';
+import '../../../../core/utils/app_colors.dart';
 
 part 'assets_state.dart';
 
@@ -21,9 +16,9 @@ class AssetsCubit extends Cubit<AssetsState> {
 
   AssetsCubit(this.assetsRepo) : super(AssetsInitial());
 
-  final List<Assets> allAssets = [];
-  final List<Assets> searchedAssets = [];
-  final List<Assets> filterdAssets = [];
+  final List<AssetsEntity> allAssets = [];
+  final List<AssetsEntity> searchedAssets = [];
+  final List<AssetsEntity> filterdAssets = [];
 
   Future<void> getAssets() async {
     emit(GetAssetsLoading());
@@ -48,12 +43,12 @@ class AssetsCubit extends Cubit<AssetsState> {
     }
     searchedAssets.clear();
     final res = allAssets.where((asset) {
-      final nameMatch = asset.type!.toLowerCase().contains(search);
+      final nameMatch = asset.type.toLowerCase().contains(search);
       final branchName =
-          asset.branchObject?.name?.toLowerCase().contains(search) ?? false;
+          asset.branchName.toLowerCase().contains(search) ;
       final areaName =
-          asset.branchObject?.areaObject?.name?.toLowerCase().contains(search) ?? false;
-      final barcode = asset.barcode?.toLowerCase().contains(search) ?? false;
+          asset.area.toLowerCase().contains(search) ;
+      final barcode = asset.barCode.toLowerCase().contains(search) ;
       return nameMatch || branchName || areaName || barcode;
     }).toList();
     searchedAssets.addAll(res);
@@ -66,128 +61,61 @@ class AssetsCubit extends Cubit<AssetsState> {
       if (data.isEmpty) {
         return;
       }
-
-      final combined = data.map((row) {
-        return {
-          'id': row['id'],
-          'barcode': row['assets']?['barcode'] ?? '',
-          'name': row['assets']?['name'] ?? '',
-          'branch': row['assets']?['branch']?['name'] ?? '',
-          'floor': row['assets']?['floor'] ?? '',
-          'place': row['assets']?['place'] ?? '',
-          'area': row['assets']?['area'] ?? '',
-          'type': row['assets']?['type'] ?? '',
-          'amount': row['Ammount'],
-
-
-        };
-      }).toList();
-
-
-      final workbook = xlsio.Workbook();
-      final sheet = workbook.worksheets[0];
-
-      final headers = combined.first.keys.toList();
-
-      final headerStyle = workbook.styles.add('HeaderStyle');
-      headerStyle.bold = true;
-      headerStyle.fontSize = 14;
-      headerStyle.hAlign = xlsio.HAlignType.center;
-      headerStyle.backColor = '#008C43';
-      headerStyle.fontColor = '#ffffff';
-
-
-
-      for (var i = 0; i < headers.length; i++) {
-        final cell = sheet.getRangeByIndex(1, i + 1);
-        cell.setText(headers[i].toString());
-        cell.cellStyle = headerStyle;
-      }
-
-      for (var rowIndex = 0; rowIndex < combined.length; rowIndex++) {
-        final row = combined[rowIndex];
-        for (var colIndex = 0; colIndex < headers.length; colIndex++) {
-          final value = row[headers[colIndex]]?.toString() ?? '';
-          final cell = sheet.getRangeByIndex(rowIndex + 2, colIndex + 1);
-          cell.setText(value);
-        }
-      }
-
-      final lastRow = data.length + 1;
-      sheet.getRangeByIndex(1, 1, lastRow, headers.length).autoFitColumns();
-
-      final List<int> bytes = workbook.saveAsStream();
-      workbook.dispose();
-
-      final Uint8List fileBytes = Uint8List.fromList(bytes);
-
-      final timestamp = DateTime.now();
-      DateFormat('d - MMM - yyyy').format(timestamp);
-      final fileName = "Assets $timestamp.xlsx";
-
-      // Platform Check
-      if (kIsWeb ||
-          Platform.isWindows ||
-          Platform.isLinux ||
-          Platform.isMacOS) {
-        await FileSaver.instance.saveFile(
-          name: fileName,
-          bytes: fileBytes,
-          fileExtension: "xlsx",
-          mimeType: MimeType.microsoftExcel,
-        );
-
-      } else if (Platform.isAndroid) {
-        if (await Permission.storage.request().isDenied) {
-          return;
-        }
-        if (await Permission.storage.request().isDenied) {
-          return;
-        }
-
-        final downloadsDir = await getExternalStorageDirectory();
-        if (!downloadsDir!.existsSync()) {
-          downloadsDir.createSync(recursive: true);
-        }
-        final filePath = "${downloadsDir.path}/$fileName";
-        final file = File(filePath);
-        await file.writeAsBytes(fileBytes);
-        await OpenFilex.open(filePath);
-        await SharePlus.instance.share(
-          ShareParams(files: [XFile(file.path)], text: 'Assets Export'),
-        );
-
-      } else if (Platform.isIOS) {
-        final dir = await getApplicationDocumentsDirectory();
-        final filePath = "${dir.path}/$fileName";
-
-        final file = File(filePath);
-        await file.writeAsBytes(fileBytes);
-
-        await OpenFilex.open(file.path);
-        await SharePlus.instance.share(
-          ShareParams(files: [XFile(file.path)], text: 'Assets Export'),
-        );
-      }
-
+      await convertDataToExcel(data);
     } catch (e) {
-      print(e);
-
+     log(e.toString());
     }
   }
-  void filterAssets({BigInt? area, BigInt? branch}) {
+  void filterAssets({int? area, int? branch}) {
     filterdAssets.clear();
 
     final res = allAssets.where((asset) {
       final matchArea = area == null ||
-          asset.branchObject?.areaObject?.id == area;
+          asset.branchObject.areaId == area;
       final matchBranch = branch == null ||
-          asset.branchObject?.id == branch;
+          asset.branchObject.id == branch;
       return matchBranch || matchArea;
     }).toList();
 
     filterdAssets.addAll(res);
     emit(GetAssetsSuccess(assets: filterdAssets));
+  }
+  Future<void> addAssetsData({
+    required String? barcode,
+    required String? name,
+    required String? floor,
+    required String? place,
+    required String? type,
+    required BigInt? branch,
+  }) async {
+    final res = await assetsRepo.addAssets(
+      barcode: barcode,
+      name: name,
+      floor: floor,
+      place: place,
+      type: type,
+      branch: branch,
+    );
+    res.fold(
+          (l) {
+        Get.snackbar(
+          'Error',
+          l.message,
+          backgroundColor: Colors.red,
+          colorText: AppColors.white,
+        );
+      },
+          (r) {
+        getAssets();
+        emit(GetAssetsSuccess(assets: allAssets));
+        Get.snackbar(
+          "Add Assets Success",
+          'Assets Added Successfully',
+          backgroundColor: AppColors.green,
+          colorText: AppColors.white,
+        );
+      },
+    );
   }
 
 

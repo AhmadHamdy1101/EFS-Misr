@@ -9,6 +9,6 @@ final class QrcodeFailed extends QrcodeState {
   QrcodeFailed({required this.errMsg});
 }
 final class QrcodeSuccess extends QrcodeState {
-  final Assets assets;
+  final AssetsEntity assets;
   QrcodeSuccess({required this.assets});
 }

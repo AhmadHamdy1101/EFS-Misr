@@ -6,6 +6,9 @@ class AddAccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AddAccountPageBody();
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: AddAccountPageBody()
+    );
   }
 }

@@ -40,9 +40,9 @@ class TicketsList extends StatelessWidget {
                     context.read<AssetsTicketsCubit>().getAssetsWithTicketId(
                       ticketId: state.tickets[index].id,
                     );
-                    context.read<AssetsRepairCubit>().getAssetsRepairDetails(
-                      ticketID: state.tickets[index].id,
-                    );
+                    // context.read<AssetsRepairCubit>().getAssetsRepairDetails(
+                    //   ticketID: state.tickets[index].id, assetID: ,
+                    // );
                     Get.to(
                       () => TicketDetailsPage(tickets: state.tickets[index]),
                     );

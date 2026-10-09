@@ -52,7 +52,8 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                     textEditingController: search,
                     textInputType: TextInputType.text,
                     onChanged: (search) {
-                      return context.read<TicketsCubit>().searchTickets(search);
+                       context.read<TicketsCubit>().searchTickets(search);
+                       return null;
                     },
                   ),
                 ),

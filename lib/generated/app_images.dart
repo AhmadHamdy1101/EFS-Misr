@@ -14,25 +14,32 @@ class $AppImagesImagesGen {
   const $AppImagesImagesGen();
 
   final SvgGenImage customerTable = const SvgGenImage(
-      'assets/images/Customer table.svg');
+    'assets/images/Customer table.svg',
+  );
   final SvgGenImage digitalCall = const SvgGenImage(
-      'assets/images/Digital call.svg');
+    'assets/images/Digital call.svg',
+  );
   final SvgGenImage electricity = const SvgGenImage(
-      'assets/images/Electricity.svg');
+    'assets/images/Electricity.svg',
+  );
   final SvgGenImage email = const SvgGenImage('assets/images/Email.svg');
   final SvgGenImage excel = const SvgGenImage('assets/images/Excel.svg');
   final AssetGenImage frame7 = const AssetGenImage('assets/images/Frame7.png');
   final SvgGenImage furniture = const SvgGenImage(
-      'assets/images/Furniture.svg');
+    'assets/images/Furniture.svg',
+  );
   final SvgGenImage language = const SvgGenImage('assets/images/Language.svg');
   final SvgGenImage notifecation = const SvgGenImage(
-      'assets/images/Notifecation.svg');
+    'assets/images/Notifecation.svg',
+  );
   final SvgGenImage password = const SvgGenImage('assets/images/Password.svg');
   final SvgGenImage phone = const SvgGenImage('assets/images/Phone.svg');
   final SvgGenImage qrCodeScanner = const SvgGenImage(
-      'assets/images/Qr code scanner.svg');
+    'assets/images/Qr code scanner.svg',
+  );
   final SvgGenImage rotatingEmployeeChair = const SvgGenImage(
-      'assets/images/Rotating employee chair.svg');
+    'assets/images/Rotating employee chair.svg',
+  );
   final AssetGenImage signIn = const AssetGenImage('assets/images/SignIn.png');
   final SvgGenImage vector = const SvgGenImage('assets/images/Vector.svg');
   final SvgGenImage vector1 = const SvgGenImage('assets/images/Vector1.svg');
@@ -41,7 +48,8 @@ class $AppImagesImagesGen {
   final SvgGenImage accounts = const SvgGenImage('assets/images/accounts.svg');
   final SvgGenImage address = const SvgGenImage('assets/images/address.svg');
   final SvgGenImage airConditioning = const SvgGenImage(
-      'assets/images/air conditioning.svg');
+    'assets/images/air conditioning.svg',
+  );
   final SvgGenImage arrow = const SvgGenImage('assets/images/arrow.svg');
   final SvgGenImage assets = const SvgGenImage('assets/images/assets.svg');
   final SvgGenImage comment = const SvgGenImage('assets/images/comment.svg');
@@ -49,9 +57,11 @@ class $AppImagesImagesGen {
   final SvgGenImage curtain = const SvgGenImage('assets/images/curtain.svg');
   final SvgGenImage date = const SvgGenImage('assets/images/date.svg');
   final SvgGenImage deductions = const SvgGenImage(
-      'assets/images/deductions.svg');
-  final SvgGenImage employeeSOffice = const SvgGenImage(
-      'assets/images/employee office.svg');
+    'assets/images/deductions.svg',
+  );
+  final SvgGenImage employeeOffice = const SvgGenImage(
+    'assets/images/employee office.svg',
+  );
   final SvgGenImage engineer = const SvgGenImage('assets/images/engineer.svg');
   final SvgGenImage home = const SvgGenImage('assets/images/home.svg');
   final SvgGenImage iconlogo = const SvgGenImage('assets/images/iconlogo.svg');
@@ -62,7 +72,8 @@ class $AppImagesImagesGen {
   final SvgGenImage position = const SvgGenImage('assets/images/position.svg');
   final SvgGenImage priority = const SvgGenImage('assets/images/priority.svg');
   final AssetGenImage profileJpg = const AssetGenImage(
-      'assets/images/profile.jpg');
+    'assets/images/profile.jpg',
+  );
   final SvgGenImage profileSvg = const SvgGenImage('assets/images/profile.svg');
   final SvgGenImage repair = const SvgGenImage('assets/images/repair.svg');
   final SvgGenImage role = const SvgGenImage('assets/images/role.svg');
@@ -71,7 +82,8 @@ class $AppImagesImagesGen {
   final SvgGenImage submited = const SvgGenImage('assets/images/submited.svg');
   final SvgGenImage ticket = const SvgGenImage('assets/images/ticket.svg');
   final SvgGenImage tobShapwithlogo = const SvgGenImage(
-      'assets/images/tobShapwithlogo.svg');
+    'assets/images/tobShapwithlogo.svg',
+  );
   final AssetGenImage user = const AssetGenImage('assets/images/user.png');
 }
 
@@ -86,7 +98,6 @@ class AssetGenImage {
   const AssetGenImage(this._assetName, {this.size, this.flavors = const {}});
 
   final String _assetName;
-
 
   final Size? size;
   final Set<String> flavors;
@@ -144,15 +155,8 @@ class AssetGenImage {
     );
   }
 
-  ImageProvider provider({
-    AssetBundle? bundle,
-    String? package,
-  }) {
-    return AssetImage(
-      _assetName,
-      bundle: bundle,
-      package: package,
-    );
+  ImageProvider provider({AssetBundle? bundle, String? package}) {
+    return AssetImage(_assetName, bundle: bundle, package: package);
   }
 
   Widget custom({
@@ -230,4 +234,3 @@ class SvgGenImage {
 
   String get keyName => _assetName;
 }
-

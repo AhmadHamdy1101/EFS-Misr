@@ -1,11 +1,12 @@
 import 'package:efs_misr/Features/Assets_data/presentation/controller/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/qrcode_cubit.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+
+import '../../../Tickets/presentation/controller/tickets_cubit.dart';
 
 class QRScanTicketPage extends StatefulWidget {
   const QRScanTicketPage({super.key, required this.ticketId});
@@ -29,7 +30,7 @@ class _QRScanTicketPageState extends State<QRScanTicketPage> {
           if (state is QrcodeSuccess) {
             // Get.to(AssetsDetailsPage(assets: state.assets,));
             context.read<AssetsTicketsCubit>().addAssetsAndTickets(
-              assetsId: state.assets.id,
+              assetsId: BigInt.from(state.assets.id),
               ticketId: widget.ticketId,
             );
             context.read<TicketsCubit>().updateTicketResponseDate(

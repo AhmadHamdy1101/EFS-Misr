@@ -67,7 +67,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                               selectedRepairValue: selectedRepairValue,
                               amount: amount,
                               ticket: widget.ticket,
-                              asset: data[index],
+                              asset: data[index].assets,
                             );
                           },
                         );
@@ -102,7 +102,7 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                     ),
                                     child: ClipRRect(
                                       child: SvgPicture.asset(
-                                        'assets/images/${data[index].type}.svg',
+                                        'assets/images/${data[index].assets.type}.svg',
                                         color: AppColors.green,
                                         width:
                                             ScreensSize(context).screenWidth *
@@ -122,19 +122,19 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text("${data[index].type}".tr),
-                                            Text('${data[index].barcode}'),
+                                            Text("${data[index].assets.type}".tr),
+                                            Text('${data[index].assets.barcode}'),
                                           ],
                                         ),
                                         Text(
-                                          '${data[index].branchObject?.name}'
+                                          '${data[index].assets.branchObject?.name}'
                                               .tr,
                                           style: AppTextStyle.latoRegular16(
                                             context,
                                           ).copyWith(color: AppColors.green),
                                         ),
                                         Text(
-                                          '${data[index].branchObject?.area}'
+                                          '${data[index].assets.branchObject?.area}'
                                               .tr,
                                           style: AppTextStyle.latoRegular16(
                                             context,

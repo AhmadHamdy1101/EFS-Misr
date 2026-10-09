@@ -1,4 +1,6 @@
-import 'package:efs_misr/Features/Home/data/models/supadart_exports.dart';
+
+import '../../../../core/models/assets.dart';
+import '../../../../core/models/assets_repair.dart';
 
 class AssetsWithAssetsRepairEntity {
   final Assets assets;

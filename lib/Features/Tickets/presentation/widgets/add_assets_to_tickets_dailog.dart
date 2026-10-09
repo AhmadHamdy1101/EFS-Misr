@@ -86,7 +86,7 @@ class AddAssetsToTicketsDialog extends StatelessWidget {
                   );
                   await context
                       .read<AssetsRepairCubit>()
-                      .getAssetsRepairDetails(ticketID: ticket.id);
+                      .getAssetsRepairDetails(ticketID: ticket.id, assetID: asset.id);
                 },
                 text: 'Add',
                 foregroundcolor: Theme.of(

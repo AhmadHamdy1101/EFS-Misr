@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:efs_misr/Features/Assets_data/domain/repo/assets_data_repo.dart';
 import 'package:efs_misr/Features/Tickets/domain/repo/tickets_repo.dart';
 import 'package:efs_misr/Features/Tickets/presentation/screens/add_tickets_page.dart';
 import 'package:efs_misr/Features/Accounts/presentation/screens/add_success_page.dart';
@@ -25,9 +26,10 @@ import '../../../../core/models/user.dart';
 part 'tickets_state.dart';
 
 class TicketsCubit extends Cubit<TicketsState> {
-  TicketsRepo ticketsRepo;
+  final TicketsRepo ticketsRepo;
+  final AssetsDataRepo assetsDataRepo;
 
-  TicketsCubit(this.ticketsRepo) : super(HomeInitial());
+  TicketsCubit({required this.ticketsRepo, required this.assetsDataRepo}) : super(HomeInitial());
 
   int totalTickets = 0;
   int totalDoneTickets = 0;
@@ -227,7 +229,7 @@ class TicketsCubit extends Cubit<TicketsState> {
     required String ticketId,
     required DateTime responseDate,
   }) async {
-    final result = await homeRepo.updateTicketResponseDate(
+    final result = await ticketsRepo.updateTicketResponseDate(
       ticketID: ticketId,
       responseDate: responseDate,
     );
@@ -248,7 +250,7 @@ class TicketsCubit extends Cubit<TicketsState> {
     required String comment,
     required num amount,
   }) async {
-    final result = await homeRepo.addAssetsRepairs(
+    final result = await assetsDataRepo.addAssetsRepairs(
       assetsId: assetsId,
       ticketId: ticketId,
       variation: variation,
@@ -320,7 +322,7 @@ class TicketsCubit extends Cubit<TicketsState> {
   }
 
   Future<void> deleteTicket({required BigInt ticketID}) async {
-    final res = await homeRepo.deleteTicket(ticketID: ticketID);
+    final res = await ticketsRepo.deleteTicket(ticketID: ticketID);
     res.fold(
       (l) {
         Get.snackbar('Error', l.message);

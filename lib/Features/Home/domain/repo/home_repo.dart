@@ -10,7 +10,10 @@ abstract class HomeRepo {
 
 
 
-
+  Future<Either<Failure, Users>> updateUserImage({
+    required BigInt userID,
+    required String? image,
+  });
 
 
 

@@ -1,5 +1,4 @@
-import 'package:efs_misr/Features/Home/data/models/supadart_header.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/assets_cubit.dart';
+import 'package:efs_misr/Features/Assets_data/presentation/controller/assets_cubit.dart';
 import 'package:efs_misr/core/utils/widgets/custom_dropdown_widget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_inbut_wedget.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import '../../../../constants/constants.dart';
+import '../../../../core/models/supadart_header.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 
@@ -33,8 +33,9 @@ class _AddAssetsPageBodyState extends State<AddAssetsPageBody> {
   final branchData = <Map<String, dynamic>>[].obs;
 
   Future<void> loadBranch() async {
-    final brnachData = await supabaseClient.branch.select();
-    branchData.value = brnachData.map<Map<String, dynamic>>((po) {
+
+    final brnData = await supabaseClient.branch.select();
+    branchData.value = brnData.map<Map<String, dynamic>>((po) {
       return {"name": po["name"], "value": po["id"].toString()};
     }).toList();
   }

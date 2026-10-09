@@ -14,7 +14,7 @@ final class GetAssetsFailure extends AssetsState {
 }
 
 final class GetAssetsSuccess extends AssetsState {
-  final List<Assets> assets;
+  final List<AssetsEntity> assets;
   GetAssetsSuccess({required this.assets});
 }
 
@@ -23,7 +23,7 @@ final class GetAssetsLoading extends AssetsState {}
 final class AddAssetsLoading extends AssetsState {}
 
 class GetAssetsFiltered extends AssetsState {
-  final List<Assets> assets;
+  final List<AssetsEntity> assets;
   final bool resetDropdown;
   GetAssetsFiltered({required this.assets, this.resetDropdown = false});
 }

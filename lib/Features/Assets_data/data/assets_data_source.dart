@@ -1,13 +1,15 @@
 
 
+import 'package:efs_misr/Features/Assets_data/domain/entities/assets_entity.dart';
+
 import '../../../constants/constants.dart';
 import '../../../core/models/assets.dart';
 import '../../../core/models/assets_repair.dart';
 import '../../../core/models/supadart_header.dart';
 
 abstract class AssetsDataSource {
-  Future<List<Assets>> getAssets();
-  Future<Assets> getAssetsByQrCode(String qrCode);
+  Future<List<AssetsEntity>> getAssets();
+  Future<AssetsEntity> getAssetsByQrCode(String qrCode);
   Future<List<AssetsRepair>> getAssetsRepairDetailsWithTicketId({
     required BigInt ticketID,
   });
@@ -20,24 +22,25 @@ abstract class AssetsDataSource {
 
 class AssetsDataSourceImpl extends AssetsDataSource{
   @override
-  Future<List<Assets>> getAssets() async {
+  Future<List<AssetsEntity>> getAssets() async {
     final assets = await supabaseClient.assets
         .select('''
       *,
       branch(*)
     ''')
         .withConverter(Assets.converter);
+    final assetsEntity = assets.map((e) => e.toAssetsEntity()).toList();
 
-    return assets;
+    return assetsEntity;
   }
 
   @override
-  Future<Assets> getAssetsByQrCode(String qrCode) async {
+  Future<AssetsEntity> getAssetsByQrCode(String qrCode) async {
     final asset = await supabaseClient.assets
         .select('*,branch(*)')
         .eq('barcode', qrCode)
         .withConverter(Assets.converter);
-    return asset[0];
+    return asset.first.toAssetsEntity();
   }
   @override
   Future<List<Assets>> getAssetsWithTicketID({required BigInt ticketId}) async {

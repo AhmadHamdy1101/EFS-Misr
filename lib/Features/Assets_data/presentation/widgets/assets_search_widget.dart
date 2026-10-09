@@ -1,3 +1,4 @@
+import 'package:efs_misr/generated/app_images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,7 @@ class AssetsSearchWidget extends StatelessWidget {
               onChanged: (search) {
                 return context.read<AssetsCubit>().searchAssets(search);
               },
-              inbutIcon: 'assets/images/search.svg',
+              inbutIcon: AppImages.images.search.path,
               inbutHintText: 'Search'.tr,
               changeToPass: false,
               textEditingController: search,

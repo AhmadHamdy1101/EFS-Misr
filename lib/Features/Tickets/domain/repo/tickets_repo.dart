@@ -11,7 +11,7 @@ abstract class TicketsRepo {
 
   // Future<Either<Failure, List<Users>>> getUsers();
 
-
+  Future<Either<Failure, String>> deleteTicket({required BigInt ticketID});
 
   Future<Either<Failure, List<Tickets>>> getTicketsWithAssetsID({
     required BigInt assetId,
@@ -37,5 +37,9 @@ abstract class TicketsRepo {
     required String priority,
     required DateTime requestDate,
     required BigInt engineer,
+  });
+  Future<Either<Failure, Tickets>> updateTicketResponseDate({
+    required String ticketID,
+    required DateTime responseDate,
   });
 }

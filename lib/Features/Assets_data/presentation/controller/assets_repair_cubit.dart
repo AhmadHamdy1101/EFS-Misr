@@ -1,7 +1,8 @@
+import 'dart:developer';
+
 import 'package:efs_misr/Features/Assets_data/domain/repo/assets_data_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-
 import '../../../../core/models/assets_repair.dart';
 import '../../../../core/models/tickets.dart';
 import '../../../../core/utils/app_colors.dart';
@@ -14,18 +15,17 @@ class AssetsRepairCubit extends Cubit<AssetsRepairState> {
 
   AssetsRepairCubit(this.assetsRepo) : super(AssetsRepairInitial());
 
-  Future<void> getAssetsRepairDetails({required BigInt ticketID}) async {
-    emit(GetAssetsRepairDataLoading());
+  Future<void> getAssetsRepairDetails({required BigInt ticketID,required BigInt assetID}) async {
+    emit(GetAssetsRepairDataLoading(assetID: assetID));
 
     final res = await assetsRepo.getAssetsRepairWithTicketID(ticketID: ticketID);
 
     res.fold(
       (fail) {
-        print(fail.message);
-        emit(GetAssetsRepairDataFailed(errMsg: fail.message));
+        emit(GetAssetsRepairDataFailed(errMsg: fail.message,));
       },
       (data) {
-        emit(GetAssetsRepairDataSuccess(assetsRepair: data));
+        emit(GetAssetsRepairDataSuccess(assetsRepair: data, assetID: assetID));
       },
     );
   }
@@ -63,7 +63,7 @@ class AssetsRepairCubit extends Cubit<AssetsRepairState> {
     );
     result.fold(
       (l) {
-        print(l.message);
+        log("Error while updating ticket");
       },
       (r) {
         Get.snackbar(

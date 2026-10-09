@@ -113,4 +113,38 @@ class TicketRepoImpl extends TicketsRepo{
   }
 
 
+  @override
+  Future<Either<Failure, Tickets>> updateTicketResponseDate({
+    required String ticketID,
+    required DateTime responseDate,
+  }) async {
+    try {
+      final tickets = await supabaseClient.tickets
+          .update(Tickets.update(responseDate: responseDate))
+          .eq('id', ticketID)
+          .select('''
+      *,
+      branch(*,area(*)),
+      engineer:users!tickets_engineer_fkey(*,positions(*))
+    ''')
+          .single()
+          .withConverter(Tickets.converterSingle);
+      return Right(tickets);
+    } catch (e) {
+      return Left(Failure.fromException(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> deleteTicket({
+    required BigInt ticketID,
+  }) async {
+    try {
+      await supabaseClient.tickets.delete().eq(Tickets.c_id, ticketID);
+      return Right('Deleted Successfully');
+    } catch (e) {
+      return Left(Failure.fromException(e));
+    }
+  }
+
 }

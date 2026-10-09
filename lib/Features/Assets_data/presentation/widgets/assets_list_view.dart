@@ -1,3 +1,4 @@
+import 'package:efs_misr/Features/Assets_data/domain/entities/assets_entity.dart';
 import 'package:efs_misr/Features/Assets_data/presentation/screens/assets_details_page.dart';
 import 'package:efs_misr/constants/screens_size.dart';
 import 'package:efs_misr/core/models/assets.dart';
@@ -13,27 +14,20 @@ import '../controller/assets_tickets_cubit.dart';
 class AssetsListView extends StatelessWidget {
   const AssetsListView({super.key, required this.assets});
 
-  final List<Assets> assets;
+  final List<AssetsEntity> assets;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: assets.length,
       itemBuilder: (context, index) {
-        // BigInt total = BigInt.zero;
-        // for (final ticket in assets[index].tickets!) {
-        //   if (ticket.amount != null) {
-        //     total += ticket.amount!;
-        //   }
-        // }
-
         return GestureDetector(
           onTap: () async {
             context.read<AssetsTicketsCubit>().getTicketsWithAssetsId(
-              assetId: assets[index].id,
+              assetId: BigInt.from(assets[index].id),
             );
             context.read<AssetsRepairCubit>().getAssetsRepairDetailsWithAssetId(
-              assetID: assets[index].id,
+              assetID: BigInt.from(assets[index].id),
             );
             Get.to(AssetsDetailsPage(assets: assets[index]));
           },
@@ -63,7 +57,7 @@ class AssetsListView extends StatelessWidget {
                         'assets/images/${assets[index].type}.svg',
                         color: AppColors.green,
                         width: ScreensSize(context).screenWidth * 0.1,
-                        height: ScreensSize(context).screenHeight * 0.1,
+                        height: ScreensSize(context).screenHeight * 0.05,
                       ),
                     ),
                   ),
@@ -73,18 +67,18 @@ class AssetsListView extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("${assets[index].type}".tr),
-                          Text('${assets[index].barcode}'),
+                          Text(assets[index].type.tr),
+                          Text(assets[index].barCode),
                         ],
                       ),
                       Text(
-                        '${assets[index].branchObject?.name}'.tr,
+                        assets[index].branchObject.name.tr,
                         style: AppTextStyle.latoRegular16(
                           context,
                         ).copyWith(color: AppColors.green),
                       ),
                       Text(
-                        '${assets[index].branchObject?.area}'.tr,
+                        assets[index].area.tr,
                         style: AppTextStyle.latoRegular16(
                           context,
                         ).copyWith(color: AppColors.gray),
@@ -110,7 +104,7 @@ class AssetsListView extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "${assets[index].amount ?? 0}",
+                                "${assets[index].totalAmount }",
                                 style: AppTextStyle.latoBold16(
                                   context,
                                 ).copyWith(color: AppColors.white),

@@ -3,6 +3,7 @@
 // WARNING: Modifications may be overwritten. Please make changes in the Supadart configuration.
 
 
+import 'package:efs_misr/core/entities/positions_entity.dart';
 import 'package:efs_misr/core/models/supadart_header.dart';
 
 class Positions implements SupadartClass<Positions> {
@@ -88,5 +89,9 @@ class Positions implements SupadartClass<Positions> {
       name: name == _unset ? this.name : name as String?,
       createdAt: createdAt == _unset ? this.createdAt : createdAt as DateTime,
     );
+  }
+
+  PositionsEntity toPositionsEntity() {
+    return PositionsEntity(id: id.toInt(), name: name);
   }
 }

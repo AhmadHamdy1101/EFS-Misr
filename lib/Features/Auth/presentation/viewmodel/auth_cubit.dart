@@ -153,25 +153,25 @@ class AuthCubit extends Cubit<AuthCubitState> {
     return super.close();
   }
 
-  // Future<void> updateUserImage({
-  //   required BigInt userId,
-  //   required String imageUrl,
-  // }) async {
-  //   try {
-  //     emit(AuthLoading());
-  //
-  //     final response = await supabaseClient
-  //         .from('users')
-  //         .update({'image': imageUrl})
-  //         .eq('id', userId)
-  //         .select()
-  //         .single(); // مهمة جداً عشان يرجع اليوزر مش int
-  //
-  //     final updatedUser = Users.fromJson(response);
-  //
-  //     emit(SessionExist(user: updatedUser));
-  //   } catch (e) {
-  //     emit(SessionLoadFailed(e.toString()));
-  //   }
-  // }
+  Future<void> updateUserImage({
+    required BigInt userId,
+    required String imageUrl,
+  }) async {
+    try {
+      emit(AuthLoading());
+
+      final response = await supabaseClient
+          .from('users')
+          .update({'image': imageUrl})
+          .eq('id', userId)
+          .select()
+          .single(); // مهمة جداً عشان يرجع اليوزر مش int
+
+      final updatedUser = Users.fromJson(response);
+
+      emit(SessionExist(user: updatedUser));
+    } catch (e) {
+      emit(SessionLoadFailed(e.toString()));
+    }
+  }
 }

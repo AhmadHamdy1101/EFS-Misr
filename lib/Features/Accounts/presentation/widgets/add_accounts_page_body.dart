@@ -18,6 +18,7 @@ class AddAccountPageBody extends StatefulWidget {
 }
 
 class _AddAccountPageBodyState extends State<AddAccountPageBody> {
+
   String? selectedValue;
   final selectedPositionValue = BigInt.zero.obs;
   final selectedStatusValue = 0.obs;
@@ -63,12 +64,14 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
   final companyTxt = ''.obs;
   final roleTxt = ''.obs;
 
+  final formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: CustomScrollView(
+    return Form(
+      key: formKey,
+      child: CustomScrollView(
         slivers: [
           SliverAppBar(
             centerTitle: true,
@@ -88,91 +91,136 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                 spacing: 20,
                 children: [
                   Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        spacing: 15,
-                        children: [
-                          CustomInputWidget(
-                            inbutIcon: 'assets/images/profile.svg',
-                            inbutHintText: 'Username'.tr,
-                            changeToPass: false,
-                            textEditingController: username,
-                          ),
-                          CustomInputWidget(
-                            inbutIcon: 'assets/images/Password.svg',
-                            inbutHintText: 'Password'.tr,
-                            changeToPass: false,
-                            textEditingController: password,
-                          ),
-                          CustomInputWidget(
-                            inbutIcon: 'assets/images/Email.svg',
-                            inbutHintText: 'Email'.tr,
-                            changeToPass: false,
-                            textEditingController: email,
-                          ),
-                          CustomInputWidget(
-                            inbutIcon: 'assets/images/Email.svg',
-                            inbutHintText: 'Company Email'.tr,
-                            changeToPass: false,
-                            textEditingController: companyEmail,
-                          ),
-                          CustomInputWidget(
-                            inbutIcon: 'assets/images/address.svg',
-                            inbutHintText: 'Address'.tr,
-                            changeToPass: false,
-                            textEditingController: address,
-                          ),
-                          CustomInputWidget(
-                            inbutIcon: 'assets/images/Phone.svg',
-                            inbutHintText: 'Phone'.tr,
-                            changeToPass: false,
-                            textEditingController: phone,
-                          ),
-                          CustomDropdownWidget(
-                            inbutIcon: 'assets/images/status.svg',
-                            inbutHintText: 'Status'.tr,
-                            textEditingController: Status,
+                    child: Column(
+                      spacing: 15,
+                      children: [
+                        CustomInputWidget(
+                          inbutIcon: 'assets/images/profile.svg',
+                          inbutHintText: 'Username'.tr,
+                          changeToPass: false,
+                          textEditingController: username,
+                          validator: (p0) {
+                            if (username.text.isEmpty) {
+                              return 'Please enter username';
+                            }
+                            return null;
+                          },
+                        ),
+                        CustomInputWidget(
+                          inbutIcon: 'assets/images/Password.svg',
+                          inbutHintText: 'Password'.tr,
+                          changeToPass: false,
+                          textEditingController: password,
+                          validator: (p0) {
+                            if (password.text.isEmpty) {
+                              return 'Please enter password';
+                            }
+                            return null;
+                          },
+                        ),
+                        CustomInputWidget(
+                          inbutIcon: 'assets/images/Email.svg',
+                          inbutHintText: 'Email'.tr,
+                          changeToPass: false,
+                          textEditingController: email,
+                          validator: (p0) {
+                            if (email.text.isEmpty) {
+                              return 'Please enter email';
+                            }
+                            return null;
+                          },
+                        ),
+                        CustomInputWidget(
+                          inbutIcon: 'assets/images/Email.svg',
+                          inbutHintText: 'Company Email'.tr,
+                          changeToPass: false,
+                          textEditingController: companyEmail,
+                        ),
+                        CustomInputWidget(
+                          inbutIcon: 'assets/images/address.svg',
+                          inbutHintText: 'Address'.tr,
+                          changeToPass: false,
+                          textEditingController: address,
+                        ),
+                        CustomInputWidget(
+                          inbutIcon: 'assets/images/Phone.svg',
+                          inbutHintText: 'Phone'.tr,
+                          changeToPass: false,
+                          textEditingController: phone,
+                          validator: (p0) {
+                            if (phone.text.isEmpty) {
+                              return 'Please enter phone';
+                            }
+                            return null;
+                          },
+                        ),
+                        CustomDropdownWidget(
+                          inbutIcon: 'assets/images/status.svg',
+                          inbutHintText: 'Status'.tr,
+                          textEditingController: Status,
+                          selectedValue: selectedValue,
+                          Data: status,
+                          onChanged: (value) {
+                            selectedStatusValue.value = int.tryParse(value!)!;
+                          },validator: (p0) {
+                            if (Status.text.isEmpty) {
+                              return 'Please enter status';
+                            }
+                            return null;
+                          },
+                        ),
+                        Obx(() {
+                          return CustomDropdownWidget(
+                            inbutIcon: 'assets/images/position.svg',
+                            inbutHintText: 'Position'.tr,
+                            textEditingController: Postition,
                             selectedValue: selectedValue,
-                            Data: status,
+                            Data: positions.toList(),
                             onChanged: (value) {
-                              selectedStatusValue.value = int.tryParse(value!)!;
+                              selectedPositionValue.value = BigInt.tryParse(
+                                value!,
+                              )!;
                             },
-                          ),
-                          Obx(() {
-                            return CustomDropdownWidget(
-                              inbutIcon: 'assets/images/position.svg',
-                              inbutHintText: 'Position'.tr,
-                              textEditingController: Postition,
-                              selectedValue: selectedValue,
-                              Data: positions.toList(),
-                              onChanged: (value) {
-                                selectedPositionValue.value = BigInt.tryParse(
-                                  value!,
-                                )!;
-                              },
-                            );
-                          }),
-                          CustomDropdownWidget(
-                            inbutIcon: 'assets/images/company.svg',
-                            inbutHintText: 'Company'.tr,
-                            selectedValue: selectedValue,
-                            onChanged: (value) {
-                              companyTxt.value = value!;
+                            validator: (p0) {
+                              if (Postition.text.isEmpty) {
+                                return 'Please enter position';
+                              }
+                              return null;
                             },
-                            Data: company,
-                          ),
-                          CustomDropdownWidget(
-                            inbutIcon: 'assets/images/role.svg',
-                            inbutHintText: 'Role'.tr,
-                            selectedValue: selectedValue,
-                            onChanged: (value) {
-                              roleTxt.value = value!;
-                            },
-                            Data: role,
-                            iconColor: AppColors.gray,
-                          ),
-                        ],
-                      ),
+                          );
+                        }),
+                        CustomDropdownWidget(
+                          inbutIcon: 'assets/images/company.svg',
+                          inbutHintText: 'Company'.tr,
+                          selectedValue: selectedValue,
+                          onChanged: (value) {
+                            companyTxt.value = value!;
+                          },
+                          Data: company,
+                          validator: (p0) {
+                            if (companyTxt.value.isEmpty) {
+                              return 'Please enter company';
+                            }
+                            return null;
+                          },
+                        ),
+                        CustomDropdownWidget(
+                          inbutIcon: 'assets/images/role.svg',
+                          inbutHintText: 'Role'.tr,
+                          selectedValue: selectedValue,
+                          onChanged: (value) {
+                            roleTxt.value = value!;
+                          },
+                          Data: role,
+                          iconColor: AppColors.gray,
+                          validator: (p0) {
+                            if (roleTxt.value.isEmpty) {
+                              return 'Please enter role';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(
@@ -190,6 +238,9 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                         ),
                       ),
                       onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          formKey.currentState!.save();
+                        }
                         addAccountLoading.value = true;
                         context.read<AuthCubit>().addAccount(
                           email: email.text,
@@ -206,19 +257,19 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                         addAccountLoading.value = false;
                       },
                       child: Obx(
-                        () => addAccountLoading.value
+                            () => addAccountLoading.value
                             ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: AppColors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: AppColors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
                             : Text(
-                                'Add',
-                                style: AppTextStyle.latoBold26(context),
-                              ),
+                          'Add',
+                          style: AppTextStyle.latoBold26(context),
+                        ),
                       ),
                     ),
                   ),

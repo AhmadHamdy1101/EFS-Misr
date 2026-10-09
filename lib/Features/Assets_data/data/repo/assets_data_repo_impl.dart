@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:efs_misr/Features/Assets_data/data/assets_data_source.dart';
+import 'package:efs_misr/Features/Assets_data/domain/entities/assets_entity.dart';
 import 'package:efs_misr/Features/Assets_data/domain/repo/assets_data_repo.dart';
 import 'package:efs_misr/core/models/assets_repair.dart';
 import '../../../../constants/constants.dart';
@@ -13,7 +14,7 @@ class AssetsDataRepoImpl implements AssetsDataRepo{
   final AssetsDataSource assetsDataSource;
   AssetsDataRepoImpl(this.assetsDataSource);
   @override
-  Future<Either<Failure, List<Assets>>> getAssets() async {
+  Future<Either<Failure, List<AssetsEntity>>> getAssets() async {
     try {
       final assets = await assetsDataSource.getAssets();
       return Right(assets);
@@ -23,9 +24,11 @@ class AssetsDataRepoImpl implements AssetsDataRepo{
   }
 
   @override
-  Future<Either<Failure, Assets>> getAssetsByQrCode(String barcode) async {
+  Future<Either<Failure, AssetsEntity>> getAssetsByQrCode(String barcode) async {
     try {
       final assets = await assetsDataSource.getAssetsByQrCode(barcode);
+
+
       return Right(assets);
     } catch (e) {
       return Left(Failure.fromException(e));
@@ -119,6 +122,35 @@ class AssetsDataRepoImpl implements AssetsDataRepo{
         AssetsAndTickets.insert(assetsId: assetsId, TicketsId: ticketId),
       );
       return Right('Success');
+    } catch (e) {
+      return Left(Failure.fromException(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Assets>>> addAssets({
+    required String? barcode,
+    required String? name,
+    required String? floor,
+    required String? place,
+    required String? type,
+    required BigInt? branch,
+  }) async {
+    try {
+      final assets = await supabaseClient.assets
+          .insert(
+        Assets.insert(
+          barcode: barcode,
+          name: name,
+          floor: floor,
+          place: place,
+          type: type,
+          Branch: branch,
+        ),
+      )
+          .select()
+          .withConverter(Assets.converter);
+      return Right(assets);
     } catch (e) {
       return Left(Failure.fromException(e));
     }

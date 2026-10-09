@@ -67,4 +67,22 @@ class HomeRepoImpl extends HomeRepo {
     }
   }
 
+  @override
+  Future<Either<Failure, Users>> updateUserImage({
+    required BigInt userID,
+    required String? image,
+  }) async {
+    try {
+      final user = await supabaseClient.users
+          .update(Users.update(image: image))
+          .eq(Users.c_id, userID)
+          .select('*,positions(*)')
+          .single()
+          .withConverter(Users.converterSingle);
+      return Right(user);
+    } catch (e) {
+      return Left(Failure.fromException(e));
+    }
+  }
+
 }
