@@ -3,11 +3,10 @@ import 'package:efs_misr/Features/Tickets/presentation/widgets/ticket_damage_com
 import 'package:efs_misr/Features/Tickets/presentation/widgets/ticket_dates.dart';
 import 'package:efs_misr/Features/Tickets/presentation/widgets/ticket_header.dart';
 import 'package:efs_misr/Features/Tickets/presentation/widgets/ticket_priority.dart';
+import 'package:efs_misr/Features/Tickets/domain/entities/ticket_entity.dart';
 import 'package:efs_misr/constants/screens_size.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../../../core/models/tickets.dart';
 
 class TicketDetailsContainer extends StatelessWidget {
   const TicketDetailsContainer({
@@ -16,7 +15,7 @@ class TicketDetailsContainer extends StatelessWidget {
     required this.damageComment,
   });
 
-  final Tickets ticket;
+  final TicketEntity ticket;
   final TextEditingController damageComment;
 
   @override

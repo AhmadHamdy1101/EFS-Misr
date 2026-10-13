@@ -33,7 +33,6 @@ class _AddAssetsPageBodyState extends State<AddAssetsPageBody> {
   final branchData = <Map<String, dynamic>>[].obs;
 
   Future<void> loadBranch() async {
-
     final brnData = await supabaseClient.branch.select();
     branchData.value = brnData.map<Map<String, dynamic>>((po) {
       return {"name": po["name"], "value": po["id"].toString()};
@@ -116,7 +115,7 @@ class _AddAssetsPageBodyState extends State<AddAssetsPageBody> {
                               inbutHintText: 'Branch'.tr,
                               textEditingController: branch,
                               selectedValue: selectedValue,
-                              Data: branchData.toList(),
+                              data: branchData.toList(),
                               onChanged: (value) {
                                 selectedBranchValue.value = BigInt.tryParse(
                                   value!,
@@ -131,7 +130,7 @@ class _AddAssetsPageBodyState extends State<AddAssetsPageBody> {
                             onChanged: (value) {
                               typeTxt.value = value!;
                             },
-                            Data: typeData,
+                            data: typeData,
                           ),
                         ],
                       ),

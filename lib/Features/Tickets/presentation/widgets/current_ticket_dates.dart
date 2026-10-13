@@ -1,16 +1,16 @@
 import 'package:efs_misr/constants/screens_size.dart';
-import 'package:efs_misr/core/Functions/GetDate_Function.dart';
+import 'package:efs_misr/Features/Tickets/domain/entities/ticket_entity.dart';
+import 'package:efs_misr/core/Functions/get_date_function.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/models/tickets.dart';
 import '../../../../core/utils/app_text_styles.dart';
 
 class CurrentTicketDates extends StatelessWidget {
   const CurrentTicketDates({super.key, required this.currentTicket});
 
-  final Tickets currentTicket;
+  final TicketEntity currentTicket;
 
   @override
   Widget build(BuildContext context) {
@@ -75,22 +75,6 @@ class CurrentTicketDates extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Request Date:'.tr,
-                        style: AppTextStyle.latoBold20(
-                          context,
-                        ).copyWith(color: AppColors.green),
-                      ),
-                      Text(
-                        currentTicket.requestDate != null
-                            ? getDateFromTimestamp(currentTicket.requestDate)
-                            : '-',
-                      ),
-                    ],
-                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

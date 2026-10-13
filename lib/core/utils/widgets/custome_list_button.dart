@@ -5,10 +5,7 @@ import '../app_colors.dart';
 import '../app_text_styles.dart';
 
 class CustomListButton extends StatelessWidget {
-  const CustomListButton({
-    super.key,
-    required this.buttonsData,
-  });
+  const CustomListButton({super.key, required this.buttonsData});
 
   final List<Map<String, dynamic>> buttonsData;
 
@@ -47,7 +44,7 @@ class CustomListButton extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.black.withOpacity(0.1),
+                                color: AppColors.black.withValues(alpha: 0.1),
                                 blurRadius: 10,
                                 offset: const Offset(0, 0),
                               ),

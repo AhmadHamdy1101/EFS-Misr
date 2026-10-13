@@ -4,29 +4,8 @@ sealed class AssetsRepairState {}
 
 final class AssetsRepairInitial extends AssetsRepairState {}
 
-final class GetAssetsRepairDataSuccess extends AssetsRepairState {
-  final List<AssetsRepair> assetsRepair;
-  final BigInt assetID;
-  GetAssetsRepairDataSuccess({
-    required this.assetsRepair,
-    required this.assetID,
-  });
-}
-
-final class GetAssetsRepairDataFailed extends AssetsRepairState {
-  final String errMsg;
-
-  GetAssetsRepairDataFailed({required this.errMsg,});
-}
-
-final class GetAssetsRepairDataLoading extends AssetsRepairState {
-  final BigInt assetID;
-
-  GetAssetsRepairDataLoading({required this.assetID});
-}
-
 final class GetAssetsRepairDataInAssetsPageSuccess extends AssetsRepairState {
-  final List<AssetsRepair> assetsRepair;
+  final List<AssetRepairEntity> assetsRepair;
 
   GetAssetsRepairDataInAssetsPageSuccess({required this.assetsRepair});
 }
@@ -38,8 +17,3 @@ final class GetAssetsRepairDataInAssetsPageFailed extends AssetsRepairState {
 }
 
 final class GetAssetsRepairDataInAssetsPageLoading extends AssetsRepairState {}
-
-final class UpdateTicketDataSuccess extends AssetsRepairState {
-  final Tickets tickets;
-  UpdateTicketDataSuccess({required this.tickets});
-}

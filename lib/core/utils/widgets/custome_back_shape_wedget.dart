@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 class CustomBackShapeWedget extends StatelessWidget {
   const CustomBackShapeWedget({
     super.key,
@@ -23,7 +23,7 @@ class CustomBackShapeWedget extends StatelessWidget {
         height: screenHeight * 0.3,
         fit: BoxFit.cover,
         colorFilter: ColorFilter.mode(
-          Colors.white.withOpacity(0.2),
+          Colors.white.withValues(alpha: 0.2),
           BlendMode.srcIn,
         ),
       ),

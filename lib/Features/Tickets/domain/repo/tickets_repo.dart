@@ -1,45 +1,38 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/Errors/failure.dart';
-import '../../../../core/models/tickets.dart';
+import '../entities/ticket_change.dart';
+import '../entities/ticket_entity.dart';
+import '../entities/ticket_lookup_option.dart';
 
-abstract class TicketsRepo {
-  Future<Either<Failure, List<Tickets>>> getTickets();
-
-
-
-
-  // Future<Either<Failure, List<Users>>> getUsers();
-
-  Future<Either<Failure, String>> deleteTicket({required BigInt ticketID});
-
-  Future<Either<Failure, List<Tickets>>> getTicketsWithAssetsID({
+abstract interface class TicketsRepo {
+  Future<Either<Failure, List<TicketEntity>>> getTickets();
+  Future<Either<Failure, TicketEntity?>> getTicketById(BigInt ticketId);
+  Future<Either<Failure, List<TicketEntity>>> getTicketsWithAssetsID({
     required BigInt assetId,
   });
-
-
-
-  Future<Either<Failure, Tickets>> updateTicketStatus({
-    required String ticketID,
-    required String newStatus,
-    required DateTime repairDate,
-  });
-
-  Future<Either<Failure, Tickets>> updateTicketComment({
-    required String ticketID,
-    required String newComment,
-  });
-
-  Future<Either<Failure, List<Tickets>>> addTicket({
-    required BigInt orecalID,
+  Future<Either<Failure, TicketFormOptions>> getTicketFormOptions();
+  Future<Either<Failure, TicketEntity>> addTicket({
+    required BigInt oracleId,
     required String comment,
-    required BigInt branchID,
+    required BigInt branchId,
     required String priority,
     required DateTime requestDate,
-    required BigInt engineer,
+    required BigInt engineerId,
   });
-  Future<Either<Failure, Tickets>> updateTicketResponseDate({
-    required String ticketID,
+  Future<Either<Failure, TicketEntity>> updateTicketStatus({
+    required BigInt ticketId,
+    required TicketStatus status,
+    DateTime? repairDate,
+  });
+  Future<Either<Failure, TicketEntity>> updateDamageDescription({
+    required BigInt ticketId,
+    required String damageDescription,
+  });
+  Future<Either<Failure, TicketEntity>> updateTicketResponseDate({
+    required BigInt ticketId,
     required DateTime responseDate,
   });
+  Future<Either<Failure, Unit>> deleteTicket({required BigInt ticketId});
+  Stream<TicketChange> watchTicketChanges();
 }

@@ -18,6 +18,9 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  Timer? _navigationTimer;
+  bool _hasNavigated = false;
+  bool _isShowingNoInternetDialog = false;
 
   @override
   void initState() {
@@ -52,6 +55,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
+    _navigationTimer?.cancel();
     _controller.dispose(); // clean up
     super.dispose();
   }
@@ -61,15 +65,21 @@ class _SplashScreenState extends State<SplashScreen>
     return BlocListener<CheckInternetCubit, CheckInternetState>(
       listener: (context, state) {
         if (state is InternetConnected) {
-          Timer(const Duration(seconds: 3), () {
+          _navigationTimer ??= Timer(const Duration(seconds: 3), () {
+            if (!mounted || _hasNavigated) return;
+            _hasNavigated = true;
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const MainApp()),
+              MaterialPageRoute<void>(builder: (context) => const MainApp()),
             );
           });
         }
         if (state is InternetDisconnected) {
-          _showNoInternetDialog(context);
+          _navigationTimer?.cancel();
+          _navigationTimer = null;
+          if (!_isShowingNoInternetDialog) {
+            _showNoInternetDialog(context);
+          }
         }
       },
       child: Scaffold(
@@ -92,6 +102,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _showNoInternetDialog(BuildContext context) {
+    _isShowingNoInternetDialog = true;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -102,6 +113,7 @@ class _SplashScreenState extends State<SplashScreen>
           TextButton(
             onPressed: () {
               Navigator.pop(context);
+              _isShowingNoInternetDialog = false;
               // Cubit هيتابع لوحده الاتصال
             },
             child: const Text('حسناً'),

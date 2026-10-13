@@ -8,7 +8,7 @@ import 'core/layout/desktop_layout.dart';
 import 'core/layout/mobile_layout.dart';
 import 'core/layout/tablet_layout.dart';
 import 'core/utils/app_colors.dart';
-import 'features/Auth/presentation/pages/auth_page.dart';
+import 'Features/Auth/presentation/pages/auth_page.dart';
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -32,7 +32,9 @@ class _AuthGateState extends State<AuthGate> {
           return Container(
             decoration: BoxDecoration(color: Theme.of(context).primaryColor),
             child: Center(
-              child: CircularProgressIndicator(backgroundColor: AppColors.green),
+              child: CircularProgressIndicator(
+                backgroundColor: AppColors.green,
+              ),
             ),
           );
         }

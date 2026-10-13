@@ -17,13 +17,6 @@ class TicketPageBody extends StatefulWidget {
 
 class _TicketPageBodyState extends State<TicketPageBody> {
   final TextEditingController search = TextEditingController();
-  final List<Map<String, dynamic>> data = [
-    {'name': 'North Cairo', 'value': 'North Cairo'},
-    {'name': 'South Cairo', 'value': 'South Cairo'},
-    {'name': 'Middle Cairo', 'value': 'Middle Cairo'},
-    {'name': 'New Cairo', 'value': 'New Cairo'},
-  ];
-  String? selectedValue;
 
   @override
   void dispose() {
@@ -52,8 +45,8 @@ class _TicketPageBodyState extends State<TicketPageBody> {
                     textEditingController: search,
                     textInputType: TextInputType.text,
                     onChanged: (search) {
-                       context.read<TicketsCubit>().searchTickets(search);
-                       return null;
+                      context.read<TicketsCubit>().searchTickets(search);
+                      return null;
                     },
                   ),
                 ),
@@ -62,11 +55,7 @@ class _TicketPageBodyState extends State<TicketPageBody> {
             ),
           ),
         ),
-        FilterSectionWidget(
-          selectedValue: selectedValue,
-          Data: data,
-          screenWidth: screenWidth,
-        ),
+        const FilterSectionWidget(),
         TicketsList(screenWidth: screenWidth, screenHeight: screenHeight),
       ],
     );

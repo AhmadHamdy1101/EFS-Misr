@@ -13,14 +13,15 @@ class AddSuccessPageBody extends StatefulWidget {
     required this.message,
     required this.buttonTitle,
     required this.onPress,
-    this.secondPress,
+    required this.secondPress,
+    this.refreshAccounts = false,
   });
 
   final String message;
   final String buttonTitle;
-  final onPress;
-
-  final secondPress;
+  final VoidCallback onPress;
+  final bool refreshAccounts;
+  final VoidCallback secondPress;
 
   @override
   State<AddSuccessPageBody> createState() => _AddSuccessPageBodyState();
@@ -30,7 +31,9 @@ class _AddSuccessPageBodyState extends State<AddSuccessPageBody> {
   @override
   void initState() {
     super.initState();
-    context.read<AccountsCubit>().getAccounts();
+    if (widget.refreshAccounts) {
+      context.read<AccountsCubit>().getAccounts();
+    }
   }
 
   // design here
@@ -67,10 +70,10 @@ class _AddSuccessPageBodyState extends State<AddSuccessPageBody> {
                       child: ElevatedButton(
                         onPressed: widget.onPress,
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
+                          backgroundColor: WidgetStateProperty.all<Color>(
                             Colors.transparent,
                           ),
-                          elevation: MaterialStateProperty.all<double>(0),
+                          elevation: WidgetStateProperty.all<double>(0),
                         ),
                         child: Text(
                           widget.buttonTitle,

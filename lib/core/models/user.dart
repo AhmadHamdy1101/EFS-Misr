@@ -309,16 +309,16 @@ class Users implements SupadartClass<Users> {
 
   UserEntity toUserEntity() {
     return UserEntity(
-      userid: userid!,
-      name: name!,
-      email: email!,
-      phone: phone!,
+      userid: userid ?? '',
+      name: name ?? '',
+      email: email ?? '',
+      phone: phone ?? '',
       address: address ?? '',
-      role: role!,
-      status: status!,
-      position: position!.toPositionsEntity(),
+      role: role ?? '',
+      status: status ?? 0,
+      position: position?.toPositionsEntity(),
       companyEmail: companyEmail ?? '',
-      company: company!,
+      company: company ?? '',
       image: image ?? '',
     );
   }

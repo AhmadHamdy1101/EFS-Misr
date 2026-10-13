@@ -1,7 +1,6 @@
 import 'package:efs_misr/Features/Assets_data/domain/entities/assets_entity.dart';
 import 'package:efs_misr/Features/Assets_data/presentation/screens/assets_details_page.dart';
 import 'package:efs_misr/constants/screens_size.dart';
-import 'package:efs_misr/core/models/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,7 +8,6 @@ import 'package:get/get.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../controller/assets_repair_cubit.dart';
-import '../controller/assets_tickets_cubit.dart';
 
 class AssetsListView extends StatelessWidget {
   const AssetsListView({super.key, required this.assets});
@@ -23,13 +21,13 @@ class AssetsListView extends StatelessWidget {
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () async {
-            context.read<AssetsTicketsCubit>().getTicketsWithAssetsId(
-              assetId: BigInt.from(assets[index].id),
-            );
-            context.read<AssetsRepairCubit>().getAssetsRepairDetailsWithAssetId(
+            final assetsRepairCubit = context.read<AssetsRepairCubit>();
+            await assetsRepairCubit.getAssetsRepairDetailsWithAssetId(
               assetID: BigInt.from(assets[index].id),
             );
-            Get.to(AssetsDetailsPage(assets: assets[index]));
+            if (context.mounted) {
+              Get.to(AssetsDetailsPage(assets: assets[index]));
+            }
           },
           child: Card(
             shape: RoundedRectangleBorder(
@@ -49,13 +47,16 @@ class AssetsListView extends StatelessWidget {
                       ScreensSize(context).screenWidth * 0.03,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.lightGreen.withOpacity(0.25),
+                      color: AppColors.lightGreen.withValues(alpha: 0.25),
                       borderRadius: BorderRadius.circular(60),
                     ),
                     child: ClipRRect(
                       child: SvgPicture.asset(
                         'assets/images/${assets[index].type}.svg',
-                        color: AppColors.green,
+                        colorFilter: const ColorFilter.mode(
+                          AppColors.green,
+                          BlendMode.srcIn,
+                        ),
                         width: ScreensSize(context).screenWidth * 0.1,
                         height: ScreensSize(context).screenHeight * 0.05,
                       ),
@@ -104,7 +105,7 @@ class AssetsListView extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "${assets[index].totalAmount }",
+                                "${assets[index].totalAmount}",
                                 style: AppTextStyle.latoBold16(
                                   context,
                                 ).copyWith(color: AppColors.white),

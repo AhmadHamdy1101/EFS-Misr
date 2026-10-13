@@ -13,7 +13,7 @@ class CustomBottomNav extends StatefulWidget {
   final ValueChanged<int> onPressed;
 
   @override
-  _CustomBottomNavState createState() => _CustomBottomNavState();
+  State<CustomBottomNav> createState() => _CustomBottomNavState();
 }
 
 class _CustomBottomNavState extends State<CustomBottomNav> {
@@ -37,9 +37,12 @@ class _CustomBottomNavState extends State<CustomBottomNav> {
           return IconButton(
             icon: SvgPicture.asset(
               widget.icons[index],
-              color: widget.selectedIndex == index
-                  ? Theme.of(context).colorScheme.secondary // أو AppColors.green
-                  : Theme.of(context).colorScheme.primary, // أو AppColors.black
+              colorFilter: ColorFilter.mode(
+                widget.selectedIndex == index
+                    ? Theme.of(context).colorScheme.secondary
+                    : Theme.of(context).colorScheme.primary,
+                BlendMode.srcIn,
+              ),
             ),
             onPressed: () => widget.onPressed(index),
           );

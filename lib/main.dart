@@ -1,7 +1,11 @@
 import 'package:efs_misr/Features/Assets_data/domain/repo/assets_data_repo.dart';
+import 'package:efs_misr/Features/Assets_data/domain/repo/assets_repair_repository.dart';
+import 'package:efs_misr/Features/Assets_data/domain/usecases/add_asset_repair_use_case.dart';
 import 'package:efs_misr/Features/Auth/domain/auth_repo.dart';
 import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
 import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/check_internet_cubit.dart';
+import 'package:efs_misr/Features/Home/presentation/viewmodel/image_cubit.dart';
 import 'package:efs_misr/Features/Splash/presentation/splash_screen.dart';
 import 'package:efs_misr/Features/Accounts/presentation/controller/accounts_cubit.dart';
 import 'package:efs_misr/Features/Assets_data/presentation/controller/assets_tickets_cubit.dart';
@@ -11,6 +15,7 @@ import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:efs_misr/core/utils/app_translations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'Features/Assets_data/presentation/controller/assets_cubit.dart';
@@ -23,43 +28,56 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(url: supbaseUrl, anonKey: supbaseKey);
   setup();
-  runApp(MyApp(themeMode: ThemeMode.system,));
+  runApp(const MyApp(themeMode: ThemeMode.system));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key, required ThemeMode themeMode});
+  const MyApp({super.key, required this.themeMode});
+
+  final ThemeMode themeMode;
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  bool isDark = false;
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (context) => CheckInternetCubit(Connectivity())),
         BlocProvider(create: (context) => AuthCubit(getIt.get<AuthRepo>())),
         BlocProvider(
           create: (context) =>
-              TicketsCubit(ticketsRepo: getIt.get<TicketsRepo>(), assetsDataRepo: getIt.get<AssetsDataRepo>())..getTickets(),
+              TicketsCubit(ticketsRepo: getIt.get<TicketsRepo>())..getTickets(),
         ),
         BlocProvider(
-          create: (context) => AssetsCubit(getIt.get<AssetsDataRepo>())..getAssets(),
+          create: (context) =>
+              AssetsCubit(getIt.get<AssetsDataRepo>())..getAssets(),
         ),
-        BlocProvider(create: (context) => QrcodeCubit(getIt.get<AssetsDataRepo>())),
+        BlocProvider(
+          create: (context) => QrcodeCubit(getIt.get<AssetsDataRepo>()),
+        ),
         BlocProvider(create: (context) => AccountsCubit(getIt.get<HomeRepo>())),
         BlocProvider(
-          create: (context) => AssetsTicketsCubit(getIt.get<AssetsDataRepo>(),getIt.get<TicketsRepo>()),
+          create: (context) => AssetsTicketsCubit(
+            getIt.get<AssetsDataRepo>(),
+            getIt.get<AssetsRepairRepository>(),
+          ),
         ),
         BlocProvider(
-          create: (context) => AssetsRepairCubit(getIt.get<AssetsDataRepo>()),
+          create: (context) => AssetsRepairCubit(
+            assetsRepairRepository: getIt.get<AssetsRepairRepository>(),
+            addAssetRepair: getIt.get<AddAssetRepairUseCase>(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ImageCubit(getIt.get<HomeRepo>()),
         ),
       ],
       child: GetMaterialApp(
         translations: AppTranslations(),
-        locale: Locale('en'),
+        locale: const Locale('en'),
         debugShowCheckedModeBanner: false,
         title: 'EFS',
         theme: ThemeData(
@@ -96,11 +114,11 @@ class _MyAppState extends State<MyApp> {
             secondary: AppColors.green,
             brightness: Brightness.light,
             error: Colors.red,
-            onPrimary: AppColors.green,
+            onPrimary: AppColors.white,
             onSecondary: AppColors.white,
             onError: Colors.red,
             surface: AppColors.white,
-            onSurface: AppColors.white,
+            onSurface: AppColors.black,
           ),
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
             backgroundColor: AppColors.white,
@@ -146,11 +164,11 @@ class _MyAppState extends State<MyApp> {
           ),
           cardTheme: CardThemeData(
             color: AppColors.buttondark,
-            shadowColor: AppColors.white.withOpacity(0.25),
+            shadowColor: AppColors.white.withValues(alpha: 0.25),
           ),
         ),
-        themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-        home: SplashScreen(),
+        themeMode: widget.themeMode,
+        home: const SplashScreen(),
       ),
     );
   }

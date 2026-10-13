@@ -1,34 +1,56 @@
+import 'package:efs_misr/core/entities/branch_entity.dart';
+import 'package:efs_misr/core/entities/user_entity.dart';
+
+enum TicketStatus {
+  awaiting('Awaiting'),
+  completed('Completed'),
+  canceled('Canceled'),
+  rejected('Rejected'),
+  unknown('Unknown');
+
+  const TicketStatus(this.databaseValue);
+
+  final String databaseValue;
+
+  static TicketStatus fromDatabase(String? value) {
+    for (final status in values) {
+      if (status.databaseValue.toLowerCase() == value?.toLowerCase()) {
+        return status;
+      }
+    }
+    return TicketStatus.unknown;
+  }
+}
+
 class TicketEntity {
   final int id;
-  final int orecalId;
-  final String branch;
-
-  // final Branch? branchObject;
-  final DateTime requestDate;
-  final DateTime repairDate;
-  final DateTime responseDate;
-  final DateTime repairDuration;
+  final int? oricalID;
+  final BranchEntity? branchEntity;
+  final DateTime? requestDate;
+  final DateTime? repairDate;
+  final DateTime? responseDate;
+  final DateTime? repairDuration;
+  final DateTime? createdAt;
   final String priority;
-  final int engineer;
-  final int closedBy;
-  final int amount;
+  final int? engineer;
+  final int? closedBy;
+  final num amount;
   final String damageDescription;
   final String attachment;
   final String comment;
-  final String status;
+  final TicketStatus status;
   final String variation;
-  final DateTime createdAt;
+  final UserEntity? engineerUserEntity;
+  final UserEntity? closedByUserEntity;
 
-  // final Users? user;
-
-  TicketEntity({
+  const TicketEntity({
     required this.id,
-    required this.orecalId,
-    required this.branch,
+    required this.oricalID,
     required this.requestDate,
     required this.repairDate,
     required this.responseDate,
     required this.repairDuration,
+    required this.createdAt,
     required this.priority,
     required this.engineer,
     required this.closedBy,
@@ -38,7 +60,8 @@ class TicketEntity {
     required this.comment,
     required this.status,
     required this.variation,
-    required this.createdAt,
+    required this.branchEntity,
+    required this.engineerUserEntity,
+    required this.closedByUserEntity,
   });
-
 }

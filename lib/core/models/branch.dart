@@ -97,10 +97,9 @@ class Branch implements SupadartClass<Branch> {
       parsedAreaId = BigInt.from(areaValue);
     } else if (areaValue is String) {
       parsedAreaId = BigInt.tryParse(areaValue);
-    }
-    else if (areaValue is Map<String, dynamic>) {
-    parsedAreaObject = Area.fromJson(areaValue);
-    parsedAreaId = BigInt.from(areaValue['id'] ?? 0);
+    } else if (areaValue is Map<String, dynamic>) {
+      parsedAreaObject = Area.fromJson(areaValue);
+      parsedAreaId = BigInt.from(areaValue['id'] ?? 0);
     }
     return Branch(
       id: jsonn['id'] != null
@@ -110,7 +109,7 @@ class Branch implements SupadartClass<Branch> {
           ? BigInt.parse(jsonn['branch_id'].toString())
           : null,
       name: jsonn['name'] != null ? jsonn['name'].toString() : null,
-      area:parsedAreaId,
+      area: parsedAreaId,
       areaObject: parsedAreaObject,
       createdAt: jsonn['created_at'] != null
           ? DateTime.parse(jsonn['created_at'].toString())
@@ -168,6 +167,8 @@ class Branch implements SupadartClass<Branch> {
       name: name ?? '',
       id: id.toInt(),
       areaId: area?.toInt() ?? 0,
+      branchId: branchId?.toInt(),
+      areaName: areaObject?.name,
     );
   }
 }

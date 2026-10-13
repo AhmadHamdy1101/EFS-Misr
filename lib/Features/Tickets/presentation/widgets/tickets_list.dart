@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
-import '../../../Assets_data/presentation/controller/assets_repair_cubit.dart';
 import '../controller/tickets_cubit.dart';
 import '../screens/ticket_details_page.dart';
 
@@ -38,7 +37,7 @@ class TicketsList extends StatelessWidget {
                 return GestureDetector(
                   onTap: () {
                     context.read<AssetsTicketsCubit>().getAssetsWithTicketId(
-                      ticketId: state.tickets[index].id,
+                      ticketId: BigInt.from(state.tickets[index].id),
                     );
                     // context.read<AssetsRepairCubit>().getAssetsRepairDetails(
                     //   ticketID: state.tickets[index].id, assetID: ,
@@ -49,7 +48,8 @@ class TicketsList extends StatelessWidget {
                   },
                   child: TicketsEditPopMenu(
                     screenWidth: screenWidth,
-                    screenHeight: screenHeight, tickets: state.tickets[index],
+                    screenHeight: screenHeight,
+                    tickets: state.tickets[index],
                   ),
                 );
               },

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:efs_misr/Features/Accounts/presentation/screens/add_account_page.dart';
 import 'package:efs_misr/Features/Accounts/presentation/screens/add_success_page.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +24,8 @@ class AuthCubit extends Cubit<AuthCubitState> {
   Future<void> login({required String email, required String password}) async {
     emit(AuthLoading());
     final response = await authRepo.login(email, password);
-    response.fold(
-      (l) {
+    await response.fold<Future<void>>(
+      (l) async {
         emit(LoginFailure(errorMsg: l.message));
       },
       (userId) async {
@@ -130,10 +131,13 @@ class AuthCubit extends Cubit<AuthCubitState> {
               AddSuccessPage(
                 message: 'Account created successfully',
                 onPress: () {
-                  Get.back();
+                  Get.off(() => const AddAccountPage());
                 },
                 buttonTitle: 'Add Another Account',
-                secondPress: () {},
+                secondPress: () {
+                  Get.back();
+                },
+                refreshAccounts: true,
               ),
             );
           },

@@ -9,22 +9,22 @@ class CheckInternetCubit extends Cubit<CheckInternetState> {
   late StreamSubscription _subscription;
 
   CheckInternetCubit(this._connectivity) : super(CheckInternetInitial()) {
+    _subscription = _connectivity.onConnectivityChanged.listen(_updateState);
     checkInitialConnection();
-    _subscription = _connectivity.onConnectivityChanged.listen((result) {
-      if (result == ConnectivityResult.none) {
-        emit(InternetDisconnected());
-      } else {
-        emit(InternetConnected());
-      }
-    });
   }
+
   Future<void> checkInitialConnection() async {
     final result = await _connectivity.checkConnectivity();
-    if (result == ConnectivityResult.none) {
-      emit(InternetDisconnected());
-    } else {
-      emit(InternetConnected());
-    }
+    _updateState(result);
+  }
+
+  void _updateState(List<ConnectivityResult> results) {
+    if (isClosed) return;
+
+    final isDisconnected =
+        results.isEmpty ||
+        results.every((result) => result == ConnectivityResult.none);
+    emit(isDisconnected ? InternetDisconnected() : InternetConnected());
   }
 
   @override

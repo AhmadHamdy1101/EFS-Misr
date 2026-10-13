@@ -13,14 +13,14 @@ class CustomDropdownWidget extends StatefulWidget {
     this.validator,
     this.onChanged,
     required this.selectedValue,
-    required this.Data,
+    required this.data,
     this.iconColor,
   });
-  final iconColor;
+  final Color? iconColor;
   final String inbutIcon;
   final String inbutHintText;
   final String? selectedValue;
-  final List<Map<String, dynamic>> Data;
+  final List<Map<String, dynamic>> data;
   final TextEditingController? textEditingController;
   final TextInputType? textInputType;
   final String? Function(String?)? validator;
@@ -48,7 +48,7 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
         borderRadius: BorderRadius.circular(40), // pill shape
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withValues(alpha: 0.2),
             spreadRadius: 1,
             blurRadius: 10,
             offset: const Offset(0, 3),
@@ -56,7 +56,6 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
         ],
       ),
       child: DropdownButtonFormField<String>(
-
         dropdownColor: Theme.of(context).primaryColor,
         borderRadius: BorderRadius.circular(10),
         isExpanded: true,
@@ -68,7 +67,7 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
             context,
           ).copyWith(color: Theme.of(context).colorScheme.primary),
         ),
-        items: widget.Data.map((status) {
+        items: widget.data.map((status) {
           return DropdownMenuItem<String>(
             value: status['value'],
             child: Text(
@@ -90,9 +89,7 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
         decoration: InputDecoration(
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(
-              color: Colors.red,
-            ),
+            borderSide: const BorderSide(color: Colors.red),
           ),
           prefixIconConstraints: const BoxConstraints(
             minWidth: 30,
@@ -100,7 +97,12 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
           ),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(9.0),
-            child: SvgPicture.asset(widget.inbutIcon, color: widget.iconColor),
+            child: SvgPicture.asset(
+              widget.inbutIcon,
+              colorFilter: widget.iconColor == null
+                  ? null
+                  : ColorFilter.mode(widget.iconColor!, BlendMode.srcIn),
+            ),
           ),
           border: InputBorder.none,
         ),

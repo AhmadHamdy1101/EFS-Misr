@@ -13,20 +13,42 @@ abstract class Failure {
       // استعمل الكود من Supabase لو موجود
       return AuthFailure.fromSupabaseError(exception.code ?? 'unknown');
     } else if (exception is PostgrestException) {
-      return PostgrestFailure(exception.message);
+      final details = <String>[];
+      final message = exception.message.trim();
+      if (message.isNotEmpty) details.add(message);
+      if (exception.code?.trim().isNotEmpty ?? false) {
+        details.add('Code: ${exception.code}');
+      }
+      final exceptionDetails = exception.details?.toString().trim() ?? '';
+      if (exceptionDetails.isNotEmpty && exceptionDetails != 'null') {
+        details.add('Details: $exceptionDetails');
+      }
+      final hint = exception.hint?.trim() ?? '';
+      if (hint.isNotEmpty) details.add('Hint: $hint');
+
+      return PostgrestFailure(
+        details.isEmpty
+            ? 'The database rejected the request without an error message.'
+            : details.join('\n'),
+      );
     } else if (exception is StorageException) {
-      return StorageFailure(exception.message);
+      final message = exception.message.trim();
+      return StorageFailure(
+        message.isEmpty ? 'The file storage request failed.' : message,
+      );
     } else {
-      return GeneralFailure('Unexpected error: ${exception.toString()}');
+      final message = exception.toString().trim();
+      return GeneralFailure(
+        message.isEmpty
+            ? 'An unexpected error occurred.'
+            : 'Unexpected error: $message',
+      );
     }
   }
 }
 
-
-
 class AuthFailure extends Failure {
   AuthFailure(super.message);
-
 
   factory AuthFailure.fromSupabaseError(String errorCode) {
     switch (errorCode) {
@@ -49,7 +71,6 @@ class AuthFailure extends Failure {
 class PostgrestFailure extends Failure {
   PostgrestFailure(super.message);
 }
-
 
 class StorageFailure extends Failure {
   StorageFailure(super.message);

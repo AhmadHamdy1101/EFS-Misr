@@ -112,10 +112,11 @@ class _EditAssetsPageBodyState extends State<EditAssetsPageBody> {
                           Obx(() {
                             return CustomDropdownWidget(
                               inbutIcon: 'assets/images/address.svg',
-                              inbutHintText: '${widget.assets?.branchObject?.name}',
+                              inbutHintText:
+                                  '${widget.assets?.branchObject?.name}',
                               textEditingController: branch,
                               selectedValue: selectedValue,
-                              Data: branchData.toList(),
+                              data: branchData.toList(),
                               onChanged: (value) {
                                 selectedBranchValue.value = BigInt.tryParse(
                                   value!,
@@ -130,7 +131,7 @@ class _EditAssetsPageBodyState extends State<EditAssetsPageBody> {
                             onChanged: (value) {
                               typeTxt.value = value!;
                             },
-                            Data: typeData,
+                            data: typeData,
                           ),
                         ],
                       ),

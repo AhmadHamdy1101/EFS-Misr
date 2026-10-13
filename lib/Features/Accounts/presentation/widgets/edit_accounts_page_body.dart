@@ -62,8 +62,8 @@ class _EditAccountPageBodyState extends State<EditAccountPageBody> {
   final TextEditingController companyEmail = TextEditingController();
   final TextEditingController address = TextEditingController();
   final TextEditingController phone = TextEditingController();
-  final TextEditingController Status = TextEditingController();
-  final TextEditingController Postition = TextEditingController();
+  final TextEditingController statusController = TextEditingController();
+  final TextEditingController positionController = TextEditingController();
   final companyTxt = ''.obs;
   final roleTxt = ''.obs;
 
@@ -134,16 +134,16 @@ class _EditAccountPageBodyState extends State<EditAccountPageBody> {
                           ),
                           CustomDropdownWidget(
                             inbutIcon: 'assets/images/status.svg',
-                            inbutHintText: widget.user?.status == '1'
+                            inbutHintText: widget.user?.status == 1
                                 ? 'Active'
-                                : widget.user?.status == '2'
+                                : widget.user?.status == 2
                                 ? 'Internship'
-                                : widget.user?.status == '3'
+                                : widget.user?.status == 3
                                 ? 'Terminated'
                                 : 'Suspended',
-                            textEditingController: Status,
+                            textEditingController: statusController,
                             selectedValue: selectedValue,
-                            Data: status,
+                            data: status,
                             onChanged: (value) {
                               selectedStatusValue.value = int.tryParse(value!)!;
                             },
@@ -152,9 +152,9 @@ class _EditAccountPageBodyState extends State<EditAccountPageBody> {
                             return CustomDropdownWidget(
                               inbutIcon: 'assets/images/position.svg',
                               inbutHintText: '${widget.user?.position?.name}',
-                              textEditingController: Postition,
+                              textEditingController: positionController,
                               selectedValue: selectedValue,
-                              Data: positions.toList(),
+                              data: positions.toList(),
                               onChanged: (value) {
                                 selectedPositionValue.value = BigInt.tryParse(
                                   value!,
@@ -169,7 +169,7 @@ class _EditAccountPageBodyState extends State<EditAccountPageBody> {
                             onChanged: (value) {
                               companyTxt.value = value!;
                             },
-                            Data: company,
+                            data: company,
                           ),
                           CustomDropdownWidget(
                             inbutIcon: 'assets/images/role.svg',
@@ -178,7 +178,7 @@ class _EditAccountPageBodyState extends State<EditAccountPageBody> {
                             onChanged: (value) {
                               roleTxt.value = value!;
                             },
-                            Data: role,
+                            data: role,
                             iconColor: AppColors.gray,
                           ),
                         ],

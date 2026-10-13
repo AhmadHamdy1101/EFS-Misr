@@ -7,9 +7,10 @@ final class HomeInitial extends TicketsState {}
 final class GetTicketsLoading extends TicketsState {}
 
 final class GetTicketsSuccess extends TicketsState {
-  final List<Tickets> tickets;
+  final List<TicketEntity> tickets;
+  final List<TicketEntity> allTickets;
 
-  GetTicketsSuccess({required this.tickets});
+  GetTicketsSuccess({required this.tickets, required this.allTickets});
 }
 
 final class GetTicketsFailure extends TicketsState {

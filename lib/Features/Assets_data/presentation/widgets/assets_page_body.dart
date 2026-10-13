@@ -1,5 +1,6 @@
 import 'package:efs_misr/Features/Assets_data/presentation/widgets/assets_list_view.dart';
 import 'package:efs_misr/Features/Assets_data/presentation/widgets/assets_search_widget.dart';
+import 'package:efs_misr/core/Functions/convert_to_excel_function.dart';
 import 'package:efs_misr/constants/screens_size.dart';
 import 'package:efs_misr/core/utils/widgets/custom_outline_button_widget.dart';
 import 'package:efs_misr/generated/app_images.dart';
@@ -75,8 +76,26 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                       borderRadius: BorderRadius.circular(50),
                     ),
                   ),
-                  onPressed: () {
-                    context.read<AssetsCubit>().convertAssetsToExcel();
+                  onPressed: () async {
+                    final messenger = ScaffoldMessenger.of(context);
+                    try {
+                      final status = await context
+                          .read<AssetsCubit>()
+                          .convertAssetsToExcel();
+                      if (!context.mounted) return;
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text(excelExportStatusMessage(status).tr),
+                        ),
+                      );
+                    } catch (error) {
+                      if (!context.mounted) return;
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text('${'Export failed'.tr}: $error'),
+                        ),
+                      );
+                    }
                   },
                   child: Row(
                     spacing: 10,
@@ -100,9 +119,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                       borderRadius: BorderRadius.circular(50),
                     ),
                   ),
-                  onPressed: () {
-                    // Get.to(AddTicketsPage());
-                  },
+                  onPressed: () {},
                   child: Row(
                     spacing: 10,
                     children: [
@@ -178,7 +195,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                     inbutIcon: AppImages.images.address.path,
                     inbutHintText: 'Area',
                     selectedValue: selectedValue,
-                    Data: areaData.toList(),
+                    data: areaData.toList(),
                     onChanged: (value) {
                       setState(() {
                         selectedArea = BigInt.tryParse(value!);
@@ -196,7 +213,7 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                     inbutIcon: AppImages.images.address.path,
                     inbutHintText: 'Branch',
                     selectedValue: selectedValue,
-                    Data: branchData.toList(),
+                    data: branchData.toList(),
                     onChanged: (value) {
                       setState(() {
                         selectedBranch = BigInt.tryParse(value!);
@@ -230,7 +247,6 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                             area: selectedArea?.toInt(),
                             branch: selectedBranch?.toInt(),
                           );
-
                         },
                       ),
                     ),

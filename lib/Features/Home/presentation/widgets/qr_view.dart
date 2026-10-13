@@ -10,7 +10,7 @@ class QRScanPage extends StatefulWidget {
   const QRScanPage({super.key});
 
   @override
-  _QRScanPageState createState() => _QRScanPageState();
+  State<QRScanPage> createState() => _QRScanPageState();
 }
 
 class _QRScanPageState extends State<QRScanPage> {
@@ -25,10 +25,15 @@ class _QRScanPageState extends State<QRScanPage> {
       body: BlocConsumer<QrcodeCubit, QrcodeState>(
         listener: (context, state) {
           if (state is QrcodeSuccess) {
-            Get.to(AssetsDetailsPage(assets: state.assets,));
+            Get.to(AssetsDetailsPage(assets: state.assets));
           }
           if (state is QrcodeFailed) {
-            Get.snackbar('Error', state.errMsg,backgroundColor: Colors.red,colorText: Colors.white);
+            Get.snackbar(
+              'Error',
+              state.errMsg,
+              backgroundColor: Colors.red,
+              colorText: Colors.white,
+            );
           }
         },
         builder: (context, state) {
@@ -45,7 +50,9 @@ class _QRScanPageState extends State<QRScanPage> {
                     final List<Barcode> barcodes = capture.barcodes;
                     for (final barcode in barcodes) {
                       if (barcode.rawValue != null) {
-                        context.read<QrcodeCubit>().getAssetsByQrCode(barcode.rawValue!);
+                        context.read<QrcodeCubit>().getAssetsByQrCode(
+                          barcode.rawValue!,
+                        );
                       }
                     }
                     Future.delayed(const Duration(seconds: 2), () {
@@ -58,9 +65,10 @@ class _QRScanPageState extends State<QRScanPage> {
                 flex: 1,
                 child: Center(
                   child: Text(
-                      barcode != null ? 'Result: $barcode' : 'Scan a code'),
+                    barcode != null ? 'Result: $barcode' : 'Scan a code',
+                  ),
                 ),
-              )
+              ),
             ],
           );
         },

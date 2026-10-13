@@ -1,19 +1,21 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../app_colors.dart';
 import '../app_text_styles.dart';
+
 class CustomOverviewWidget extends StatelessWidget {
-   const CustomOverviewWidget({
+  const CustomOverviewWidget({
     super.key,
     required this.screenHeight,
-    required this.screenWidth, required this.totalTickets, required this.doneTickets, required this.awaitTickets,
+    required this.screenWidth,
+    required this.totalTickets,
+    required this.doneTickets,
+    required this.awaitTickets,
   });
 
   final double screenHeight;
   final double screenWidth;
-
 
   final int totalTickets;
   final int doneTickets;
@@ -28,14 +30,14 @@ class CustomOverviewWidget extends StatelessWidget {
       left: screenWidth * 0.035,
       child: Container(
         width: screenWidth * 0.93,
-        
+
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(13),
           color: Theme.of(context).colorScheme.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               spreadRadius: 0,
               blurRadius: 12.7,
               offset: const Offset(0, 4),
@@ -58,12 +60,9 @@ class CustomOverviewWidget extends StatelessWidget {
                 context,
               ).copyWith(color: AppColors.green),
             ),
-            SizedBox(height: 10,),
+            SizedBox(height: 10),
             Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 20,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.tertiary,
                 borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -82,18 +81,17 @@ class CustomOverviewWidget extends StatelessWidget {
                       ),
                       Text(
                         "$totalTickets",
-                        style: AppTextStyle.latoBold26(context).copyWith(color: AppColors.green),
+                        style: AppTextStyle.latoBold26(
+                          context,
+                        ).copyWith(color: AppColors.green),
                       ),
-
                     ],
                   ),
                   Container(
                     height: screenHeight * 0.1,
                     width: 1,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                       color: AppColors.gray,
                     ),
                   ),
@@ -104,22 +102,20 @@ class CustomOverviewWidget extends StatelessWidget {
                         "Done \n Tickets".tr,
                         style: AppTextStyle.latoBold26(context),
                         textAlign: TextAlign.center,
-
                       ),
                       Text(
                         "$doneTickets",
-                        style: AppTextStyle.latoBold26(context).copyWith(color: AppColors.green),
+                        style: AppTextStyle.latoBold26(
+                          context,
+                        ).copyWith(color: AppColors.green),
                       ),
-
                     ],
                   ),
                   Container(
                     height: screenHeight * 0.1,
                     width: 1,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                       color: AppColors.gray,
                     ),
                   ),
@@ -130,13 +126,13 @@ class CustomOverviewWidget extends StatelessWidget {
                         "Awaiting \n Tickets".tr,
                         style: AppTextStyle.latoBold26(context),
                         textAlign: TextAlign.center,
-
                       ),
                       Text(
                         "$awaitTickets",
-                        style: AppTextStyle.latoBold26(context).copyWith(color: AppColors.green),
+                        style: AppTextStyle.latoBold26(
+                          context,
+                        ).copyWith(color: AppColors.green),
                       ),
-
                     ],
                   ),
                 ],

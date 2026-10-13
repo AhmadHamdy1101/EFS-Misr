@@ -2,7 +2,6 @@ import 'package:efs_misr/Features/Home/presentation/widgets/edit_assets_page_bod
 import 'package:flutter/material.dart';
 
 import '../../../../core/models/assets.dart';
-import '../widgets/add_assets_page_body.dart';
 
 class EditAssetsPage extends StatelessWidget {
   const EditAssetsPage({super.key, this.assets});
@@ -10,6 +9,6 @@ class EditAssetsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return EditAssetsPageBody(assets: assets,);
+    return EditAssetsPageBody(assets: assets);
   }
 }

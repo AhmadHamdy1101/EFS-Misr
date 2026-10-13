@@ -8,7 +8,7 @@ class UserEntity {
   final String address;
   final String role;
   final int status;
-  final PositionsEntity position;
+  final PositionsEntity? position;
   final String companyEmail;
   final String company;
   final String image;
@@ -21,6 +21,9 @@ class UserEntity {
     required this.address,
     required this.role,
     required this.status,
-    required this.position, required this.companyEmail, required this.company, required this.image,
-});
+    required this.position,
+    required this.companyEmail,
+    required this.company,
+    required this.image,
+  });
 }

@@ -2,32 +2,16 @@ import 'package:efs_misr/Features/Assets_data/presentation/widgets/assets_repair
 import 'package:efs_misr/Features/Assets_data/domain/entities/assets_entity.dart';
 import 'package:efs_misr/constants/screens_size.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/models/tickets.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
-import '../controller/assets_tickets_cubit.dart';
 
-class AssetsDetailsPageBody extends StatefulWidget {
+class AssetsDetailsPageBody extends StatelessWidget {
   const AssetsDetailsPageBody({super.key, required this.assets});
 
   final AssetsEntity assets;
-
-  @override
-  State<AssetsDetailsPageBody> createState() => _AssetsDetailsPageBodyState();
-}
-
-class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
-  final tickets = <Tickets>[].obs;
-
-  @override
-  void initState() {
-    super.initState();
-    tickets.value = context.read<AssetsTicketsCubit>().tickets;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +42,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                         ),
                         child: ClipRRect(
                           child: SvgPicture.asset(
-                            'assets/images/${widget.assets.type}.svg',
+                            'assets/images/${assets.type}.svg',
                           ),
                         ),
                       ),
@@ -68,18 +52,18 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(widget.assets.type.tr),
-                              Text(widget.assets.barCode),
+                              Text(assets.type.tr),
+                              Text(assets.barCode),
                             ],
                           ),
                           Text(
-                            widget.assets.branchObject.name.tr,
+                            assets.branchObject.name.tr,
                             style: AppTextStyle.latoRegular16(
                               context,
                             ).copyWith(color: AppColors.green),
                           ),
                           Text(
-                            widget.assets.area.tr,
+                            assets.area.tr,
                             style: AppTextStyle.latoRegular16(
                               context,
                             ).copyWith(color: AppColors.gray),
@@ -104,7 +88,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    '${widget.assets.totalAmount}',
+                                    '${assets.totalAmount}',
                                     style: AppTextStyle.latoBold16(
                                       context,
                                     ).copyWith(color: AppColors.white),
@@ -142,13 +126,13 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
                             Row(
                               children: [
                                 Text('Room:'.tr),
-                                Text(widget.assets.place.tr),
+                                Text(assets.place.tr),
                               ],
                             ),
                             Row(
                               children: [
                                 Text('Type:'.tr),
-                                Text(widget.assets.type.tr),
+                                Text(assets.type.tr),
                               ],
                             ),
                           ],
@@ -161,7 +145,7 @@ class _AssetsDetailsPageBodyState extends State<AssetsDetailsPageBody> {
             ),
           ),
         ),
-        AssetsRepairListView(assetsEntity: widget.assets),
+        const AssetsRepairListView(),
       ],
     );
   }

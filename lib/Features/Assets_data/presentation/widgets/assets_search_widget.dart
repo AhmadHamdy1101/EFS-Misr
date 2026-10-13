@@ -22,7 +22,8 @@ class AssetsSearchWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: CustomInputWidget(
               onChanged: (search) {
-                return context.read<AssetsCubit>().searchAssets(search);
+                 context.read<AssetsCubit>().searchAssets(search);
+                 return null;
               },
               inbutIcon: AppImages.images.search.path,
               inbutHintText: 'Search'.tr,

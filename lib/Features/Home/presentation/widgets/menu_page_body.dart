@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import '../../../../constants/constants.dart';
@@ -7,6 +8,7 @@ import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_menu_button_widget.dart';
 import '../../../../core/utils/widgets/custome_back_shape_wedget.dart';
+import '../viewmodel/image_cubit.dart';
 
 class MenuPageBody extends StatefulWidget {
   const MenuPageBody({super.key, required this.user});
@@ -29,8 +31,6 @@ class _MenuPageBodyState extends State<MenuPageBody> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    print(widget.user.image.toString());
-
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -70,12 +70,10 @@ class _MenuPageBodyState extends State<MenuPageBody> {
                     children: [
                       GestureDetector(
                         onTap: () async {
-                          // final newImageUrl = await uploadUserImage(context, widget.user.id);
-                          // if (newImageUrl != null) {
-                          //   setState(() {
-                          //     _userImage = newImageUrl; // يحدث الصورة فورًا
-                          //   });
-                          // }
+                          await context.read<ImageCubit>().updateImage(userId: widget.user.id, userName: widget.user.name);
+                          setState(() {
+                            _userImage = widget.user.image;
+                          });
                         },
                         child: Stack(
                           children: [

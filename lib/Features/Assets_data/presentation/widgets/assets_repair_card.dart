@@ -1,18 +1,18 @@
 import 'package:efs_misr/constants/screens_size.dart';
-import 'package:efs_misr/core/models/assets_repair.dart';
+import 'package:efs_misr/Features/Assets_data/domain/entities/asset_repair_entity.dart';
 import 'package:efs_misr/generated/app_images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/Functions/GetDate_Function.dart';
+import '../../../../core/Functions/get_date_function.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 
 class AssetsRepairCard extends StatelessWidget {
   const AssetsRepairCard({super.key, required this.assetsRepair});
 
-  final AssetsRepair assetsRepair;
+  final AssetRepairEntity assetsRepair;
 
   @override
   Widget build(BuildContext context) {

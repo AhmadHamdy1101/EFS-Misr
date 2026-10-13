@@ -18,7 +18,6 @@ class AddAccountPageBody extends StatefulWidget {
 }
 
 class _AddAccountPageBodyState extends State<AddAccountPageBody> {
-
   String? selectedValue;
   final selectedPositionValue = BigInt.zero.obs;
   final selectedStatusValue = 0.obs;
@@ -59,8 +58,8 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
   final TextEditingController companyEmail = TextEditingController();
   final TextEditingController address = TextEditingController();
   final TextEditingController phone = TextEditingController();
-  final TextEditingController Status = TextEditingController();
-  final TextEditingController Postition = TextEditingController();
+  final TextEditingController statusController = TextEditingController();
+  final TextEditingController positionController = TextEditingController();
   final companyTxt = ''.obs;
   final roleTxt = ''.obs;
 
@@ -157,13 +156,14 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                         CustomDropdownWidget(
                           inbutIcon: 'assets/images/status.svg',
                           inbutHintText: 'Status'.tr,
-                          textEditingController: Status,
+                          textEditingController: statusController,
                           selectedValue: selectedValue,
-                          Data: status,
+                          data: status,
                           onChanged: (value) {
                             selectedStatusValue.value = int.tryParse(value!)!;
-                          },validator: (p0) {
-                            if (Status.text.isEmpty) {
+                          },
+                          validator: (p0) {
+                            if (statusController.text.isEmpty) {
                               return 'Please enter status';
                             }
                             return null;
@@ -173,16 +173,16 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                           return CustomDropdownWidget(
                             inbutIcon: 'assets/images/position.svg',
                             inbutHintText: 'Position'.tr,
-                            textEditingController: Postition,
+                            textEditingController: positionController,
                             selectedValue: selectedValue,
-                            Data: positions.toList(),
+                            data: positions.toList(),
                             onChanged: (value) {
                               selectedPositionValue.value = BigInt.tryParse(
                                 value!,
                               )!;
                             },
                             validator: (p0) {
-                              if (Postition.text.isEmpty) {
+                              if (positionController.text.isEmpty) {
                                 return 'Please enter position';
                               }
                               return null;
@@ -196,7 +196,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                           onChanged: (value) {
                             companyTxt.value = value!;
                           },
-                          Data: company,
+                          data: company,
                           validator: (p0) {
                             if (companyTxt.value.isEmpty) {
                               return 'Please enter company';
@@ -211,7 +211,7 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                           onChanged: (value) {
                             roleTxt.value = value!;
                           },
-                          Data: role,
+                          data: role,
                           iconColor: AppColors.gray,
                           validator: (p0) {
                             if (roleTxt.value.isEmpty) {
@@ -257,19 +257,19 @@ class _AddAccountPageBodyState extends State<AddAccountPageBody> {
                         addAccountLoading.value = false;
                       },
                       child: Obx(
-                            () => addAccountLoading.value
+                        () => addAccountLoading.value
                             ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            color: AppColors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: AppColors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
                             : Text(
-                          'Add',
-                          style: AppTextStyle.latoBold26(context),
-                        ),
+                                'Add',
+                                style: AppTextStyle.latoBold26(context),
+                              ),
                       ),
                     ),
                   ),

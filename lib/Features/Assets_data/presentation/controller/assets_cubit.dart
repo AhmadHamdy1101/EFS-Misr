@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:efs_misr/Features/Assets_data/domain/entities/assets_entity.dart';
 import 'package:efs_misr/Features/Assets_data/domain/repo/assets_data_repo.dart';
 import 'package:efs_misr/core/Functions/convert_to_excel_function.dart';
@@ -36,50 +35,46 @@ class AssetsCubit extends Cubit<AssetsState> {
     );
   }
 
-  searchAssets(String? search) {
-    if (search == null || search.isEmpty) {
+  void searchAssets(String? search) {
+    final query = search?.trim().toLowerCase() ?? '';
+    if (query.isEmpty) {
       emit(GetAssetsSuccess(assets: allAssets));
       return;
     }
     searchedAssets.clear();
     final res = allAssets.where((asset) {
-      final nameMatch = asset.type.toLowerCase().contains(search);
-      final branchName =
-          asset.branchName.toLowerCase().contains(search) ;
-      final areaName =
-          asset.area.toLowerCase().contains(search) ;
-      final barcode = asset.barCode.toLowerCase().contains(search) ;
+      final nameMatch = asset.type.toLowerCase().contains(query);
+      final branchName = asset.branchName.toLowerCase().contains(query);
+      final areaName = asset.area.toLowerCase().contains(query);
+      final barcode = asset.barCode.toLowerCase().contains(query);
       return nameMatch || branchName || areaName || barcode;
     }).toList();
     searchedAssets.addAll(res);
     emit(GetAssetsSuccess(assets: searchedAssets));
   }
 
-  Future<void> convertAssetsToExcel() async {
-    try {
-      final data = await supabaseClient.assetsAndTickets.select('id,tickets(orecal_id),assets(barcode,name,branch(name),floor,place,area,type),Ammount');
-      if (data.isEmpty) {
-        return;
-      }
-      await convertDataToExcel(data);
-    } catch (e) {
-     log(e.toString());
-    }
+  Future<ExcelExportStatus> convertAssetsToExcel() async {
+    final data = await supabaseClient.assetsAndTickets.select(
+      'id,tickets(orecal_id),assets(barcode,name,branch(name),floor,place,area,type),Ammount',
+    );
+    if (data.isEmpty) return ExcelExportStatus.noData;
+
+    return convertDataToExcel(data);
   }
+
   void filterAssets({int? area, int? branch}) {
     filterdAssets.clear();
 
     final res = allAssets.where((asset) {
-      final matchArea = area == null ||
-          asset.branchObject.areaId == area;
-      final matchBranch = branch == null ||
-          asset.branchObject.id == branch;
-      return matchBranch || matchArea;
+      final matchArea = area == null || asset.branchObject.areaId == area;
+      final matchBranch = branch == null || asset.branchObject.id == branch;
+      return matchBranch && matchArea;
     }).toList();
 
     filterdAssets.addAll(res);
     emit(GetAssetsSuccess(assets: filterdAssets));
   }
+
   Future<void> addAssetsData({
     required String? barcode,
     required String? name,
@@ -96,8 +91,8 @@ class AssetsCubit extends Cubit<AssetsState> {
       type: type,
       branch: branch,
     );
-    res.fold(
-          (l) {
+    await res.fold<Future<void>>(
+      (l) async {
         Get.snackbar(
           'Error',
           l.message,
@@ -105,9 +100,8 @@ class AssetsCubit extends Cubit<AssetsState> {
           colorText: AppColors.white,
         );
       },
-          (r) {
-        getAssets();
-        emit(GetAssetsSuccess(assets: allAssets));
+      (r) async {
+        await getAssets();
         Get.snackbar(
           "Add Assets Success",
           'Assets Added Successfully',
@@ -117,6 +111,4 @@ class AssetsCubit extends Cubit<AssetsState> {
       },
     );
   }
-
-
 }

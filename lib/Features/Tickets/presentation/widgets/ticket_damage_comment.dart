@@ -1,14 +1,12 @@
+import 'package:efs_misr/Features/Tickets/domain/entities/ticket_entity.dart';
+import 'package:efs_misr/Features/Tickets/presentation/controller/tickets_cubit.dart';
 import 'package:efs_misr/constants/screens_size.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
-import 'package:efs_misr/core/utils/widgets/custom_button_widget.dart';
+import 'package:efs_misr/core/utils/app_text_styles.dart';
 import 'package:efs_misr/core/utils/widgets/custom_inbut_wedget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-
-import '../../../../core/models/tickets.dart';
-import '../../../../core/utils/app_text_styles.dart';
-import '../controller/tickets_cubit.dart';
 
 class TicketDamageComment extends StatelessWidget {
   const TicketDamageComment({
@@ -18,108 +16,133 @@ class TicketDamageComment extends StatelessWidget {
   });
 
   final TextEditingController damageComment;
-  final Tickets ticket;
+  final TicketEntity ticket;
+
+  Future<void> _editDamageDescription(BuildContext context) async {
+    damageComment.text = ticket.damageDescription;
+    final formKey = GlobalKey<FormState>();
+    var isSaving = false;
+    var errorMessage = '';
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) => AlertDialog(
+          backgroundColor: AppColors.white,
+          title: Text('Edit damage description'.tr),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomInputWidget(
+                  inbutIcon: 'assets/images/comment.svg',
+                  inbutHintText: 'Damage Description'.tr,
+                  changeToPass: false,
+                  textEditingController: damageComment,
+                  textInputType: TextInputType.multiline,
+                  validator: (value) => (value?.trim().isEmpty ?? true)
+                      ? 'Damage description is required'.tr
+                      : null,
+                ),
+                if (errorMessage.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: isSaving ? null : () => Navigator.pop(dialogContext),
+              child: Text('Cancel'.tr),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: AppColors.green),
+              onPressed: isSaving
+                  ? null
+                  : () async {
+                      if (!formKey.currentState!.validate()) return;
+                      setDialogState(() {
+                        isSaving = true;
+                        errorMessage = '';
+                      });
+                      final result = await dialogContext
+                          .read<TicketsCubit>()
+                          .updateDamageDescription(
+                            ticketId: ticket.id,
+                            damageDescription: damageComment.text.trim(),
+                          );
+                      if (!dialogContext.mounted) return;
+                      result.fold(
+                        (failure) => setDialogState(() {
+                          isSaving = false;
+                          errorMessage = failure.message;
+                        }),
+                        (_) => Navigator.pop(dialogContext),
+                      );
+                    },
+              child: isSaving
+                  ? const SizedBox.square(
+                      dimension: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text('Save'.tr),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Container(
-        padding: EdgeInsets.all(20.0),
-        width: ScreensSize(context).screenWidth,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Damage Description:'.tr,
-                  style: AppTextStyle.latoBold20(
-                    context,
-                  ).copyWith(color: AppColors.green),
-                ),
-
-                TextButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Dialog(
-                          backgroundColor: AppColors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: SingleChildScrollView(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                spacing: 10,
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [CloseButton()],
-                                  ),
-
-                                  CustomInputWidget(
-                                    inbutIcon: "assets/images/comment.svg",
-                                    inbutHintText: "Damage Description",
-                                    changeToPass: false,
-                                    textEditingController: damageComment,
-                                  ),
-                                  CustomButtonWidget(
-                                    screenWidth: ScreensSize(
-                                      context,
-                                    ).screenWidth,
-                                    toppadding: 10.0,
-                                    textstyle: AppTextStyle.latoBold20(context),
-                                    foregroundcolor: AppColors.white,
-                                    onpressed: () {
-                                      context
-                                          .read<TicketsCubit>()
-                                          .updateTicketComment(
-                                            ticketId: ticket.id.toString(),
-                                            newComment: damageComment.text,
-                                          );
-                                      Navigator.pop(
-                                        context,
-                                      );
-                                    },
-                                    text: 'Submit',
-                                    color: AppColors.green,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  child: Text(
-                    'Edit',
-                    style: AppTextStyle.latoBold20(
-                      context,
-                    ).copyWith(color: AppColors.gray),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: SizedBox(
+          width: ScreensSize(context).screenWidth,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Damage Description:'.tr,
+                      style: AppTextStyle.latoBold20(
+                        context,
+                      ).copyWith(color: AppColors.green),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            BlocBuilder<TicketsCubit, TicketsState>(
-              builder: (context, state) {
-                if (state is GetTicketsSuccess) {
-                  final currentTicket = state.tickets.firstWhere(
-                    (t) => t.id == ticket.id,
-                    orElse: () => ticket,
-                  );
-                  return Text(currentTicket.damageDescription ?? 'No Damage');
-                }
-                return Text(ticket.damageDescription ?? 'No Damage');
-              },
-            ),
-          ],
+                  TextButton(
+                    onPressed: () => _editDamageDescription(context),
+                    child: Text(
+                      'Edit'.tr,
+                      style: AppTextStyle.latoBold20(
+                        context,
+                      ).copyWith(color: AppColors.gray),
+                    ),
+                  ),
+                ],
+              ),
+              BlocBuilder<TicketsCubit, TicketsState>(
+                builder: (context, state) {
+                  final latest = state is GetTicketsSuccess
+                      ? state.allTickets.firstWhere(
+                          (item) => item.id == ticket.id,
+                          orElse: () => ticket,
+                        )
+                      : ticket;
+                  return Text(latest.damageDescription);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

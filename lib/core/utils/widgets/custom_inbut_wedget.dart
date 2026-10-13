@@ -40,7 +40,7 @@ class CustomInputWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(40), // pill shape
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withValues(alpha: 0.2),
             spreadRadius: 1,
             blurRadius: 10,
             offset: const Offset(0, 3),
@@ -48,7 +48,7 @@ class CustomInputWidget extends StatelessWidget {
         ],
       ),
       child: TextFormField(
-        // readOnly: readOnly ?? false,
+        readOnly: readOnly ?? false,
         onTap: onTap,
         onChanged: onChanged,
         validator: validator,
@@ -64,7 +64,12 @@ class CustomInputWidget extends StatelessWidget {
           ).copyWith(color: Theme.of(context).colorScheme.primary),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(9.0),
-            child: SvgPicture.asset(inbutIcon, color: iconColor),
+            child: SvgPicture.asset(
+              inbutIcon,
+              colorFilter: iconColor == null
+                  ? null
+                  : ColorFilter.mode(iconColor!, BlendMode.srcIn),
+            ),
           ),
           prefixIconConstraints: const BoxConstraints(
             minWidth: 30, // العرض المطلوب

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -7,7 +6,8 @@ import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/widgets/custom_profile_wedget.dart';
 import '../../../../core/utils/widgets/custome_back_shape_wedget.dart';
 import '../../../../core/utils/widgets/custome_overview_widget.dart';
-import '../../../../core/utils/widgets/ticket_overview_widget.dart';
+import '../../../Tickets/presentation/widgets/ticket_overview_widget.dart';
+import '../../../Tickets/domain/entities/ticket_entity.dart';
 import '../../../Tickets/presentation/controller/tickets_cubit.dart';
 
 class HomePageBody extends StatefulWidget {
@@ -24,7 +24,6 @@ class _HomePageBodyState extends State<HomePageBody> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final textScale = MediaQuery.textScaleFactorOf(context);
 
     return CustomScrollView(
       slivers: [
@@ -53,19 +52,20 @@ class _HomePageBodyState extends State<HomePageBody> {
               ),
               CustomProfileWidget(
                 screenWidth: screenWidth,
-                image:  (widget.user.image != null && widget.user.image!.isNotEmpty)
+                image:
+                    (widget.user.image != null && widget.user.image!.isNotEmpty)
                     ? Image.network(
-                  widget.user.image!,
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                )
+                        widget.user.image!,
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                      )
                     : Image.asset(
-                  'assets/images/user.png',
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                ),
+                        'assets/images/user.png',
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                      ),
                 name: '${widget.user.name}',
                 position: '${widget.user.position!.name}',
                 onPress: () {},
@@ -81,12 +81,12 @@ class _HomePageBodyState extends State<HomePageBody> {
                     return CustomOverviewWidget(
                       screenHeight: screenHeight,
                       screenWidth: screenWidth,
-                      totalTickets: state.tickets.length,
-                      doneTickets: state.tickets
-                          .where((ticket) => ticket.status == 'Completed')
+                      totalTickets: state.allTickets.length,
+                      doneTickets: state.allTickets
+                          .where((ticket) => ticket.status == TicketStatus.completed)
                           .length,
-                      awaitTickets: state.tickets
-                          .where((ticket) => ticket.status == 'Awaiting')
+                      awaitTickets: state.allTickets
+                          .where((ticket) => ticket.status == TicketStatus.awaiting)
                           .length,
                     );
                   }
@@ -124,7 +124,7 @@ class _HomePageBodyState extends State<HomePageBody> {
                       Text(
                         "Tickets Overview".tr,
                         style: TextStyle(
-                          fontSize: screenWidth * 0.045 * textScale,
+                          fontSize: screenWidth * 0.045,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -136,28 +136,31 @@ class _HomePageBodyState extends State<HomePageBody> {
                     builder: (context, state) {
                       if (state is GetTicketsLoading) {
                         return const Center(
-                          child:
-                          CircularProgressIndicator(color: AppColors.green),
+                          child: CircularProgressIndicator(
+                            color: AppColors.green,
+                          ),
                         );
                       }
                       if (state is GetTicketsFailure) {
                         return Center(child: Text(state.errMsg));
                       }
                       if (state is GetTicketsSuccess &&
-                          state.tickets.isNotEmpty) {
+                          state.allTickets.isNotEmpty) {
+                        final overviewTickets = state.allTickets.take(5).toList();
                         return ListView.builder(
                           padding: EdgeInsets.zero,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: state.tickets.length,
+                          itemCount: overviewTickets.length,
                           itemBuilder: (context, index) {
                             return Container(
-                              margin:
-                              EdgeInsets.only(bottom: screenHeight * 0.04),
+                              margin: EdgeInsets.only(
+                                bottom: screenHeight * 0.04,
+                              ),
                               child: TicketOverViewWidget(
                                 screenWidth: screenWidth,
                                 screenHeight: screenHeight,
-                                ticketData: state.tickets[index],
+                                ticketData: overviewTickets[index],
                               ),
                             );
                           },
@@ -165,8 +168,7 @@ class _HomePageBodyState extends State<HomePageBody> {
                       }
                       return Column(
                         children: [
-                          const Icon(Icons.inbox,
-                              size: 64, color: Colors.grey),
+                          const Icon(Icons.inbox, size: 64, color: Colors.grey),
                           const SizedBox(height: 10),
                           Text(
                             "No Tickets Found",

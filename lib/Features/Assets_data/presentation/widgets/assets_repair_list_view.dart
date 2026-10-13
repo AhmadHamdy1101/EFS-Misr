@@ -1,5 +1,5 @@
-import 'package:efs_misr/Features/Assets_data/domain/entities/assets_entity.dart';
 import 'package:efs_misr/Features/Assets_data/presentation/widgets/assets_repair_card.dart';
+import 'package:efs_misr/core/utils/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../Tickets/presentation/screens/ticket_details_page.dart';
@@ -7,9 +7,7 @@ import '../controller/assets_repair_cubit.dart';
 import '../controller/assets_tickets_cubit.dart';
 
 class AssetsRepairListView extends StatelessWidget {
-  const AssetsRepairListView({super.key, required this.assetsEntity});
-
-  final AssetsEntity assetsEntity;
+  const AssetsRepairListView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,31 +32,28 @@ class AssetsRepairListView extends StatelessWidget {
                           top: Radius.circular(20),
                         ),
                       ),
-                      isScrollControlled: false,
+
                       builder: (BuildContext context) {
+                        final ticket = state.assetsRepair[index].ticket;
+                        if (ticket == null) {
+                          return  Padding(
+                            padding: EdgeInsets.all(24),
+                            child: Text('No ticket assigned to this repair.',style: AppTextStyle.latoRegular24(context),),
+                          );
+                        }
+
                         context
                             .read<AssetsTicketsCubit>()
                             .getAssetsWithTicketId(
-                              ticketId: state.assetsRepair[index].tickets!.id,
+                              ticketId: BigInt.from(ticket.id),
                             );
-                        context
-                            .read<AssetsRepairCubit>()
-                            .getAssetsRepairDetails(
-                              ticketID: state.assetsRepair[index].tickets!.id,
-                              assetID: BigInt.from(assetsEntity.id),
-                            );
-                        if (state.assetsRepair[index].tickets == null) {
-                          return Text('No tickets assigned to this asset');
-                        }
-                        else {
-                          return TicketDetailsPage(
-                          tickets: state.assetsRepair[index].tickets!,
-                        );
-                        }
+                        return TicketDetailsPage(tickets: ticket);
                       },
                     );
                   },
-                  child: AssetsRepairCard(assetsRepair: state.assetsRepair[index],),
+                  child: AssetsRepairCard(
+                    assetsRepair: state.assetsRepair[index],
+                  ),
                 );
               },
             );

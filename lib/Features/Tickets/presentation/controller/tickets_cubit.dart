@@ -1,356 +1,307 @@
-import 'dart:io';
+import 'dart:async';
+import 'dart:developer' as developer;
 
-import 'package:efs_misr/Features/Assets_data/domain/repo/assets_data_repo.dart';
+import 'package:dartz/dartz.dart';
+import 'package:efs_misr/Features/Tickets/domain/entities/ticket_change.dart';
+import 'package:efs_misr/Features/Tickets/domain/entities/ticket_entity.dart';
+import 'package:efs_misr/Features/Tickets/domain/entities/ticket_lookup_option.dart';
 import 'package:efs_misr/Features/Tickets/domain/repo/tickets_repo.dart';
-import 'package:efs_misr/Features/Tickets/presentation/screens/add_tickets_page.dart';
-import 'package:efs_misr/Features/Accounts/presentation/screens/add_success_page.dart';
-import 'package:efs_misr/Features/Tickets/presentation/screens/ticket_page.dart';
-import 'package:efs_misr/constants/constants.dart';
-import 'package:efs_misr/core/utils/app_colors.dart';
-import 'package:file_saver/file_saver.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:efs_misr/core/Errors/failure.dart';
+import 'package:efs_misr/core/Functions/convert_to_excel_function.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
-
-import '../../../../core/models/supadart_header.dart';
-import '../../../../core/models/tickets.dart';
-import '../../../../core/models/user.dart';
 
 part 'tickets_state.dart';
 
 class TicketsCubit extends Cubit<TicketsState> {
+  TicketsCubit({required this.ticketsRepo}) : super(HomeInitial()) {
+    _subscribeToTicketChanges();
+  }
+
   final TicketsRepo ticketsRepo;
-  final AssetsDataRepo assetsDataRepo;
+  final List<TicketEntity> _allTickets = [];
+  final List<TicketChange> _pendingChanges = [];
+  StreamSubscription<TicketChange>? _ticketChangesSubscription;
+  bool _hasLoadedTickets = false;
+  String _searchQuery = '';
+  int? _areaFilter;
+  int? _branchFilter;
 
-  TicketsCubit({required this.ticketsRepo, required this.assetsDataRepo}) : super(HomeInitial());
+  List<TicketEntity> get allTickets => List.unmodifiable(_allTickets);
+  int? get selectedAreaId => _areaFilter;
+  int? get selectedBranchId => _branchFilter;
 
-  int totalTickets = 0;
-  int totalDoneTickets = 0;
-  int totalAwaitingTickets = 0;
+  List<TicketLookupOption> get areaOptions {
+    final options = <int, TicketLookupOption>{};
+    for (final ticket in _allTickets) {
+      final branch = ticket.branchEntity;
+      if (branch != null) {
+        options.putIfAbsent(
+          branch.areaId,
+          () => TicketLookupOption(
+            id: branch.areaId,
+            name: branch.areaName ?? 'Area ${branch.areaId}',
+          ),
+        );
+      }
+    }
+    return _sortedOptions(options.values);
+  }
 
-  final List<Tickets> allTickets = [];
-  final List<Tickets> searchedTickets = [];
-  final List<Tickets> filterdTickets = [];
-  final List<Users> engineers = [];
+  List<TicketLookupOption> get branchOptions {
+    final options = <int, TicketLookupOption>{};
+    for (final ticket in _allTickets) {
+      final branch = ticket.branchEntity;
+      if (branch != null) {
+        options.putIfAbsent(
+          branch.id,
+          () => TicketLookupOption(id: branch.id, name: branch.name),
+        );
+      }
+    }
+    return _sortedOptions(options.values);
+  }
 
   Future<void> getTickets() async {
-    emit(GetTicketsLoading());
+    if (!_hasLoadedTickets) emit(GetTicketsLoading());
     final result = await ticketsRepo.getTickets();
     result.fold(
       (failure) {
-        emit(GetTicketsFailure(errMsg: failure.message));
+        if (!_hasLoadedTickets) {
+          emit(GetTicketsFailure(errMsg: failure.message));
+        }
       },
       (tickets) {
-        allTickets.clear();
-        allTickets.addAll(tickets);
-        totalTickets = tickets.length;
-        totalDoneTickets = tickets
-            .where((ticket) => ticket.status == 'Completed')
-            .length;
-        totalAwaitingTickets = tickets
-            .where((ticket) => ticket.status == 'Awaiting')
-            .length;
-        emit(GetTicketsSuccess(tickets: allTickets));
+        _allTickets
+          ..clear()
+          ..addAll(tickets);
+        _sortTickets();
+        _hasLoadedTickets = true;
+        for (final change in List<TicketChange>.of(_pendingChanges)) {
+          _applyChange(change);
+        }
+        _pendingChanges.clear();
+        _emitVisibleTickets();
       },
     );
   }
 
   void searchTickets(String? search) {
-    if (search == null || search.isEmpty) {
-      emit(GetTicketsSuccess(tickets: allTickets));
-      return;
-    }
-    searchedTickets.clear();
-    final res = allTickets.where((ticket) {
-      final idMatch = ticket.orecalId.toString().toLowerCase().contains(search);
-      final commentMatch =
-          ticket.comment?.toLowerCase().contains(search) ?? false;
-      final branchName =
-          ticket.branchObject?.name?.toLowerCase().contains(search) ?? false;
-      final areaName =
-          ticket.branchObject?.areaObject?.name?.toLowerCase().contains(
-            search,
-          ) ??
-          false;
-      return idMatch || commentMatch || branchName || areaName;
-    }).toList();
-    searchedTickets.addAll(res);
-    emit(GetTicketsSuccess(tickets: searchedTickets));
+    _searchQuery = search?.trim().toLowerCase() ?? '';
+    _emitVisibleTickets();
   }
 
-  Future<void> convertTicketsToExcel() async {
-    try {
-      final data = await supabaseClient.tickets.select(
-        'orecal_id,branch(branch_id,name) , priority, request_date, repair_date,response_date,damage_description,status',
-      );
-      if (data.isEmpty) {
-        return;
-      }
+  void filterTickets({int? area, int? branch}) {
+    _areaFilter = area;
+    _branchFilter = branch;
+    _emitVisibleTickets();
+  }
 
-      final combined = data.map((row) {
-        return {
-          'orecal_id': row['orecal_id'],
-          'branch_name': row['branch']?['name'] ?? '',
-          'branch_id': row['branch']?['branch_id'] ?? '',
-          'damage_description': row['damage_description'],
-          'priority': row['priority'],
-          'request_date': row['request_date'],
-          'repair_date': row['repair_date'],
-          'response_date': row['response_date'],
-          'status': row['status'],
+  Future<Either<Failure, TicketFormOptions>> getTicketFormOptions() {
+    return ticketsRepo.getTicketFormOptions();
+  }
+
+  Future<Either<Failure, ExcelExportStatus>> convertTicketsToExcel() async {
+    try {
+      final data = _allTickets.map((ticket) {
+        return <String, dynamic>{
+          'orecal_id': ticket.oricalID,
+          'branch': {
+            'name': ticket.branchEntity?.name,
+            'branch_id': ticket.branchEntity?.branchId,
+          },
+          'priority': ticket.priority,
+          'request_date': ticket.requestDate?.toIso8601String(),
+          'repair_date': ticket.repairDate?.toIso8601String(),
+          'response_date': ticket.responseDate?.toIso8601String(),
+          'damage_description': ticket.damageDescription,
+          'status': ticket.status.databaseValue,
         };
       }).toList();
-
-      final workbook = xlsio.Workbook();
-      final sheet = workbook.worksheets[0];
-      final headers = combined.first.keys.toList();
-      final headerStyle = workbook.styles.add('HeaderStyle');
-      headerStyle.bold = true;
-      headerStyle.fontSize = 14;
-      headerStyle.hAlign = xlsio.HAlignType.center;
-      headerStyle.backColor = '#008C43';
-      headerStyle.fontColor = '#ffffff';
-
-      //  headers
-      for (var i = 0; i < headers.length; i++) {
-        final cell = sheet.getRangeByIndex(1, i + 1);
-        cell.setText(headers[i].toString());
-        cell.cellStyle = headerStyle;
-      }
-
-      //  data
-      for (var rowIndex = 0; rowIndex < combined.length; rowIndex++) {
-        final row = combined[rowIndex];
-        for (var colIndex = 0; colIndex < headers.length; colIndex++) {
-          final value = row[headers[colIndex]]?.toString() ?? '';
-          sheet.getRangeByIndex(rowIndex + 2, colIndex + 1).setText(value);
-        }
-      }
-
-      final List<int> bytes = workbook.saveAsStream();
-      workbook.dispose();
-      final Uint8List fileBytes = Uint8List.fromList(bytes);
-
-      final timestamp = DateTime.now();
-      DateFormat('d - MMM - yyyy').format(timestamp);
-      final fileName = "Tickets_$timestamp.xlsx";
-
-      if (kIsWeb ||
-          Platform.isWindows ||
-          Platform.isLinux ||
-          Platform.isMacOS) {
-        await FileSaver.instance.saveFile(
-          name: fileName,
-          bytes: fileBytes,
-          fileExtension: "xlsx",
-          mimeType: MimeType.microsoftExcel,
-        );
-      } else if (Platform.isAndroid) {
-        if (await Permission.storage.request().isDenied) {
-          return;
-        } else {}
-
-        final downloadsDir = await getExternalStorageDirectory();
-        if (!downloadsDir!.existsSync()) {
-          downloadsDir.createSync(recursive: true);
-        }
-
-        final filePath = "${downloadsDir.path}/$fileName";
-        final file = File(filePath);
-        await file.writeAsBytes(fileBytes);
-
-        await OpenFilex.open(filePath);
-        await SharePlus.instance.share(
-          ShareParams(files: [XFile(file.path)], text: 'Tickets Export'),
-        );
-      } else if (Platform.isIOS) {
-        final dir = await getApplicationDocumentsDirectory();
-        final filePath = "${dir.path}/$fileName";
-
-        final file = File(filePath);
-        await file.writeAsBytes(fileBytes);
-
-        await OpenFilex.open(file.path);
-        await SharePlus.instance.share(
-          ShareParams(files: [XFile(file.path)], text: 'Tickets Export'),
-        );
-      }
-    } catch (e) {
-      Get.snackbar('Error', e.toString());
+      final status = await convertDataToExcel(data);
+      return Right(status);
+    } catch (error) {
+      return Left(Failure.fromException(error));
     }
   }
 
-  Future<void> updateTicketStatus({
-    required String ticketId,
-    required String newStatus,
-    required DateTime repairDate,
+  Future<Either<Failure, TicketEntity>> updateTicketStatus({
+    required int ticketId,
+    required TicketStatus status,
+    DateTime? repairDate,
   }) async {
     final result = await ticketsRepo.updateTicketStatus(
-      ticketID: ticketId,
-      newStatus: newStatus,
-      repairDate: repairDate,
+      ticketId: BigInt.from(ticketId),
+      status: status,
+      repairDate: status == TicketStatus.completed
+          ? (repairDate ?? DateTime.now())
+          : null,
     );
-    result.fold((l) {}, (ticket) {
-      final updatedTickets = allTickets.map((e) {
-        return e.id == ticket.id ? ticket : e;
-      }).toList();
-      allTickets.clear();
-      allTickets.addAll(updatedTickets);
-      emit(GetTicketsSuccess(tickets: updatedTickets));
-    });
+    result.fold((_) {}, _upsertTicket);
+    return result;
   }
 
-  Future<void> updateTicketComment({
-    required String ticketId,
-    required String newComment,
+  Future<Either<Failure, TicketEntity>> updateDamageDescription({
+    required int ticketId,
+    required String damageDescription,
   }) async {
-    final result = await ticketsRepo.updateTicketComment(
-      ticketID: ticketId,
-      newComment: newComment,
+    final result = await ticketsRepo.updateDamageDescription(
+      ticketId: BigInt.from(ticketId),
+      damageDescription: damageDescription,
     );
-    result.fold((l) {}, (ticket) {
-      final updatedTickets = allTickets.map((e) {
-        return e.id == ticket.id ? ticket : e;
-      }).toList();
-      allTickets.clear();
-      allTickets.addAll(updatedTickets);
-      emit(GetTicketsSuccess(tickets: updatedTickets));
-    });
+    result.fold((_) {}, _upsertTicket);
+    return result;
   }
 
-  Future<void> updateTicketResponseDate({
-    required String ticketId,
+  Future<Either<Failure, TicketEntity>> updateTicketResponseDate({
+    required int ticketId,
     required DateTime responseDate,
   }) async {
     final result = await ticketsRepo.updateTicketResponseDate(
-      ticketID: ticketId,
+      ticketId: BigInt.from(ticketId),
       responseDate: responseDate,
     );
-    result.fold((l) {}, (ticket) {
-      final updatedTickets = allTickets.map((e) {
-        return e.id == ticket.id ? ticket : e;
-      }).toList();
-      allTickets.clear();
-      allTickets.addAll(updatedTickets);
-      emit(GetTicketsSuccess(tickets: updatedTickets));
+    result.fold((_) {}, _upsertTicket);
+    return result;
+  }
+
+  Future<Either<Failure, TicketEntity>> addTicket({
+    required BigInt oracleId,
+    required String comment,
+    required BigInt branchId,
+    required String priority,
+    required DateTime requestDate,
+    required BigInt engineerId,
+  }) async {
+    if (oracleId <= BigInt.zero ||
+        branchId <= BigInt.zero ||
+        engineerId <= BigInt.zero) {
+      return Left(
+        GeneralFailure(
+          'Select a branch and engineer and enter a valid Oracle ID.',
+        ),
+      );
+    }
+    if (comment.trim().isEmpty) {
+      return Left(GeneralFailure('Comment is required.'));
+    }
+    final result = await ticketsRepo.addTicket(
+      oracleId: oracleId,
+      comment: comment,
+      branchId: branchId,
+      priority: priority,
+      requestDate: requestDate,
+      engineerId: engineerId,
+    );
+    result.fold((_) {}, _upsertTicket);
+    return result;
+  }
+
+  Future<Either<Failure, Unit>> deleteTicket({required int ticketId}) async {
+    final result = await ticketsRepo.deleteTicket(
+      ticketId: BigInt.from(ticketId),
+    );
+    result.fold((_) {}, (_) {
+      _allTickets.removeWhere((ticket) => ticket.id == ticketId);
+      _emitVisibleTickets();
+    });
+    return result;
+  }
+
+  void _subscribeToTicketChanges() {
+    try {
+      _ticketChangesSubscription = ticketsRepo.watchTicketChanges().listen(
+        (change) {
+          if (_hasLoadedTickets) {
+            _applyChange(change);
+          } else {
+            _pendingChanges.add(change);
+          }
+        },
+        onError: (Object error, StackTrace stackTrace) {
+          developer.log(
+            'Ticket realtime subscription failed.',
+            error: error,
+            stackTrace: stackTrace,
+            name: 'TicketsCubit',
+          );
+        },
+      );
+    } catch (error, stackTrace) {
+      developer.log(
+        'Could not start ticket realtime subscription.',
+        error: error,
+        stackTrace: stackTrace,
+        name: 'TicketsCubit',
+      );
+    }
+  }
+
+  void _applyChange(TicketChange change) {
+    if (change.ticket == null) {
+      _allTickets.removeWhere((ticket) => ticket.id == change.id);
+    } else {
+      _upsertTicket(change.ticket!);
+      return;
+    }
+    _emitVisibleTickets();
+  }
+
+  void _upsertTicket(TicketEntity ticket) {
+    final index = _allTickets.indexWhere((current) => current.id == ticket.id);
+    if (index == -1) {
+      _allTickets.add(ticket);
+    } else {
+      _allTickets[index] = ticket;
+    }
+    _sortTickets();
+    _emitVisibleTickets();
+  }
+
+  void _sortTickets() {
+    _allTickets.sort((first, second) {
+      final firstCreated =
+          first.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final secondCreated =
+          second.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return secondCreated.compareTo(firstCreated);
     });
   }
 
-  Future<void> addAssetsRepair({
-    required BigInt assetsId,
-    required BigInt ticketId,
-    required String variation,
-    required String comment,
-    required num amount,
-  }) async {
-    final result = await assetsDataRepo.addAssetsRepairs(
-      assetsId: assetsId,
-      ticketId: ticketId,
-      variation: variation,
-      comment: comment,
-      amount: amount,
-    );
-    result.fold(
-      (l) {
-        Get.snackbar('Error', l.message);
-      },
-      (ticket) {
-        final updatedTickets = allTickets.map((e) {
-          return e.id == ticket.id ? ticket : e;
-        }).toList();
-        allTickets.clear();
-        allTickets.addAll(updatedTickets);
-        emit(GetTicketsSuccess(tickets: updatedTickets));
-      },
-    );
-    Get.snackbar(
-      'Success',
-      'Details Added Successfully',
-      backgroundColor: AppColors.green,
+  void _emitVisibleTickets() {
+    if (isClosed || !_hasLoadedTickets) return;
+    final visible = _allTickets.where(_matchesFilters).toList(growable: false);
+    emit(
+      GetTicketsSuccess(
+        tickets: List.unmodifiable(visible),
+        allTickets: List.unmodifiable(_allTickets),
+      ),
     );
   }
 
-  Future<void> addTicket({
-    required BigInt orecalID,
-    required String comment,
-    required BigInt branchID,
-    required String priority,
-    required DateTime requestDate,
-    required BigInt engineer,
-  }) async {
-    final result = await ticketsRepo.addTicket(
-      orecalID: orecalID,
-      comment: comment,
-      branchID: branchID,
-      priority: priority,
-      requestDate: requestDate,
-      engineer: engineer,
-    );
-    result.fold(
-      (l) {
-        Get.snackbar(
-          "Error",
-          l.message,
-          backgroundColor: Colors.red,
-          colorText: AppColors.white,
-        );
-      },
-      (tickets) {
-        getTickets();
-        Get.to(
-          AddSuccessPage(
-            message: 'Ticket added successfully',
-            buttonTitle: 'Add More Tickets',
-            onPress: () {
-              Get.off(AddTicketsPage());
-            },
-            secondPress: () {
-              TicketPage();
-            },
-          ),
-        );
-        emit(GetTicketsSuccess(tickets: allTickets));
-      },
-    );
+  bool _matchesFilters(TicketEntity ticket) {
+    final branch = ticket.branchEntity;
+    if (_areaFilter != null && branch?.areaId != _areaFilter) return false;
+    if (_branchFilter != null && branch?.id != _branchFilter) return false;
+    if (_searchQuery.isEmpty) return true;
+
+    return (ticket.oricalID?.toString().toLowerCase().contains(_searchQuery) ??
+            false) ||
+        ticket.comment.toLowerCase().contains(_searchQuery) ||
+        ticket.damageDescription.toLowerCase().contains(_searchQuery) ||
+        ticket.status.databaseValue.toLowerCase().contains(_searchQuery) ||
+        (branch?.name.toLowerCase().contains(_searchQuery) ?? false) ||
+        (branch?.areaName?.toLowerCase().contains(_searchQuery) ?? false);
   }
 
-  Future<void> deleteTicket({required BigInt ticketID}) async {
-    final res = await ticketsRepo.deleteTicket(ticketID: ticketID);
-    res.fold(
-      (l) {
-        Get.snackbar('Error', l.message);
-      },
-      (r) {
-        getTickets();
-        Get.snackbar('Success', r);
-        emit(GetTicketsSuccess(tickets: allTickets));
-      },
-    );
+  List<TicketLookupOption> _sortedOptions(Iterable<TicketLookupOption> items) {
+    final options = items.toList()
+      ..sort((first, second) => first.name.compareTo(second.name));
+    return List.unmodifiable(options);
   }
 
-  void filterTickets({BigInt? area, BigInt? branch}) {
-    if (area == null && branch == null) {
-      emit(GetTicketsSuccess(tickets: allTickets));
-      return;
-    }
-    filterdTickets.clear();
-
-    final res = allTickets.where((asset) {
-      final matchArea =
-          area == null || asset.branchObject?.areaObject?.id == area;
-      final matchBranch = branch == null || asset.branchObject?.id == branch;
-
-      return matchArea && matchBranch;
-    }).toList();
-
-    filterdTickets.addAll(res);
-    emit(GetTicketsSuccess(tickets: filterdTickets));
+  @override
+  Future<void> close() async {
+    await _ticketChangesSubscription?.cancel();
+    await super.close();
   }
 }

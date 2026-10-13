@@ -213,10 +213,10 @@ class SvgGenImage {
       semanticsLabel: semanticsLabel,
       excludeFromSemantics: excludeFromSemantics,
       theme: theme,
-      color: color,
-      colorBlendMode: colorBlendMode,
+      colorFilter: color == null
+          ? null
+          : ColorFilter.mode(color, colorBlendMode),
       clipBehavior: clipBehavior,
-      cacheColorFilter: cacheColorFilter,
     );
   }
 
