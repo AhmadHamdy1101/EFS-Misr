@@ -18,9 +18,15 @@ String excelExportStatusMessage(ExcelExportStatus status) => switch (status) {
 /// file. Export errors are allowed to reach the caller so the UI can report
 /// them instead of silently treating a failed export as successful.
 Future<ExcelExportStatus> convertDataToExcel(
-  List<Map<String, dynamic>> data,
+  List<dynamic> rawData,
 ) async {
-  if (data.isEmpty) return ExcelExportStatus.noData;
+  if (rawData.isEmpty) return ExcelExportStatus.noData;
+
+  final data = rawData.map((e) {
+    if (e is Map<String, dynamic>) return e;
+    if (e is Map) return Map<String, dynamic>.from(e);
+    return <String, dynamic>{};
+  }).toList();
 
   final isTicketExport = data.first.containsKey('orecal_id');
   final rows = isTicketExport
@@ -86,21 +92,39 @@ Future<ExcelExportStatus> saveRowsToExcel(
       return ExcelExportStatus.saved;
     }
 
-    if (!Platform.isAndroid && !Platform.isIOS) {
-      throw UnsupportedError('XLSX export is not supported on this platform.');
+    if (Platform.isIOS) {
+      await FileSaver.instance.saveFile(
+        name: fileName,
+        bytes: bytes,
+        fileExtension: 'xlsx',
+        mimeType: MimeType.microsoftExcel,
+      );
+      return ExcelExportStatus.saved;
     }
 
-    // Use the system document picker so the user chooses a visible location.
-    // This works with Android's scoped storage without broad storage access.
-    final savedPath = await FileSaver.instance.saveAs(
-      name: fileName,
-      bytes: bytes,
-      fileExtension: 'xlsx',
-      mimeType: MimeType.microsoftExcel,
-    );
-    return savedPath == null
-        ? ExcelExportStatus.cancelled
-        : ExcelExportStatus.saved;
+    if (Platform.isAndroid) {
+      try {
+        final savedPath = await FileSaver.instance.saveAs(
+          name: fileName,
+          bytes: bytes,
+          fileExtension: 'xlsx',
+          mimeType: MimeType.microsoftExcel,
+        );
+        return savedPath == null
+            ? ExcelExportStatus.cancelled
+            : ExcelExportStatus.saved;
+      } catch (_) {
+        await FileSaver.instance.saveFile(
+          name: fileName,
+          bytes: bytes,
+          fileExtension: 'xlsx',
+          mimeType: MimeType.microsoftExcel,
+        );
+        return ExcelExportStatus.saved;
+      }
+    }
+
+    throw UnsupportedError('XLSX export is not supported on this platform.');
   } finally {
     workbook.dispose();
   }
@@ -108,6 +132,7 @@ Future<ExcelExportStatus> saveRowsToExcel(
 
 Map<String, dynamic> _assetExportRow(Map<String, dynamic> row) => {
   'id': row['id'],
+  'ticket_oracle_id': _relationValue(row['tickets'], 'orecal_id'),
   'barcode': _relationValue(row['assets'], 'barcode'),
   'name': _relationValue(row['assets'], 'name'),
   'branch': _relationValue(_relationValue(row['assets'], 'branch'), 'name'),
