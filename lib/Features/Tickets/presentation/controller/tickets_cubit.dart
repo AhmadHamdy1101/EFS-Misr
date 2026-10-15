@@ -5,59 +5,54 @@ import 'package:dartz/dartz.dart';
 import 'package:efs_misr/Features/Tickets/domain/entities/ticket_change.dart';
 import 'package:efs_misr/Features/Tickets/domain/entities/ticket_entity.dart';
 import 'package:efs_misr/Features/Tickets/domain/entities/ticket_lookup_option.dart';
+import 'package:efs_misr/Features/Tickets/domain/entities/ticket_stats.dart';
 import 'package:efs_misr/Features/Tickets/domain/repo/tickets_repo.dart';
 import 'package:efs_misr/core/Errors/failure.dart';
 import 'package:efs_misr/core/Functions/convert_to_excel_function.dart';
+import 'package:efs_misr/core/paging/page_loader.dart';
+import 'package:efs_misr/core/paging/page_query.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'tickets_state.dart';
 
+/// Holds the ticket list one page at a time (search and filters run on the
+/// server), plus the home overview: the newest tickets and server-side counts.
+/// Realtime changes are applied to the loaded pages in place.
 class TicketsCubit extends Cubit<TicketsState> {
-  TicketsCubit({required this.ticketsRepo}) : super(HomeInitial());
+  TicketsCubit({
+    required this.ticketsRepo,
+    Duration searchDebounce = const Duration(milliseconds: 300),
+    Duration overviewRefreshDelay = const Duration(milliseconds: 500),
+  }) : _searchDebouncer = Debouncer(searchDebounce),
+       _overviewDebouncer = Debouncer(overviewRefreshDelay),
+       super(HomeInitial()) {
+    _pages = PageLoader(ticketsRepo.getTickets, idOf: (ticket) => ticket.id);
+  }
+
+  static const recentCount = 5;
 
   final TicketsRepo ticketsRepo;
-  final List<TicketEntity> _allTickets = [];
+  final Debouncer _searchDebouncer;
+
+  /// Realtime events often come in bursts; the counts are refetched once
+  /// the burst settles instead of once per event.
+  final Debouncer _overviewDebouncer;
+  late final PageLoader<TicketEntity> _pages;
   final List<TicketChange> _pendingChanges = [];
   StreamSubscription<TicketChange>? _ticketChangesSubscription;
+  List<TicketEntity> _recentTickets = const [];
+  TicketStats _stats = TicketStats.empty;
   bool _hasLoadedTickets = false;
+  String? _listError;
+
+  /// Bumped on sign-out so responses for the previous user are ignored.
+  int _session = 0;
   String _searchQuery = '';
   int? _areaFilter;
   int? _branchFilter;
 
-  List<TicketEntity> get allTickets => List.unmodifiable(_allTickets);
   int? get selectedAreaId => _areaFilter;
   int? get selectedBranchId => _branchFilter;
-
-  List<TicketLookupOption> get areaOptions {
-    final options = <int, TicketLookupOption>{};
-    for (final ticket in _allTickets) {
-      final branch = ticket.branchEntity;
-      if (branch != null) {
-        options.putIfAbsent(
-          branch.areaId,
-          () => TicketLookupOption(
-            id: branch.areaId,
-            name: branch.areaName ?? 'Area ${branch.areaId}',
-          ),
-        );
-      }
-    }
-    return _sortedOptions(options.values);
-  }
-
-  List<TicketLookupOption> get branchOptions {
-    final options = <int, TicketLookupOption>{};
-    for (final ticket in _allTickets) {
-      final branch = ticket.branchEntity;
-      if (branch != null) {
-        options.putIfAbsent(
-          branch.id,
-          () => TicketLookupOption(id: branch.id, name: branch.name),
-        );
-      }
-    }
-    return _sortedOptions(options.values);
-  }
 
   /// Opens the realtime channel and loads tickets for the signed-in user.
   Future<void> start() async {
@@ -68,50 +63,59 @@ class TicketsCubit extends Cubit<TicketsState> {
   /// Closes the realtime channel and drops everything cached for the
   /// previous user. Called on sign-out.
   Future<void> reset() async {
+    _session++;
+    _searchDebouncer.cancel();
+    _overviewDebouncer.cancel();
     await _ticketChangesSubscription?.cancel();
     _ticketChangesSubscription = null;
-    _allTickets.clear();
+    _pages.clear();
     _pendingChanges.clear();
+    _recentTickets = const [];
+    _stats = TicketStats.empty;
     _hasLoadedTickets = false;
+    _listError = null;
     _searchQuery = '';
     _areaFilter = null;
     _branchFilter = null;
     if (!isClosed) emit(HomeInitial());
   }
 
+  /// Loads the first page for the current search and filters, and the home
+  /// overview alongside it.
   Future<void> getTickets() async {
     if (!_hasLoadedTickets) emit(GetTicketsLoading());
-    final result = await ticketsRepo.getTickets();
-    result.fold(
-      (failure) {
-        if (!_hasLoadedTickets) {
-          emit(GetTicketsFailure(errMsg: failure.message));
-        }
-      },
-      (tickets) {
-        _allTickets
-          ..clear()
-          ..addAll(tickets);
-        _sortTickets();
-        _hasLoadedTickets = true;
-        for (final change in List<TicketChange>.of(_pendingChanges)) {
-          _applyChange(change);
-        }
-        _pendingChanges.clear();
-        _emitVisibleTickets();
-      },
-    );
+    await (_reloadList(), _loadOverview()).wait;
   }
 
-  void searchTickets(String? search) {
-    _searchQuery = search?.trim().toLowerCase() ?? '';
+  Future<void> loadMore() async {
+    if (!_hasLoadedTickets || _listError != null || !_pages.canLoadMore) {
+      return;
+    }
+    final loading = _pages.loadMore();
+    _emitVisibleTickets();
+    final result = await loading;
+    if (result == null) return;
+    result.fold(
+      (failure) => developer.log(
+        'Could not load more tickets: ${failure.message}',
+        name: 'TicketsCubit',
+      ),
+      (_) {},
+    );
     _emitVisibleTickets();
   }
 
-  void filterTickets({int? area, int? branch}) {
+  Future<void> searchTickets(String? search) {
+    final query = search?.trim() ?? '';
+    if (query == _searchQuery) return Future.value();
+    _searchQuery = query;
+    return _searchDebouncer.run(_reloadList);
+  }
+
+  Future<void> filterTickets({int? area, int? branch}) {
     _areaFilter = area;
     _branchFilter = branch;
-    _emitVisibleTickets();
+    return _reloadList();
   }
 
   Future<Either<Failure, TicketFormOptions>> getTicketFormOptions() {
@@ -119,27 +123,15 @@ class TicketsCubit extends Cubit<TicketsState> {
   }
 
   Future<Either<Failure, ExcelExportStatus>> convertTicketsToExcel() async {
-    try {
-      final data = _allTickets.map((ticket) {
-        return <String, dynamic>{
-          'orecal_id': ticket.oricalID,
-          'branch': {
-            'name': ticket.branchEntity?.name,
-            'branch_id': ticket.branchEntity?.branchId,
-          },
-          'priority': ticket.priority,
-          'request_date': ticket.requestDate?.toIso8601String(),
-          'repair_date': ticket.repairDate?.toIso8601String(),
-          'response_date': ticket.responseDate?.toIso8601String(),
-          'damage_description': ticket.damageDescription,
-          'status': ticket.status.databaseValue,
-        };
-      }).toList();
-      final status = await convertDataToExcel(data);
-      return Right(status);
-    } catch (error) {
-      return Left(Failure.fromException(error));
-    }
+    final rows = await ticketsRepo.getExportRows();
+    return rows.fold((failure) async => Left(failure), (data) async {
+      if (data.isEmpty) return const Right(ExcelExportStatus.noData);
+      try {
+        return Right(await convertDataToExcel(data));
+      } catch (error) {
+        return Left(Failure.fromException(error));
+      }
+    });
   }
 
   Future<Either<Failure, TicketEntity>> updateTicketStatus({
@@ -218,11 +210,71 @@ class TicketsCubit extends Cubit<TicketsState> {
     final result = await ticketsRepo.deleteTicket(
       ticketId: BigInt.from(ticketId),
     );
-    result.fold((_) {}, (_) {
-      _allTickets.removeWhere((ticket) => ticket.id == ticketId);
-      _emitVisibleTickets();
-    });
+    result.fold((_) {}, (_) => _removeTicket(ticketId));
     return result;
+  }
+
+  Future<void> _reloadList() async {
+    final session = _session;
+    final result = await _pages.reload(
+      search: _searchQuery,
+      areaId: _areaFilter,
+      branchId: _branchFilter,
+    );
+    if (result == null || isClosed || session != _session) return;
+    result.fold(
+      (failure) {
+        if (_hasLoadedTickets) {
+          _listError = failure.message;
+          _emitVisibleTickets();
+        } else {
+          emit(GetTicketsFailure(errMsg: failure.message));
+        }
+      },
+      (_) {
+        _listError = null;
+        final firstLoad = !_hasLoadedTickets;
+        _hasLoadedTickets = true;
+        _sortTickets();
+        if (firstLoad) {
+          for (final change in List<TicketChange>.of(_pendingChanges)) {
+            _applyChange(change);
+          }
+          _pendingChanges.clear();
+        }
+        _emitVisibleTickets();
+      },
+    );
+  }
+
+  Future<void> _loadOverview() async {
+    final session = _session;
+    final (stats, recent) = await (
+      ticketsRepo.getTicketStats(),
+      ticketsRepo.getTickets(const PageQuery(pageSize: recentCount)),
+    ).wait;
+    if (isClosed || session != _session) return;
+    stats.fold(
+      (failure) => _logOverviewFailure(failure),
+      (value) => _stats = value,
+    );
+    recent.fold(
+      (failure) => _logOverviewFailure(failure),
+      (tickets) => _recentTickets = List.unmodifiable(tickets),
+    );
+    _emitVisibleTickets();
+  }
+
+  void _logOverviewFailure(Failure failure) {
+    developer.log(
+      'Could not load the ticket overview: ${failure.message}',
+      name: 'TicketsCubit',
+    );
+  }
+
+  void _scheduleOverviewRefresh() {
+    if (!_hasLoadedTickets) return;
+    unawaited(_overviewDebouncer.run(_loadOverview));
   }
 
   void _subscribeToTicketChanges() {
@@ -255,70 +307,94 @@ class TicketsCubit extends Cubit<TicketsState> {
   }
 
   void _applyChange(TicketChange change) {
-    if (change.ticket == null) {
-      _allTickets.removeWhere((ticket) => ticket.id == change.id);
+    final ticket = change.ticket;
+    if (ticket == null) {
+      _removeTicket(change.id);
     } else {
-      _upsertTicket(change.ticket!);
-      return;
+      _upsertTicket(ticket);
     }
-    _emitVisibleTickets();
   }
 
+  void _removeTicket(int ticketId) {
+    _pages.items.removeWhere((ticket) => ticket.id == ticketId);
+    _emitVisibleTickets();
+    _scheduleOverviewRefresh();
+  }
+
+  /// Replaces a loaded ticket, or adds it when it matches the current search
+  /// and filters and sorts inside the loaded pages. Tickets that sort after
+  /// the last loaded row arrive with a later page instead.
   void _upsertTicket(TicketEntity ticket) {
-    final index = _allTickets.indexWhere((current) => current.id == ticket.id);
-    if (index == -1) {
-      _allTickets.add(ticket);
-    } else {
-      _allTickets[index] = ticket;
+    final tickets = _pages.items;
+    final index = tickets.indexWhere((current) => current.id == ticket.id);
+    final matches = _matchesFilters(ticket);
+    if (index != -1) {
+      if (matches) {
+        tickets[index] = ticket;
+      } else {
+        tickets.removeAt(index);
+      }
+    } else if (matches && _isWithinLoadedPages(ticket)) {
+      tickets.add(ticket);
     }
     _sortTickets();
     _emitVisibleTickets();
+    _scheduleOverviewRefresh();
   }
 
-  void _sortTickets() {
-    _allTickets.sort((first, second) {
-      final firstCreated =
-          first.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-      final secondCreated =
-          second.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-      return secondCreated.compareTo(firstCreated);
-    });
+  bool _isWithinLoadedPages(TicketEntity ticket) {
+    if (!_pages.hasMore || _pages.items.isEmpty) return true;
+    return _compareNewestFirst(ticket, _pages.items.last) <= 0;
   }
 
-  void _emitVisibleTickets() {
-    if (isClosed || !_hasLoadedTickets) return;
-    final visible = _allTickets.where(_matchesFilters).toList(growable: false);
-    emit(
-      GetTicketsSuccess(
-        tickets: List.unmodifiable(visible),
-        allTickets: List.unmodifiable(_allTickets),
-      ),
+  /// Same order as the server query: newest first, then highest id.
+  void _sortTickets() => _pages.items.sort(_compareNewestFirst);
+
+  static int _compareNewestFirst(TicketEntity first, TicketEntity second) {
+    final epoch = DateTime.fromMillisecondsSinceEpoch(0);
+    final byCreated = (second.createdAt ?? epoch).compareTo(
+      first.createdAt ?? epoch,
     );
+    return byCreated != 0 ? byCreated : second.id.compareTo(first.id);
   }
 
+  /// Mirrors the server-side search and filters for single tickets that
+  /// arrive through realtime or local edits.
   bool _matchesFilters(TicketEntity ticket) {
     final branch = ticket.branchEntity;
     if (_areaFilter != null && branch?.areaId != _areaFilter) return false;
     if (_branchFilter != null && branch?.id != _branchFilter) return false;
     if (_searchQuery.isEmpty) return true;
 
-    return (ticket.oricalID?.toString().toLowerCase().contains(_searchQuery) ??
-            false) ||
-        ticket.comment.toLowerCase().contains(_searchQuery) ||
-        ticket.damageDescription.toLowerCase().contains(_searchQuery) ||
-        ticket.status.databaseValue.toLowerCase().contains(_searchQuery) ||
-        (branch?.name.toLowerCase().contains(_searchQuery) ?? false) ||
-        (branch?.areaName?.toLowerCase().contains(_searchQuery) ?? false);
+    final query = _searchQuery.toLowerCase();
+    return ticket.comment.toLowerCase().contains(query) ||
+        ticket.damageDescription.toLowerCase().contains(query) ||
+        (ticket.oricalID != null &&
+            BigInt.tryParse(_searchQuery) == BigInt.from(ticket.oricalID!)) ||
+        (ticket.status != TicketStatus.unknown &&
+            ticket.status.databaseValue.toLowerCase().startsWith(query));
   }
 
-  List<TicketLookupOption> _sortedOptions(Iterable<TicketLookupOption> items) {
-    final options = items.toList()
-      ..sort((first, second) => first.name.compareTo(second.name));
-    return List.unmodifiable(options);
+  void _emitVisibleTickets() {
+    if (isClosed || !_hasLoadedTickets) return;
+    emit(
+      GetTicketsSuccess(
+        tickets: _listError == null
+            ? List.unmodifiable(_pages.items)
+            : const [],
+        recentTickets: _recentTickets,
+        stats: _stats,
+        hasMore: _listError == null && _pages.hasMore,
+        isLoadingMore: _pages.isLoadingMore,
+        listError: _listError,
+      ),
+    );
   }
 
   @override
   Future<void> close() async {
+    _searchDebouncer.cancel();
+    _overviewDebouncer.cancel();
     await _ticketChangesSubscription?.cancel();
     await super.close();
   }

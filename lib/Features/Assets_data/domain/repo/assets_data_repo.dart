@@ -2,9 +2,10 @@ import 'package:dartz/dartz.dart';
 import 'package:efs_misr/Features/Assets_data/domain/entities/assets_entity.dart';
 
 import '../../../../core/Errors/failure.dart';
+import '../../../../core/paging/page_query.dart';
 
 abstract class AssetsDataRepo {
-  Future<Either<Failure, List<AssetsEntity>>> getAssets();
+  Future<Either<Failure, List<AssetsEntity>>> getAssets(PageQuery query);
   Future<Either<Failure, List<AssetsEntity>>> getAssetsWithTicketID({
     required BigInt ticketId,
   });

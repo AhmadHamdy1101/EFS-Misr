@@ -11,7 +11,13 @@ final class GetAssetsFailure extends AssetsState {
 
 final class GetAssetsSuccess extends AssetsState {
   final List<AssetsEntity> assets;
-  GetAssetsSuccess({required this.assets});
+  final bool hasMore;
+  final bool isLoadingMore;
+  GetAssetsSuccess({
+    required this.assets,
+    this.hasMore = false,
+    this.isLoadingMore = false,
+  });
 }
 
 final class GetAssetsLoading extends AssetsState {}

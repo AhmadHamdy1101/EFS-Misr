@@ -1,17 +1,29 @@
+import 'dart:developer' as developer;
+
 import 'package:dartz/dartz.dart';
 import 'package:efs_misr/Features/Assets_data/domain/entities/assets_entity.dart';
 import 'package:efs_misr/Features/Assets_data/domain/repo/assets_data_repo.dart';
 import 'package:efs_misr/core/Errors/failure.dart';
 import 'package:efs_misr/core/Functions/convert_to_excel_function.dart';
+import 'package:efs_misr/core/paging/page_loader.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'assets_state.dart';
 
+/// Holds the asset list, one page at a time; search and filters run on the
+/// server so they cover every asset, not just the loaded pages.
 class AssetsCubit extends Cubit<AssetsState> {
-  AssetsCubit(this.assetsRepo) : super(AssetsInitial());
+  AssetsCubit(
+    this.assetsRepo, {
+    Duration searchDebounce = const Duration(milliseconds: 300),
+  }) : _searchDebouncer = Debouncer(searchDebounce),
+       super(AssetsInitial()) {
+    _pages = PageLoader(assetsRepo.getAssets, idOf: (asset) => asset.id);
+  }
 
   final AssetsDataRepo assetsRepo;
-  final List<AssetsEntity> _allAssets = [];
+  final Debouncer _searchDebouncer;
+  late final PageLoader<AssetsEntity> _pages;
   bool _hasLoaded = false;
   String _searchQuery = '';
   int? _areaFilter;
@@ -20,33 +32,51 @@ class AssetsCubit extends Cubit<AssetsState> {
   int? get selectedAreaId => _areaFilter;
   int? get selectedBranchId => _branchFilter;
 
+  /// Loads the first page for the current search and filters.
   Future<void> getAssets() async {
     if (!_hasLoaded) emit(GetAssetsLoading());
-    final result = await assetsRepo.getAssets();
-    result.fold(
-      (failure) {
-        if (!_hasLoaded) emit(GetAssetsFailure(errMsg: failure.message));
-      },
-      (assets) {
-        _allAssets
-          ..clear()
-          ..addAll(assets);
-        _hasLoaded = true;
-        _emitVisibleAssets();
-      },
+    final result = await _pages.reload(
+      search: _searchQuery,
+      areaId: _areaFilter,
+      branchId: _branchFilter,
     );
+    if (result == null || isClosed) return;
+    result.fold((failure) => emit(GetAssetsFailure(errMsg: failure.message)), (
+      _,
+    ) {
+      _hasLoaded = true;
+      _emitVisibleAssets();
+    });
   }
 
-  void searchAssets(String? search) {
-    _searchQuery = search?.trim().toLowerCase() ?? '';
+  Future<void> loadMore() async {
+    if (!_hasLoaded || !_pages.canLoadMore) return;
+    final loading = _pages.loadMore();
     _emitVisibleAssets();
+    final result = await loading;
+    if (result == null) return;
+    result.fold(
+      (failure) => developer.log(
+        'Could not load more assets: ${failure.message}',
+        name: 'AssetsCubit',
+      ),
+      (_) {},
+    );
+    _emitVisibleAssets();
+  }
+
+  Future<void> searchAssets(String? search) {
+    final query = search?.trim() ?? '';
+    if (query == _searchQuery) return Future.value();
+    _searchQuery = query;
+    return _searchDebouncer.run(getAssets);
   }
 
   /// Search and filters are combined, so applying one never discards the other.
-  void filterAssets({int? area, int? branch}) {
+  Future<void> filterAssets({int? area, int? branch}) {
     _areaFilter = area;
     _branchFilter = branch;
-    _emitVisibleAssets();
+    return getAssets();
   }
 
   Future<Either<Failure, ExcelExportStatus>> convertAssetsToExcel() async {
@@ -77,16 +107,16 @@ class AssetsCubit extends Cubit<AssetsState> {
       type: type,
       branch: branch,
     );
-    return res.fold((failure) => Left(failure), (added) {
-      _allAssets.addAll(added);
-      _emitVisibleAssets();
-      return const Right(unit);
-    });
+    // Reload so the new asset shows in its sorted place, and only when it
+    // matches the current search and filters.
+    if (res.isRight()) await getAssets();
+    return res.map((_) => unit);
   }
 
   /// Drops the previous user's data. Called on sign-out.
   void reset() {
-    _allAssets.clear();
+    _searchDebouncer.cancel();
+    _pages.clear();
     _hasLoaded = false;
     _searchQuery = '';
     _areaFilter = null;
@@ -98,22 +128,16 @@ class AssetsCubit extends Cubit<AssetsState> {
     if (isClosed || !_hasLoaded) return;
     emit(
       GetAssetsSuccess(
-        assets: List.unmodifiable(_allAssets.where(_matchesFilters)),
+        assets: List.unmodifiable(_pages.items),
+        hasMore: _pages.hasMore,
+        isLoadingMore: _pages.isLoadingMore,
       ),
     );
   }
 
-  bool _matchesFilters(AssetsEntity asset) {
-    if (_areaFilter != null && asset.branchObject.areaId != _areaFilter) {
-      return false;
-    }
-    if (_branchFilter != null && asset.branchObject.id != _branchFilter) {
-      return false;
-    }
-    if (_searchQuery.isEmpty) return true;
-    return asset.type.toLowerCase().contains(_searchQuery) ||
-        asset.branchName.toLowerCase().contains(_searchQuery) ||
-        asset.area.toLowerCase().contains(_searchQuery) ||
-        asset.barCode.toLowerCase().contains(_searchQuery);
+  @override
+  Future<void> close() {
+    _searchDebouncer.cancel();
+    return super.close();
   }
 }

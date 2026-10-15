@@ -6,9 +6,10 @@ import '../../../core/models/assets.dart';
 import '../../../core/models/assets_and_tickets.dart';
 import '../../../core/models/assets_repair.dart';
 import '../../../core/models/supadart_header.dart';
+import '../../../core/paging/page_query.dart';
 
 abstract class AssetsDataSource {
-  Future<List<AssetsEntity>> getAssets();
+  Future<List<AssetsEntity>> getAssets(PageQuery query);
   Future<AssetsEntity> getAssetsByQrCode(String qrCode);
   Future<List<AssetsRepair>> getAssetsRepairDetailsWithTicketId({
     required BigInt ticketID,
@@ -66,9 +67,32 @@ class AssetsDataSourceImpl extends AssetsDataSource {
     ''';
 
   @override
-  Future<List<AssetsEntity>> getAssets() async {
-    final assets = await _client.assets
-        .select('*, branch(*)')
+  Future<List<AssetsEntity>> getAssets(PageQuery query) async {
+    // The area id lives on the branch, so filtering by it needs an inner join.
+    var request = _client.assets.select(
+      query.areaId == null ? '*, branch(*)' : '*, branch!inner(*)',
+    );
+    if (query.branchId != null) {
+      request = request.eq(Assets.c_Branch, query.branchId!);
+    }
+    if (query.areaId != null) {
+      request = request.eq('branch.area', query.areaId!);
+    }
+    if (query.hasSearch) {
+      request = request.or(
+        ilikeAny([
+          Assets.c_type,
+          Assets.c_barcode,
+          Assets.c_name,
+          Assets.c_place,
+          Assets.c_area,
+        ], query.search),
+      );
+    }
+    final assets = await request
+        .order(Assets.c_createdAt, ascending: false)
+        .order(Assets.c_id, ascending: false)
+        .range(query.from, query.to)
         .withConverter(Assets.converter);
     return assets.map((e) => e.toAssetsEntity()).toList();
   }

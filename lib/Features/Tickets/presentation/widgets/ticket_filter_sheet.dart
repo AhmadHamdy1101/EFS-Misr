@@ -1,6 +1,8 @@
 import 'package:efs_misr/Features/Tickets/domain/entities/ticket_lookup_option.dart';
 import 'package:efs_misr/Features/Tickets/presentation/controller/tickets_cubit.dart';
+import 'package:efs_misr/core/lookups/lookup_repo.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
+import 'package:efs_misr/core/utils/singelton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -19,19 +21,44 @@ class _TicketFilterSheetState extends State<TicketFilterSheet> {
   late int? _areaId;
   late int? _branchId;
 
+  // Options come from the cached lookup tables rather than the loaded
+  // tickets, which are only the first pages.
+  List<TicketLookupOption> _areas = const [];
+  List<LookupOption> _branches = const [];
+
   @override
   void initState() {
     super.initState();
     final cubit = context.read<TicketsCubit>();
     _areaId = cubit.selectedAreaId;
     _branchId = cubit.selectedBranchId;
+    _loadOptions();
+  }
+
+  Future<void> _loadOptions() async {
+    final lookups = getIt.get<LookupRepo>();
+    final (areas, branches) = await (
+      lookups.getAreas(),
+      lookups.getBranches(),
+    ).wait;
+    if (!mounted) return;
+    setState(() {
+      _areas = areas.fold(
+        (_) => const [],
+        (options) => [
+          for (final option in options)
+            TicketLookupOption(id: option.id.toInt(), name: option.name),
+        ],
+      );
+      _branches = branches.fold((_) => const [], (options) => options);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<TicketsCubit>();
-    final areas = cubit.areaOptions;
-    final branches = _branchesForArea(cubit, _areaId);
+    final areas = _areas;
+    final branches = _branchesForArea(_areaId);
 
     return SafeArea(
       child: Padding(
@@ -60,7 +87,6 @@ class _TicketFilterSheetState extends State<TicketFilterSheet> {
               onChanged: (value) => setState(() {
                 _areaId = value;
                 if (!_branchesForArea(
-                  cubit,
                   value,
                 ).any((branch) => branch.id == _branchId)) {
                   _branchId = null;
@@ -105,16 +131,11 @@ class _TicketFilterSheetState extends State<TicketFilterSheet> {
     );
   }
 
-  List<TicketLookupOption> _branchesForArea(TicketsCubit cubit, int? areaId) {
-    return cubit.branchOptions
-        .where((branch) {
-          if (areaId == null) return true;
-          return cubit.allTickets.any(
-            (ticket) =>
-                ticket.branchEntity?.id == branch.id &&
-                ticket.branchEntity?.areaId == areaId,
-          );
-        })
-        .toList(growable: false);
+  List<TicketLookupOption> _branchesForArea(int? areaId) {
+    return [
+      for (final branch in _branches)
+        if (areaId == null || branch.areaId?.toInt() == areaId)
+          TicketLookupOption(id: branch.id.toInt(), name: branch.name),
+    ];
   }
 }

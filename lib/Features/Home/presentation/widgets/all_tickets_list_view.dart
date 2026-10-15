@@ -27,8 +27,8 @@ class AllTicketsListView extends StatelessWidget {
         if (state is GetTicketsFailure) {
           return Center(child: Text(state.errMsg));
         }
-        if (state is GetTicketsSuccess && state.allTickets.isNotEmpty) {
-          final overviewTickets = state.allTickets.take(5).toList();
+        if (state is GetTicketsSuccess && state.recentTickets.isNotEmpty) {
+          final overviewTickets = state.recentTickets;
           return ListView.builder(
             padding: EdgeInsets.zero,
             shrinkWrap: true,

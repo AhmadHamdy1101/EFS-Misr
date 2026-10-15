@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 
 import '../../../core/Errors/failure.dart';
 import '../../../core/entities/user_entity.dart';
+import '../../../core/paging/page_query.dart';
 
 /// Fields an admin fills in when creating or editing an account.
 class AccountForm {
@@ -29,7 +30,7 @@ class AccountForm {
 }
 
 abstract interface class AccountsRepo {
-  Future<Either<Failure, List<UserEntity>>> getUsers();
+  Future<Either<Failure, List<UserEntity>>> getUsers(PageQuery query);
 
   Future<Either<Failure, Unit>> addAccount({
     required AccountForm form,

@@ -1,12 +1,16 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/Errors/failure.dart';
+import '../../../../core/paging/page_query.dart';
 import '../entities/ticket_change.dart';
 import '../entities/ticket_entity.dart';
 import '../entities/ticket_lookup_option.dart';
+import '../entities/ticket_stats.dart';
 
 abstract interface class TicketsRepo {
-  Future<Either<Failure, List<TicketEntity>>> getTickets();
+  Future<Either<Failure, List<TicketEntity>>> getTickets(PageQuery query);
+  Future<Either<Failure, TicketStats>> getTicketStats();
+  Future<Either<Failure, List<Map<String, dynamic>>>> getExportRows();
   Future<Either<Failure, TicketEntity?>> getTicketById(BigInt ticketId);
   Future<Either<Failure, List<TicketEntity>>> getTicketsWithAssetsID({
     required BigInt assetId,

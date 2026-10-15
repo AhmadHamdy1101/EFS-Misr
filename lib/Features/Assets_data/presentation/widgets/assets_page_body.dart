@@ -125,9 +125,17 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                     hasScrollBody: false,
                     child: Center(child: Text('No Assets Found'.tr)),
                   ),
-                GetAssetsSuccess(:final assets) => AssetsListView(
-                  assets: assets,
-                ),
+                GetAssetsSuccess(
+                  :final assets,
+                  :final hasMore,
+                  :final isLoadingMore,
+                ) =>
+                  AssetsListView(
+                    assets: assets,
+                    hasMore: hasMore,
+                    isLoadingMore: isLoadingMore,
+                    onLoadMore: context.read<AssetsCubit>().loadMore,
+                  ),
               };
             },
           ),

@@ -7,18 +7,35 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
+import '../../../../core/utils/widgets/load_more_indicator.dart';
 import '../controller/assets_repair_cubit.dart';
 
 class AssetsListView extends StatelessWidget {
-  const AssetsListView({super.key, required this.assets});
+  const AssetsListView({
+    super.key,
+    required this.assets,
+    this.hasMore = false,
+    this.isLoadingMore = false,
+    this.onLoadMore,
+  });
 
   final List<AssetsEntity> assets;
+  final bool hasMore;
+  final bool isLoadingMore;
+  final VoidCallback? onLoadMore;
 
   @override
   Widget build(BuildContext context) {
+    final showLoadMore = hasMore && onLoadMore != null;
     return SliverList.builder(
-      itemCount: assets.length,
+      itemCount: assets.length + (showLoadMore ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index == assets.length) {
+          return LoadMoreIndicator(
+            isLoading: isLoadingMore,
+            onLoadMore: onLoadMore!,
+          );
+        }
         return GestureDetector(
           onTap: () {
             // Navigate right away; the details page shows a spinner while the

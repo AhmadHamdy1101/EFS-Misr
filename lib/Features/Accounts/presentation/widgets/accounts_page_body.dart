@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_inbut_wedget.dart';
+import '../../../../core/utils/widgets/load_more_indicator.dart';
 
 class AccountsPageBody extends StatefulWidget {
   const AccountsPageBody({super.key});
@@ -177,13 +178,25 @@ class _AccountsPageBodyState extends State<AccountsPageBody> {
                       hasScrollBody: false,
                       child: Center(child: Text('No Accounts'.tr)),
                     ),
-                  GetAccountsSuccess(:final accounts) => SliverList.builder(
-                    itemCount: accounts.length,
-                    itemBuilder: (context, index) => _AccountCard(
-                      user: accounts[index],
-                      onDelete: () => _delete(accounts[index]),
+                  GetAccountsSuccess(
+                    :final accounts,
+                    :final hasMore,
+                    :final isLoadingMore,
+                  ) =>
+                    SliverList.builder(
+                      itemCount: accounts.length + (hasMore ? 1 : 0),
+                      itemBuilder: (context, index) => index == accounts.length
+                          ? LoadMoreIndicator(
+                              isLoading: isLoadingMore,
+                              onLoadMore: context
+                                  .read<AccountsCubit>()
+                                  .loadMore,
+                            )
+                          : _AccountCard(
+                              user: accounts[index],
+                              onDelete: () => _delete(accounts[index]),
+                            ),
                     ),
-                  ),
                 };
               },
             ),

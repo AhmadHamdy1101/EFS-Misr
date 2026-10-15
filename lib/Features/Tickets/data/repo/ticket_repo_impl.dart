@@ -4,7 +4,9 @@ import '../../../../core/Errors/failure.dart';
 import '../../domain/entities/ticket_change.dart';
 import '../../domain/entities/ticket_entity.dart';
 import '../../domain/entities/ticket_lookup_option.dart';
+import '../../domain/entities/ticket_stats.dart';
 import '../../domain/repo/tickets_repo.dart';
+import '../../../../core/paging/page_query.dart';
 import '../mappers/ticket_mapper.dart';
 import '../ticket_data_source.dart';
 
@@ -14,10 +16,30 @@ class TicketRepoImpl implements TicketsRepo {
   const TicketRepoImpl(this.ticketDataSource);
 
   @override
-  Future<Either<Failure, List<TicketEntity>>> getTickets() async {
+  Future<Either<Failure, List<TicketEntity>>> getTickets(
+    PageQuery query,
+  ) async {
     try {
-      final tickets = await ticketDataSource.getTickets();
+      final tickets = await ticketDataSource.getTickets(query);
       return Right(tickets.map((ticket) => ticket.toEntity()).toList());
+    } catch (error) {
+      return Left(Failure.fromException(error));
+    }
+  }
+
+  @override
+  Future<Either<Failure, TicketStats>> getTicketStats() async {
+    try {
+      return Right(await ticketDataSource.getTicketStats());
+    } catch (error) {
+      return Left(Failure.fromException(error));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Map<String, dynamic>>>> getExportRows() async {
+    try {
+      return Right(await ticketDataSource.getExportRows());
     } catch (error) {
       return Left(Failure.fromException(error));
     }
