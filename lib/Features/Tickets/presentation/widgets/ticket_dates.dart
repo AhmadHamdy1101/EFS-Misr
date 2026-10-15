@@ -20,10 +20,7 @@ class TicketDates extends StatelessWidget {
     return BlocBuilder<TicketsCubit, TicketsState>(
       builder: (context, state) {
         if (state is GetTicketsSuccess) {
-          final currentTicket = state.allTickets.firstWhere(
-            (t) => t.id == ticket.id,
-            orElse: () => ticket,
-          );
+          final currentTicket = state.findTicket(ticket.id) ?? ticket;
           return CurrentTicketDates(currentTicket: currentTicket);
         }
         return Card(

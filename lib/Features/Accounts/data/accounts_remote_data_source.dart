@@ -3,10 +3,11 @@ import '../../../core/Errors/failure.dart';
 
 import '../../../core/models/supadart_header.dart';
 import '../../../core/models/user.dart';
+import '../../../core/paging/page_query.dart';
 import '../domain/accounts_repo.dart';
 
 abstract interface class AccountsRemoteDataSource {
-  Future<List<Users>> getUsers();
+  Future<List<Users>> getUsers(PageQuery query);
   Future<void> addAccount({
     required AccountForm form,
     required String password,
@@ -26,10 +27,17 @@ class AccountsRemoteDataSourceImpl implements AccountsRemoteDataSource {
   final SupabaseClient _client;
 
   @override
-  Future<List<Users>> getUsers() {
-    return _client.users
-        .select(Users.selectColumns)
+  Future<List<Users>> getUsers(PageQuery query) {
+    var request = _client.users.select(Users.selectColumns);
+    if (query.hasSearch) {
+      request = request.or(
+        ilikeAny([Users.c_name, Users.c_email, Users.c_company], query.search),
+      );
+    }
+    return request
         .order(Users.c_name)
+        .order(Users.c_id)
+        .range(query.from, query.to)
         .withConverter(Users.converter);
   }
 

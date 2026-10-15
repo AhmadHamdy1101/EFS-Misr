@@ -21,10 +21,7 @@ class TicketHeader extends StatelessWidget {
     return BlocBuilder<TicketsCubit, TicketsState>(
       builder: (context, state) {
         final currentTicket = state is GetTicketsSuccess
-            ? state.allTickets.firstWhere(
-                (item) => item.id == ticket.id,
-                orElse: () => ticket,
-              )
+            ? state.findTicket(ticket.id) ?? ticket
             : ticket;
 
         return Card(

@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 
 import '../../../core/Errors/failure.dart';
 import '../../../core/entities/user_entity.dart';
+import '../../../core/paging/page_query.dart';
 import '../domain/accounts_repo.dart';
 import 'accounts_remote_data_source.dart';
 
@@ -11,9 +12,9 @@ class AccountsRepoImpl implements AccountsRepo {
   final AccountsRemoteDataSource _dataSource;
 
   @override
-  Future<Either<Failure, List<UserEntity>>> getUsers() async {
+  Future<Either<Failure, List<UserEntity>>> getUsers(PageQuery query) async {
     try {
-      final users = await _dataSource.getUsers();
+      final users = await _dataSource.getUsers(query);
       return Right(users.map((user) => user.toUserEntity()).toList());
     } catch (e) {
       return Left(Failure.fromException(e));

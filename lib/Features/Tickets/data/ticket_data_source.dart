@@ -4,12 +4,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/models/supadart_header.dart';
 import '../../../core/models/tickets.dart';
+import '../../../core/paging/page_query.dart';
 import '../domain/entities/ticket_entity.dart';
+import '../domain/entities/ticket_stats.dart';
 import 'models/ticket_change_model.dart';
 import 'models/ticket_lookup_model.dart';
 
 abstract interface class TicketDataSource {
-  Future<List<Tickets>> getTickets();
+  Future<List<Tickets>> getTickets(PageQuery query);
+  Future<TicketStats> getTicketStats();
+  Future<List<Map<String, dynamic>>> getExportRows();
   Future<Tickets?> getTicketById(BigInt ticketId);
   Future<List<Tickets>> getTicketsWithAssetsId(BigInt assetId);
   Future<Tickets> addTicket({
@@ -62,11 +66,73 @@ class TicketDataSourceImpl implements TicketDataSource {
   ''';
 
   @override
-  Future<List<Tickets>> getTickets() async {
-    return _client.tickets
-        .select(_ticketSelection)
-        .order('created_at', ascending: false)
+  Future<List<Tickets>> getTickets(PageQuery query) async {
+    // The area lives on the branch, so filtering by it needs an inner join
+    // that drops tickets whose branch is in another area.
+    final selection = query.areaId == null
+        ? _ticketSelection
+        : _ticketSelection.replaceFirst(
+            'branch_details:branch(',
+            'branch_details:branch!inner(',
+          );
+    var request = _client.tickets.select(selection);
+    if (query.branchId != null) {
+      request = request.eq(Tickets.c_branch, query.branchId!);
+    }
+    if (query.areaId != null) {
+      request = request.eq('branch_details.area', query.areaId!);
+    }
+    if (query.hasSearch) request = request.or(_searchFilter(query.search));
+    return request
+        .order(Tickets.c_createdAt, ascending: false)
+        .order(Tickets.c_id, ascending: false)
+        .range(query.from, query.to)
         .withConverter(Tickets.converter);
+  }
+
+  /// Text columns are matched with ilike; the Oracle ID and status are
+  /// matched exactly because ilike doesn't work on numbers or enums.
+  String _searchFilter(String search) {
+    final lower = search.toLowerCase();
+    return [
+      ilikeAny([Tickets.c_comment, Tickets.c_damageDescription], search),
+      if (BigInt.tryParse(search) != null) '${Tickets.c_orecalId}.eq.$search',
+      for (final status in TicketStatus.values)
+        if (status != TicketStatus.unknown &&
+            status.databaseValue.toLowerCase().startsWith(lower))
+          '${Tickets.c_status}.eq.${status.databaseValue}',
+    ].join(',');
+  }
+
+  @override
+  Future<TicketStats> getTicketStats() async {
+    final counts = await Future.wait([
+      _client.tickets.count(),
+      _client.tickets.count().eq(
+        Tickets.c_status,
+        TicketStatus.completed.databaseValue,
+      ),
+      _client.tickets.count().eq(
+        Tickets.c_status,
+        TicketStatus.awaiting.databaseValue,
+      ),
+    ]);
+    return TicketStats(
+      total: counts[0],
+      completed: counts[1],
+      awaiting: counts[2],
+    );
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getExportRows() async {
+    final rows = await _client.tickets
+        .select(
+          'orecal_id,branch(name,branch_id),priority,request_date,repair_date,'
+          'response_date,damage_description,status',
+        )
+        .order(Tickets.c_createdAt, ascending: false);
+    return rows.map((row) => Map<String, dynamic>.from(row)).toList();
   }
 
   @override

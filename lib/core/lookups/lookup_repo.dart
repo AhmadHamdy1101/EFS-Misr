@@ -5,10 +5,13 @@ import '../Errors/failure.dart';
 
 /// A row from one of the small reference tables (branch, area, positions).
 class LookupOption {
-  const LookupOption({required this.id, required this.name});
+  const LookupOption({required this.id, required this.name, this.areaId});
 
   final BigInt id;
   final String name;
+
+  /// The area a branch belongs to; null for other tables.
+  final BigInt? areaId;
 }
 
 extension LookupOptionsDropdown on List<LookupOption> {
@@ -60,12 +63,14 @@ class LookupRepoImpl implements LookupRepo {
   }
 
   Future<List<LookupOption>> _fetch(String table) async {
-    final rows = await _client.from(table).select('id,name').order('name');
+    final columns = table == 'branch' ? 'id,name,area' : 'id,name';
+    final rows = await _client.from(table).select(columns).order('name');
     return List.unmodifiable(
       rows.map(
         (row) => LookupOption(
           id: BigInt.parse(row['id'].toString()),
           name: row['name']?.toString() ?? '',
+          areaId: BigInt.tryParse(row['area']?.toString() ?? ''),
         ),
       ),
     );

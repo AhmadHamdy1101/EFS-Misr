@@ -47,10 +47,7 @@ class TicketDamageComment extends StatelessWidget {
                 ),
                 if (errorMessage.isNotEmpty) ...[
                   const SizedBox(height: 12),
-                  Text(
-                    errorMessage,
-                    style: const TextStyle(color: Colors.red),
-                  ),
+                  Text(errorMessage, style: const TextStyle(color: Colors.red)),
                 ],
               ],
             ),
@@ -133,10 +130,7 @@ class TicketDamageComment extends StatelessWidget {
               BlocBuilder<TicketsCubit, TicketsState>(
                 builder: (context, state) {
                   final latest = state is GetTicketsSuccess
-                      ? state.allTickets.firstWhere(
-                          (item) => item.id == ticket.id,
-                          orElse: () => ticket,
-                        )
+                      ? state.findTicket(ticket.id) ?? ticket
                       : ticket;
                   return Text(latest.damageDescription);
                 },

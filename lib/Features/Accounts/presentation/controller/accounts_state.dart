@@ -6,7 +6,13 @@ final class AccountsInitial extends AccountsState {}
 
 final class GetAccountsSuccess extends AccountsState {
   final List<UserEntity> accounts;
-  GetAccountsSuccess(this.accounts);
+  final bool hasMore;
+  final bool isLoadingMore;
+  GetAccountsSuccess(
+    this.accounts, {
+    this.hasMore = false,
+    this.isLoadingMore = false,
+  });
 }
 
 final class GetAccountsLoading extends AccountsState {}

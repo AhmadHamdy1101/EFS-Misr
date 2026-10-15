@@ -7,6 +7,7 @@ import 'package:efs_misr/Features/Assets_data/domain/entities/asset_repair_total
 import 'package:efs_misr/Features/Assets_data/domain/repo/assets_data_repo.dart';
 import 'package:efs_misr/Features/Assets_data/domain/repo/assets_repair_repository.dart';
 import 'package:efs_misr/core/models/assets_repair.dart';
+import 'package:efs_misr/core/paging/page_query.dart';
 import '../mappers/asset_repair_mapper.dart';
 import '../../../../core/Errors/failure.dart';
 
@@ -14,9 +15,9 @@ class AssetsDataRepoImpl implements AssetsDataRepo, AssetsRepairRepository {
   final AssetsDataSource assetsDataSource;
   AssetsDataRepoImpl(this.assetsDataSource);
   @override
-  Future<Either<Failure, List<AssetsEntity>>> getAssets() async {
+  Future<Either<Failure, List<AssetsEntity>>> getAssets(PageQuery query) async {
     try {
-      final assets = await assetsDataSource.getAssets();
+      final assets = await assetsDataSource.getAssets(query);
       return Right(assets);
     } catch (e) {
       return Left(Failure.fromException(e));

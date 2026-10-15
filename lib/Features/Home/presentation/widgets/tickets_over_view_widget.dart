@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/widgets/custome_overview_widget.dart';
-import '../../../Tickets/domain/entities/ticket_entity.dart';
 import '../../../Tickets/presentation/controller/tickets_cubit.dart';
 
 class TicketsOverViewWidget extends StatelessWidget {
@@ -29,13 +28,9 @@ class TicketsOverViewWidget extends StatelessWidget {
           return CustomOverviewWidget(
             screenHeight: screenHeight,
             screenWidth: screenWidth,
-            totalTickets: state.allTickets.length,
-            doneTickets: state.allTickets
-                .where((ticket) => ticket.status == TicketStatus.completed)
-                .length,
-            awaitTickets: state.allTickets
-                .where((ticket) => ticket.status == TicketStatus.awaiting)
-                .length,
+            totalTickets: state.stats.total,
+            doneTickets: state.stats.completed,
+            awaitTickets: state.stats.awaiting,
           );
         }
         return CustomOverviewWidget(
