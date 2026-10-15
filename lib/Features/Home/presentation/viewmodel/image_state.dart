@@ -7,9 +7,13 @@ final class ImageInitial extends ImageState {}
 final class ImageUpdateLoading extends ImageState {}
 
 final class ImageUpdateSuccess extends ImageState {
-  final String? image;
+  final UserEntity user;
 
-  ImageUpdateSuccess({required this.image});
+  ImageUpdateSuccess({required this.user});
 }
 
-final class ImageUpdateFailed extends ImageState {}
+final class ImageUpdateFailed extends ImageState {
+  final String errMsg;
+
+  ImageUpdateFailed(this.errMsg);
+}

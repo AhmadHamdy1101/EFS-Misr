@@ -1,29 +1,27 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
+import 'package:efs_misr/core/entities/user_entity.dart';
 
 import '../../../core/Errors/failure.dart';
-import '../../../core/models/user.dart';
+
+enum SessionEvent { signedIn, signedOut }
 
 abstract class AuthRepo {
-  Future<Either<Failure, String>> saveUsersData({
-    required String userID,
-    required String userName,
-    required String phone,
-    required String address,
-    required BigInt position,
-    required int status,
-    required String role,
-    required String companyEmail,
-    required String company,
-    required String email,
-    required String password,
-  });
+  String? get currentUserId;
+
+  /// Only the events the app reacts to. Token refreshes and the initial
+  /// session event are filtered out so they don't trigger profile reloads.
+  Stream<SessionEvent> get sessionEvents;
 
   Future<Either<Failure, String>> login(String email, String password);
 
-  Future<Either<Failure, String>> addAccount({
-    required String password,
-    required String email,
-  });
+  Future<Either<Failure, Unit>> logout();
 
-  Future<Either<Failure, Users>> getUserData({required String userId});
+  Future<Either<Failure, UserEntity>> getUserData({required String userId});
+
+  Future<Either<Failure, UserEntity>> updateProfileImage({
+    required UserEntity user,
+    required File file,
+  });
 }

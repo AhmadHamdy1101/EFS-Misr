@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -8,7 +7,11 @@ import '../app_text_styles.dart';
 class CustomProfileWidget extends StatelessWidget {
   const CustomProfileWidget({
     super.key,
-    required this.screenWidth, required this.image, required this.name, required this.position, this.onPress,
+    required this.screenWidth,
+    required this.image,
+    required this.name,
+    required this.position,
+    this.onPress,
   });
 
   final double screenWidth;
@@ -17,46 +20,39 @@ class CustomProfileWidget extends StatelessWidget {
   final String position;
   final VoidCallback? onPress;
 
-
   @override
   Widget build(BuildContext context) {
     return Positioned(
       left: 30,
       top: 40,
       child: SizedBox(
-        width: screenWidth*0.85,
+        width: screenWidth * 0.85,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              spacing: 20,
+            ClipRRect(borderRadius: BorderRadius.circular(50), child: image),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: image,
+                Text(
+                  name,
+                  style: AppTextStyle.latoBold20(
+                    context,
+                  ).copyWith(color: AppColors.white),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: AppTextStyle.latoBold20(
-                        context,
-                      ).copyWith(color: AppColors.white),
-                    ),
-                    Text(
-                      position,
-                      style: AppTextStyle.latoRegular19(
-                        context,
-                      ).copyWith(color: AppColors.white),
-                    ),
-                  ],
+                Text(
+                  position,
+                  style: AppTextStyle.latoRegular19(
+                    context,
+                  ).copyWith(color: AppColors.white),
                 ),
               ],
             ),
             const SizedBox(width: 10),
-
-            IconButton(onPressed: onPress, icon: SvgPicture.asset("assets/images/Notifecation.svg")),
+            IconButton(
+              onPressed: onPress,
+              icon: SvgPicture.asset("assets/images/Notifecation.svg"),
+            ),
           ],
         ),
       ),

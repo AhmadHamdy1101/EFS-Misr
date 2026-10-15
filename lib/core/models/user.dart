@@ -11,7 +11,6 @@ class Users implements SupadartClass<Users> {
   final String? userid;
   final String? name;
   final String? email;
-  final String? password;
   final String? phone;
   final String? address;
   final BigInt? positionId;
@@ -29,7 +28,6 @@ class Users implements SupadartClass<Users> {
     this.userid,
     this.name,
     this.email,
-    this.password,
     this.phone,
     this.address,
     this.positionId,
@@ -43,6 +41,11 @@ class Users implements SupadartClass<Users> {
 
   static String get table_name => 'users';
 
+  /// Explicit column list for reads. Never `select('*')` on users.
+  static const String selectColumns =
+      'id,userid,name,email,phone,address,role,status,created_at,'
+      'company_email,Company,image,positions(*)';
+
   static String get c_id => 'id';
 
   static String get c_userid => 'userid';
@@ -50,8 +53,6 @@ class Users implements SupadartClass<Users> {
   static String get c_name => 'name';
 
   static String get c_email => 'email';
-
-  static String get c_password => 'password';
 
   static String get c_phone => 'phone';
 
@@ -84,7 +85,6 @@ class Users implements SupadartClass<Users> {
     String? userid,
     String? name,
     String? email,
-    String? password,
     String? phone,
     String? address,
     BigInt? positionId,
@@ -100,7 +100,6 @@ class Users implements SupadartClass<Users> {
       if (userid != null) 'userid': userid,
       if (name != null) 'name': name,
       if (email != null) 'email': email,
-      if (password != null) 'password': password,
       if (phone != null) 'phone': phone.toString(),
       if (address != null) 'address': address,
       if (positionId != null) 'positions': positionId.toString(),
@@ -118,7 +117,6 @@ class Users implements SupadartClass<Users> {
     String? userid,
     String? name,
     String? email,
-    String? password,
     String? phone,
     String? address,
     BigInt? positionID,
@@ -134,7 +132,6 @@ class Users implements SupadartClass<Users> {
       userid: userid,
       name: name,
       email: email,
-      password: password,
       phone: phone,
       address: address,
       positionId: positionID,
@@ -153,7 +150,6 @@ class Users implements SupadartClass<Users> {
     String? userid,
     String? name,
     String? email,
-    String? password,
     String? phone,
     String? address,
     BigInt? positionID,
@@ -170,7 +166,6 @@ class Users implements SupadartClass<Users> {
       userid: userid,
       name: name,
       email: email,
-      password: password,
       phone: phone,
       address: address,
       positionId: positionID,
@@ -191,7 +186,6 @@ class Users implements SupadartClass<Users> {
       userid: jsonn['userid'] != null ? jsonn['userid'].toString() : null,
       name: jsonn['name'] != null ? jsonn['name'].toString() : null,
       email: jsonn['email'] != null ? jsonn['email'].toString() : null,
-      password: jsonn['password'] != null ? jsonn['password'].toString() : null,
       phone: jsonn['phone'] != null ? jsonn['phone'].toString() : null,
       address: jsonn['address'] != null ? jsonn['address'].toString() : null,
       role: jsonn['role'] != null ? jsonn['role'].toString() : null,
@@ -217,7 +211,6 @@ class Users implements SupadartClass<Users> {
     String? userid,
     String? name,
     String? email,
-    String? password,
     String? phone,
     String? address,
     BigInt? positionID,
@@ -234,7 +227,6 @@ class Users implements SupadartClass<Users> {
       if (userid != null) 'userid': userid,
       if (name != null) 'name': name,
       if (email != null) 'email': email,
-      if (password != null) 'password': password,
       if (phone != null) 'phone': phone,
       if (address != null) 'address': address,
       if (positionID != null) 'positions': positionID,
@@ -253,7 +245,6 @@ class Users implements SupadartClass<Users> {
       userid: userid,
       name: name,
       email: email,
-      password: password,
       phone: phone,
       address: address,
       positionId: positionId,
@@ -274,7 +265,6 @@ class Users implements SupadartClass<Users> {
     Object? userid = _unset,
     Object? name = _unset,
     Object? email = _unset,
-    Object? password = _unset,
     Object? phone = _unset,
     Object? address = _unset,
     Object? positionId = _unset,
@@ -290,7 +280,6 @@ class Users implements SupadartClass<Users> {
       userid: userid == _unset ? this.userid : userid as String?,
       name: name == _unset ? this.name : name as String?,
       email: email == _unset ? this.email : email as String?,
-      password: password == _unset ? this.password : password as String?,
       phone: phone == _unset ? this.phone : phone as String?,
       address: address == _unset ? this.address : address as String?,
       positionId: positionId == _unset
@@ -320,6 +309,7 @@ class Users implements SupadartClass<Users> {
       companyEmail: companyEmail ?? '',
       company: company ?? '',
       image: image ?? '',
+      id: id,
     );
   }
 }

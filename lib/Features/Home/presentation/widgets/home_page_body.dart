@@ -1,19 +1,17 @@
+import 'package:efs_misr/Features/Home/presentation/widgets/all_tickets_list_view.dart';
+import 'package:efs_misr/Features/Home/presentation/widgets/tickets_over_view_widget.dart';
+import 'package:efs_misr/core/entities/user_entity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import '../../../../core/models/user.dart';
+
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/widgets/custom_profile_wedget.dart';
 import '../../../../core/utils/widgets/custome_back_shape_wedget.dart';
-import '../../../../core/utils/widgets/custome_overview_widget.dart';
-import '../../../Tickets/presentation/widgets/ticket_overview_widget.dart';
-import '../../../Tickets/domain/entities/ticket_entity.dart';
-import '../../../Tickets/presentation/controller/tickets_cubit.dart';
 
 class HomePageBody extends StatefulWidget {
   const HomePageBody({super.key, required this.user});
 
-  final Users user;
+  final UserEntity user;
 
   @override
   State<HomePageBody> createState() => _HomePageBodyState();
@@ -52,10 +50,9 @@ class _HomePageBodyState extends State<HomePageBody> {
               ),
               CustomProfileWidget(
                 screenWidth: screenWidth,
-                image:
-                    (widget.user.image != null && widget.user.image!.isNotEmpty)
+                image: (widget.user.image.isNotEmpty)
                     ? Image.network(
-                        widget.user.image!,
+                        widget.user.image,
                         width: 50,
                         height: 50,
                         fit: BoxFit.cover,
@@ -66,38 +63,13 @@ class _HomePageBodyState extends State<HomePageBody> {
                         height: 50,
                         fit: BoxFit.cover,
                       ),
-                name: '${widget.user.name}',
-                position: '${widget.user.position!.name}',
+                name: widget.user.name,
+                position: widget.user.position?.name ?? '',
                 onPress: () {},
               ),
-              BlocBuilder<TicketsCubit, TicketsState>(
-                builder: (context, state) {
-                  if (state is GetTicketsLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(color: AppColors.green),
-                    );
-                  }
-                  if (state is GetTicketsSuccess) {
-                    return CustomOverviewWidget(
-                      screenHeight: screenHeight,
-                      screenWidth: screenWidth,
-                      totalTickets: state.allTickets.length,
-                      doneTickets: state.allTickets
-                          .where((ticket) => ticket.status == TicketStatus.completed)
-                          .length,
-                      awaitTickets: state.allTickets
-                          .where((ticket) => ticket.status == TicketStatus.awaiting)
-                          .length,
-                    );
-                  }
-                  return CustomOverviewWidget(
-                    screenHeight: screenHeight,
-                    screenWidth: screenWidth,
-                    totalTickets: 0,
-                    doneTickets: 0,
-                    awaitTickets: 0,
-                  );
-                },
+              TicketsOverViewWidget(
+                screenHeight: screenHeight,
+                screenWidth: screenWidth,
               ),
             ],
           ),
@@ -117,7 +89,6 @@ class _HomePageBodyState extends State<HomePageBody> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -132,51 +103,9 @@ class _HomePageBodyState extends State<HomePageBody> {
                   ),
                   const SizedBox(height: 20),
 
-                  BlocBuilder<TicketsCubit, TicketsState>(
-                    builder: (context, state) {
-                      if (state is GetTicketsLoading) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: AppColors.green,
-                          ),
-                        );
-                      }
-                      if (state is GetTicketsFailure) {
-                        return Center(child: Text(state.errMsg));
-                      }
-                      if (state is GetTicketsSuccess &&
-                          state.allTickets.isNotEmpty) {
-                        final overviewTickets = state.allTickets.take(5).toList();
-                        return ListView.builder(
-                          padding: EdgeInsets.zero,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: overviewTickets.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              margin: EdgeInsets.only(
-                                bottom: screenHeight * 0.04,
-                              ),
-                              child: TicketOverViewWidget(
-                                screenWidth: screenWidth,
-                                screenHeight: screenHeight,
-                                ticketData: overviewTickets[index],
-                              ),
-                            );
-                          },
-                        );
-                      }
-                      return Column(
-                        children: [
-                          const Icon(Icons.inbox, size: 64, color: Colors.grey),
-                          const SizedBox(height: 10),
-                          Text(
-                            "No Tickets Found",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ],
-                      );
-                    },
+                  AllTicketsListView(
+                    screenHeight: screenHeight,
+                    screenWidth: screenWidth,
                   ),
                 ],
               ),

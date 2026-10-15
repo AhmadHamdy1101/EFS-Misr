@@ -1,22 +1,31 @@
-// lib/core/utils/theme_service.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Persists the theme and language choices between launches.
 class ThemeService {
-  static const _key = 'themeMode';
+  ThemeService(this._prefs);
 
-  Future<ThemeMode> get theme => loadThemeFromBox();
+  static const _themeKey = 'themeMode';
+  static const _localeKey = 'locale';
 
-  Future<ThemeMode> loadThemeFromBox() async {
-    final box = await SharedPreferences.getInstance();
-    final themeText = box.getString(_key) ?? 'light';
-    return themeText == 'dark' ? ThemeMode.dark : ThemeMode.light;
-  }
+  final SharedPreferences _prefs;
+
+  ThemeMode get themeMode => switch (_prefs.getString(_themeKey)) {
+    'dark' => ThemeMode.dark,
+    'light' => ThemeMode.light,
+    _ => ThemeMode.system,
+  };
+
+  Locale get locale => Locale(_prefs.getString(_localeKey) ?? 'en');
 
   Future<void> switchTheme(ThemeMode mode) async {
-    final box = await SharedPreferences.getInstance();
-    await box.setString(_key, mode == ThemeMode.dark ? 'dark' : 'light');
     Get.changeThemeMode(mode);
+    await _prefs.setString(_themeKey, mode.name);
+  }
+
+  Future<void> switchLocale(Locale locale) async {
+    await Get.updateLocale(locale);
+    await _prefs.setString(_localeKey, locale.languageCode);
   }
 }

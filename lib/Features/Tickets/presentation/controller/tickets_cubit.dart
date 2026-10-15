@@ -13,9 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 part 'tickets_state.dart';
 
 class TicketsCubit extends Cubit<TicketsState> {
-  TicketsCubit({required this.ticketsRepo}) : super(HomeInitial()) {
-    _subscribeToTicketChanges();
-  }
+  TicketsCubit({required this.ticketsRepo}) : super(HomeInitial());
 
   final TicketsRepo ticketsRepo;
   final List<TicketEntity> _allTickets = [];
@@ -59,6 +57,26 @@ class TicketsCubit extends Cubit<TicketsState> {
       }
     }
     return _sortedOptions(options.values);
+  }
+
+  /// Opens the realtime channel and loads tickets for the signed-in user.
+  Future<void> start() async {
+    if (_ticketChangesSubscription == null) _subscribeToTicketChanges();
+    await getTickets();
+  }
+
+  /// Closes the realtime channel and drops everything cached for the
+  /// previous user. Called on sign-out.
+  Future<void> reset() async {
+    await _ticketChangesSubscription?.cancel();
+    _ticketChangesSubscription = null;
+    _allTickets.clear();
+    _pendingChanges.clear();
+    _hasLoadedTickets = false;
+    _searchQuery = '';
+    _areaFilter = null;
+    _branchFilter = null;
+    if (!isClosed) emit(HomeInitial());
   }
 
   Future<void> getTickets() async {

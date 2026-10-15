@@ -1,14 +1,13 @@
+import 'package:efs_misr/core/entities/user_entity.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/models/user.dart';
 import '../widgets/menu_page_body.dart';
 
 class MenuPage extends StatelessWidget {
   const MenuPage({super.key, required this.user});
-  final  Users user;
+  final UserEntity user;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: MenuPageBody(user: user));
+    return Scaffold(body: MenuPageBody(user: user));
   }
 }

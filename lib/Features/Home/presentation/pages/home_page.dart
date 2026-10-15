@@ -1,9 +1,9 @@
 import 'package:efs_misr/Features/Home/presentation/widgets/qr_view.dart';
+import 'package:efs_misr/core/entities/user_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/models/user.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/widgets/custom_navigation_bar.dart';
 import '../../../Tickets/presentation/screens/ticket_page.dart';
@@ -15,7 +15,7 @@ import 'menu_page.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.user});
 
-  final Users user;
+  final UserEntity user;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -24,63 +24,42 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
 
-  void _onItemTapped(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
-  }
+  bool get _isAdmin => widget.user.role == 'Admin';
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final iconPaths = [
-      "assets/images/home.svg",
-      "assets/images/assets.svg",
-      "assets/images/ticket.svg",
-      "assets/images/profile.svg",
-      "assets/images/menu.svg",
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final tabs = <(String, Widget)>[
+      ("assets/images/home.svg", HomePageBody(user: widget.user)),
+      ("assets/images/assets.svg", const AssetsPage()),
+      ("assets/images/ticket.svg", const TicketPage()),
+      if (_isAdmin) ("assets/images/profile.svg", const AccountsPage()),
+      ("assets/images/menu.svg", MenuPage(user: widget.user)),
     ];
-    final iconPathsUser = [
-      "assets/images/home.svg",
-      "assets/images/assets.svg",
-      "assets/images/ticket.svg",
-      "assets/images/menu.svg",
-    ];
+    final index = selectedIndex.clamp(0, tabs.length - 1);
 
-    final pages = [
-      HomePageBody(user: widget.user),
-      AssetsPage(),
-      TicketPage(),
-      AccountsPage(),
-      MenuPage(user: widget.user),
-    ];
-    final pagesuser = [
-      HomePageBody(user: widget.user),
-      AssetsPage(),
-      TicketPage(),
-      MenuPage(user: widget.user),
-    ];
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         elevation: 5,
         backgroundColor: AppColors.green,
         foregroundColor: Colors.white,
         shape: const CircleBorder(),
-        onPressed: () {
-          Get.to(QRScanPage());
-        },
+        onPressed: () => Get.to(() => const QRScanPage()),
         child: SvgPicture.asset(
           'assets/images/Qr code scanner.svg',
           width: screenWidth * 0.07,
         ),
       ),
-      body: widget.user.role == 'Admin'
-          ? pages[selectedIndex]
-          : pagesuser[selectedIndex],
+      // IndexedStack keeps every tab alive, so switching tabs doesn't refetch
+      // data or lose search text and scroll position.
+      body: IndexedStack(
+        index: index,
+        children: [for (final tab in tabs) tab.$2],
+      ),
       bottomNavigationBar: CustomBottomNav(
-        icons: widget.user.role == 'Admin' ? iconPaths : iconPathsUser,
-        selectedIndex: selectedIndex,
-        onPressed: _onItemTapped,
+        icons: [for (final tab in tabs) tab.$1],
+        selectedIndex: index,
+        onPressed: (i) => setState(() => selectedIndex = i),
       ),
     );
   }

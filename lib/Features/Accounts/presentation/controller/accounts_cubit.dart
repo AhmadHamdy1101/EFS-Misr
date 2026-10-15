@@ -1,133 +1,112 @@
-import 'dart:developer';
-
-import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
+import 'package:dartz/dartz.dart';
+import 'package:efs_misr/core/Errors/failure.dart';
 import 'package:efs_misr/core/Functions/convert_to_excel_function.dart';
-import 'package:efs_misr/core/utils/app_colors.dart';
-import 'package:flutter/material.dart';
+import 'package:efs_misr/core/entities/user_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
 
-import '../../../../constants/constants.dart';
-import '../../../../core/models/supadart_header.dart';
-import '../../../../core/models/user.dart';
+import '../../domain/accounts_repo.dart';
 
 part 'accounts_state.dart';
 
+/// Holds the account list. Actions return an [Either] so the calling widget
+/// decides how to show success or failure (snackbar, navigation, ...).
 class AccountsCubit extends Cubit<AccountsState> {
-  HomeRepo homeRepo;
-  AccountsCubit(this.homeRepo) : super(AccountsInitial());
+  AccountsCubit(this.accountsRepo) : super(AccountsInitial());
 
-  final List<Users> allUsers = [];
-  final List<Users> searchedUSers = [];
+  final AccountsRepo accountsRepo;
+  final List<UserEntity> _allUsers = [];
+  String _searchQuery = '';
+  bool _hasLoaded = false;
 
   Future<void> getAccounts() async {
-    emit(GetAccountsLoading());
-    final result = await homeRepo.getUsers();
+    if (!_hasLoaded) emit(GetAccountsLoading());
+    final result = await accountsRepo.getUsers();
     result.fold(
       (failure) {
-        emit(GetAccountsFailed(failure.message));
+        if (!_hasLoaded) emit(GetAccountsFailed(failure.message));
       },
       (accounts) {
-        allUsers.clear();
-        allUsers.addAll(accounts);
-        emit(GetAccountsSuccess(allUsers));
+        _allUsers
+          ..clear()
+          ..addAll(accounts);
+        _hasLoaded = true;
+        _emitVisible();
       },
     );
   }
 
-  searchUsers(String? search) {
-    final query = search?.trim().toLowerCase() ?? '';
-    if (query.isEmpty) {
-      emit(GetAccountsSuccess(allUsers));
-      return;
-    }
-    searchedUSers.clear();
-    final res = allUsers.where((user) {
-      final nameMatch = user.name?.toLowerCase().contains(query) ?? false;
-      final emailMatch = user.email?.toLowerCase().contains(query) ?? false;
-      final companyMatch = user.company?.toLowerCase().contains(query) ?? false;
-      return nameMatch || emailMatch || companyMatch;
-    }).toList();
-    searchedUSers.addAll(res);
-    emit(GetAccountsSuccess(searchedUSers));
+  void searchUsers(String? search) {
+    _searchQuery = search?.trim().toLowerCase() ?? '';
+    _emitVisible();
   }
 
-  Future<ExcelExportStatus> convertAccountsToExcel() async {
-    // Never include the password column in an exported employee list.
-    final data = await supabaseClient.users.select(
-      'id,name,email,phone,address,role,status,created_at,company_email,Company',
-    );
-    if (data.isEmpty) return ExcelExportStatus.noData;
-
-    return saveRowsToExcel(
-      data.map((row) => Map<String, dynamic>.from(row)).toList(),
-      fileNamePrefix: 'Users',
-    );
-  }
-
-  Future<void> deleteAccount(
-    BigInt id,
-    String? userid,
-    String? username,
-  ) async {
-    try {
-      await supabaseClient.users.delete().eq('id', id);
-
-      await supabaseClient.functions.invoke(
-        'delete-user',
-        body: {'userId': userid},
-      );
-      await getAccounts();
-      Get.snackbar("Delete Success", 'User $username deleted successfully');
-    } catch (e) {
-      log(e.toString());
-    }
-  }
-
-  Future<void> updateUserData({
-    required String userID,
-    required String? userName,
-    required String? phone,
-    required String? address,
-    required BigInt? position,
-    required int? status,
-    required String? role,
-    required String? companyEmail,
-    required String? company,
-    required String? email,
-    required String? password,
+  Future<Either<Failure, Unit>> addAccount({
+    required AccountForm form,
+    required String password,
   }) async {
-    final res = await homeRepo.updateUserData(
-      userID: userID,
-      userName: userName,
-      phone: phone,
-      address: address,
-      position: position,
-      status: status,
-      role: role,
-      companyEmail: companyEmail,
-      company: company,
-      email: email,
+    final result = await accountsRepo.addAccount(
+      form: form,
       password: password,
     );
-    await res.fold<Future<void>>(
-      (l) async {
-        Get.snackbar(
-          "Error while updating",
-          l.message,
-          backgroundColor: Colors.red,
-          colorText: AppColors.white,
-        );
-      },
-      (r) async {
-        Get.snackbar(
-          "Update user successful",
-          'User has successfully updated',
-          backgroundColor: AppColors.green,
-          colorText: AppColors.white,
-        );
-        await getAccounts();
-      },
-    );
+    if (result.isRight()) await getAccounts();
+    return result;
+  }
+
+  Future<Either<Failure, UserEntity>> updateAccount({
+    required UserEntity user,
+    required AccountForm form,
+  }) async {
+    final result = await accountsRepo.updateAccount(user: user, form: form);
+    result.fold((_) {}, (updated) {
+      final index = _allUsers.indexWhere((u) => u.id == updated.id);
+      if (index != -1) _allUsers[index] = updated;
+      _emitVisible();
+    });
+    return result;
+  }
+
+  Future<Either<Failure, Unit>> deleteAccount(UserEntity user) async {
+    final result = await accountsRepo.deleteAccount(user: user);
+    result.fold((_) {}, (_) {
+      _allUsers.removeWhere((u) => u.id == user.id);
+      _emitVisible();
+    });
+    return result;
+  }
+
+  Future<Either<Failure, ExcelExportStatus>> convertAccountsToExcel() async {
+    final rows = await accountsRepo.getExportRows();
+    return rows.fold((failure) async => Left(failure), (data) async {
+      if (data.isEmpty) return const Right(ExcelExportStatus.noData);
+      try {
+        return Right(await saveRowsToExcel(data, fileNamePrefix: 'Users'));
+      } catch (e) {
+        return Left(Failure.fromException(e));
+      }
+    });
+  }
+
+  /// Drops the previous user's data. Called on sign-out.
+  void reset() {
+    _allUsers.clear();
+    _searchQuery = '';
+    _hasLoaded = false;
+    emit(AccountsInitial());
+  }
+
+  void _emitVisible() {
+    if (isClosed || !_hasLoaded) return;
+    if (_searchQuery.isEmpty) {
+      emit(GetAccountsSuccess(List.unmodifiable(_allUsers)));
+      return;
+    }
+    final visible = _allUsers
+        .where((user) {
+          return user.name.toLowerCase().contains(_searchQuery) ||
+              user.email.toLowerCase().contains(_searchQuery) ||
+              user.company.toLowerCase().contains(_searchQuery);
+        })
+        .toList(growable: false);
+    emit(GetAccountsSuccess(visible));
   }
 }

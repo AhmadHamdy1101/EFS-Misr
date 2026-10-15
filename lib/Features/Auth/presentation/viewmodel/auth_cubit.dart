@@ -1,181 +1,86 @@
 import 'dart:async';
 
-import 'package:efs_misr/Features/Accounts/presentation/screens/add_account_page.dart';
-import 'package:efs_misr/Features/Accounts/presentation/screens/add_success_page.dart';
-import 'package:efs_misr/core/utils/app_colors.dart';
-import 'package:flutter/material.dart';
+import 'package:efs_misr/core/entities/user_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get/get.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../constants/constants.dart';
-import '../../../../core/models/user.dart';
+
 import '../../domain/auth_repo.dart';
 
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthCubitState> {
-  final auth = supabaseClient.auth;
-
-  StreamSubscription<AuthState>? _sub;
-  final AuthRepo authRepo;
-
   AuthCubit(this.authRepo) : super(AuthInitial());
+
+  final AuthRepo authRepo;
+  StreamSubscription<SessionEvent>? _sub;
+
+  UserEntity? get currentUser {
+    final current = state;
+    return current is SessionExist ? current.user : null;
+  }
 
   Future<void> login({required String email, required String password}) async {
     emit(AuthLoading());
     final response = await authRepo.login(email, password);
     await response.fold<Future<void>>(
-      (l) async {
-        emit(LoginFailure(errorMsg: l.message));
-      },
-      (userId) async {
-        final user = await authRepo.getUserData(userId: userId);
-        user.fold(
-          (l) {
-            emit(LoginFailure(errorMsg: l.message));
-          },
-          (user) {
-            emit(LoginSuccess(user: user));
-            emit(SessionExist(user: user));
-          },
-        );
-      },
+      (failure) async => emit(LoginFailure(errorMsg: failure.message)),
+      (userId) => _loadProfile(
+        userId,
+        onFailure: (message) => LoginFailure(errorMsg: message),
+      ),
     );
   }
 
   Future<void> checkSession() async {
     emit(AuthLoading());
-    final session = auth.currentSession;
-    if (session?.user != null) {
-      final res = await authRepo.getUserData(userId: session!.user.id);
-      res.fold(
-        (failure) {
-          emit(
-            SessionLoadFailed(failure.message),
-          ); // اعمل الحالة دي لو مش موجودة
-        },
-        (user) {
-          emit(SessionExist(user: user));
-        },
-      );
+    final userId = authRepo.currentUserId;
+    if (userId != null) {
+      await _loadProfile(userId, onFailure: SessionLoadFailed.new);
     } else {
       emit(SessionNotExist());
     }
 
     await _sub?.cancel();
-    _sub = auth.onAuthStateChange.listen((event) async {
-      final newSession = event.session;
-      if (newSession?.user != null) {
-        final res = await authRepo.getUserData(userId: newSession!.user.id);
-        res.fold(
-          (failure) {
-            emit(SessionLoadFailed(failure.message));
-          },
-          (user) {
-            emit(SessionExist(user: user));
-          },
-        );
-      } else {
-        emit(SessionNotExist());
+    _sub = authRepo.sessionEvents.listen((event) {
+      switch (event) {
+        case SessionEvent.signedOut:
+          if (state is! SessionNotExist) emit(SessionNotExist());
+        case SessionEvent.signedIn:
+          // login() already loads the profile; only react to sign-ins that
+          // happened elsewhere (e.g. a restored session).
+          final userId = authRepo.currentUserId;
+          if (state is! SessionExist &&
+              state is! AuthLoading &&
+              userId != null) {
+            _loadProfile(userId, onFailure: SessionLoadFailed.new);
+          }
       }
     });
   }
 
-  Future<void> addAccount({
-    required String email,
-    required String userName,
-    required String password,
-    required String phone,
-    required String address,
-    required String companyEmail,
-    required String company,
-    required BigInt position,
-    required String role,
-    required int status,
-  }) async {
-    final result = await authRepo.addAccount(email: email, password: password);
-    result.fold(
-      (l) {
-        Get.snackbar(
-          "Error",
-          l.message,
-          backgroundColor: Colors.red,
-          colorText: AppColors.white,
-        );
-      },
-      (userId) async {
-        final savingData = await authRepo.saveUsersData(
-          password: password,
-          role: role,
-          companyEmail: companyEmail,
-          email: email,
-          address: address,
-          company: company,
-          phone: phone,
-          position: position,
-          status: status,
-          userID: userId,
-          userName: userName,
-        );
-        savingData.fold(
-          (l) {
-            Get.snackbar(
-              "Error",
-              l.message,
-              backgroundColor: Colors.red,
-              colorText: AppColors.white,
-            );
-          },
-          (r) {
-            Get.to(
-              AddSuccessPage(
-                message: 'Account created successfully',
-                onPress: () {
-                  Get.off(() => const AddAccountPage());
-                },
-                buttonTitle: 'Add Another Account',
-                secondPress: () {
-                  Get.back();
-                },
-                refreshAccounts: true,
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   Future<void> logout() async {
-    await auth.signOut();
+    await authRepo.logout();
     emit(SessionNotExist());
   }
 
-  @override
-  Future<void> close() {
-    _sub?.cancel();
-    return super.close();
+  /// Replaces the signed-in user, e.g. after the profile photo changes.
+  void updateCurrentUser(UserEntity user) {
+    if (state is SessionExist) emit(SessionExist(user: user));
   }
 
-  Future<void> updateUserImage({
-    required BigInt userId,
-    required String imageUrl,
+  Future<void> _loadProfile(
+    String userId, {
+    required AuthCubitState Function(String message) onFailure,
   }) async {
-    try {
-      emit(AuthLoading());
+    final res = await authRepo.getUserData(userId: userId);
+    res.fold(
+      (failure) => emit(onFailure(failure.message)),
+      (user) => emit(SessionExist(user: user)),
+    );
+  }
 
-      final response = await supabaseClient
-          .from('users')
-          .update({'image': imageUrl})
-          .eq('id', userId)
-          .select()
-          .single(); // مهمة جداً عشان يرجع اليوزر مش int
-
-      final updatedUser = Users.fromJson(response);
-
-      emit(SessionExist(user: updatedUser));
-    } catch (e) {
-      emit(SessionLoadFailed(e.toString()));
-    }
+  @override
+  Future<void> close() async {
+    await _sub?.cancel();
+    return super.close();
   }
 }

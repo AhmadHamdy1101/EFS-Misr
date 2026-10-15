@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
+import 'Features/Accounts/presentation/controller/accounts_cubit.dart';
+import 'Features/Assets_data/presentation/controller/assets_cubit.dart';
+import 'Features/Auth/presentation/pages/auth_page.dart';
 import 'Features/Auth/presentation/viewmodel/auth_cubit.dart';
+import 'Features/Tickets/presentation/controller/tickets_cubit.dart';
 import 'core/layout/adaptive_layout.dart';
 import 'core/layout/desktop_layout.dart';
 import 'core/layout/mobile_layout.dart';
 import 'core/layout/tablet_layout.dart';
+import 'core/lookups/lookup_repo.dart';
 import 'core/utils/app_colors.dart';
-import 'Features/Auth/presentation/pages/auth_page.dart';
+import 'core/utils/singelton.dart';
+import 'core/utils/widgets/app_snack_bar.dart';
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -18,20 +24,64 @@ class AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<AuthGate> {
+  final _homeKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
     context.read<AuthCubit>().checkSession();
   }
 
+  /// Starts per-user data when a session begins.
+  void _onSignedIn() {
+    context.read<TicketsCubit>().start();
+    context.read<AssetsCubit>().getAssets();
+  }
+
+  /// The data cubits live above the navigator, so they must be cleared
+  /// explicitly or the next user would see the previous user's data.
+  void _onSignedOut() {
+    context.read<TicketsCubit>().reset();
+    context.read<AssetsCubit>().reset();
+    context.read<AccountsCubit>().reset();
+    getIt.get<LookupRepo>().clearCache();
+    Get.until((route) => route.isFirst);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthCubit, AuthCubitState>(
+      listenWhen: (previous, current) =>
+          (previous is SessionExist) != (current is SessionExist) ||
+          current is LoginFailure ||
+          current is SessionLoadFailed,
+      listener: (context, state) {
+        switch (state) {
+          case SessionExist():
+            _onSignedIn();
+          case LoginFailure(:final errorMsg):
+            _onSignedOut();
+            showAppSnackBar(
+              ScaffoldMessenger.of(context),
+              errorMsg,
+              isError: true,
+            );
+          case SessionLoadFailed(:final errMsg):
+            _onSignedOut();
+            showAppSnackBar(
+              ScaffoldMessenger.of(context),
+              errMsg,
+              isError: true,
+            );
+          default:
+            _onSignedOut();
+        }
+      },
       builder: (context, state) {
-        if (state is AuthLoading) {
+        if (state is AuthLoading || state is AuthInitial) {
           return Container(
-            decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-            child: Center(
+            color: Theme.of(context).primaryColor,
+            child: const Center(
               child: CircularProgressIndicator(
                 backgroundColor: AppColors.green,
               ),
@@ -39,33 +89,14 @@ class _AuthGateState extends State<AuthGate> {
           );
         }
         if (state is SessionExist) {
+          final user = state.user;
           return AdaptiveLayout(
-            mobileLayout: (context) => MobileLayout(user: state.user),
-            tabletLayout: (context) => TabletLayout(),
-            desktopLayout: (context) => DesktopLayout(),
+            mobileLayout: (_) => MobileLayout(user: user, homeKey: _homeKey),
+            tabletLayout: (_) => TabletLayout(user: user, homeKey: _homeKey),
+            desktopLayout: (_) => DesktopLayout(user: user, homeKey: _homeKey),
           );
         }
-        if (state is LoginSuccess) {
-          return AdaptiveLayout(
-            mobileLayout: (context) => MobileLayout(user: state.user),
-            tabletLayout: (context) => TabletLayout(),
-            desktopLayout: (context) => DesktopLayout(),
-          );
-        }
-        return AuthPage();
-      },
-      listener: (BuildContext context, AuthCubitState state) {
-        if (state is LoginFailure) {
-          Get.snackbar(
-            'Error'.tr,
-            state.errorMsg,
-            colorText: AppColors.white,
-            backgroundColor: Colors.red,
-            snackPosition: SnackPosition.BOTTOM,
-            snackStyle: SnackStyle.FLOATING,
-            isDismissible: true,
-          );
-        }
+        return const AuthPage();
       },
     );
   }
