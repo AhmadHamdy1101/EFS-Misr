@@ -1,5 +1,5 @@
 import 'package:efs_misr/Features/Assets_data/presentation/controller/assets_tickets_cubit.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/qrcode_cubit.dart';
+import 'package:efs_misr/Features/Assets_data/presentation/controller/qrcode_cubit.dart';
 import 'package:efs_misr/Features/Tickets/presentation/controller/tickets_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -33,13 +33,10 @@ class _QRScanTicketPageState extends State<QRScanTicketPage> {
         );
     if (!mounted) return;
 
-    final linked = linkResult.fold(
-      (failure) {
-        messenger.showSnackBar(SnackBar(content: Text(failure.message)));
-        return false;
-      },
-      (_) => true,
-    );
+    final linked = linkResult.fold((failure) {
+      messenger.showSnackBar(SnackBar(content: Text(failure.message)));
+      return false;
+    }, (_) => true);
     if (!linked) {
       setState(() {
         _isCompleting = false;
@@ -55,16 +52,13 @@ class _QRScanTicketPageState extends State<QRScanTicketPage> {
           responseDate: DateTime.now(),
         );
     if (!mounted) return;
-    responseResult.fold(
-      (failure) {
-        messenger.showSnackBar(SnackBar(content: Text(failure.message)));
-        setState(() {
-          _isCompleting = false;
-          _isProcessing = false;
-        });
-      },
-      (_) => Get.back(),
-    );
+    responseResult.fold((failure) {
+      messenger.showSnackBar(SnackBar(content: Text(failure.message)));
+      setState(() {
+        _isCompleting = false;
+        _isProcessing = false;
+      });
+    }, (_) => Get.back());
   }
 
   @override
@@ -78,9 +72,9 @@ class _QRScanTicketPageState extends State<QRScanTicketPage> {
             _completeTicketAssetLink(state.assets.id);
           } else if (state is QrcodeFailed) {
             setState(() => _isProcessing = false);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.errMsg)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.errMsg)));
           }
         },
         builder: (context, state) {
@@ -116,7 +110,9 @@ class _QRScanTicketPageState extends State<QRScanTicketPage> {
               Expanded(
                 child: Center(
                   child: Text(
-                    barcode == null ? 'Scan a code'.tr : '${'Result'.tr}: $barcode',
+                    barcode == null
+                        ? 'Scan a code'.tr
+                        : '${'Result'.tr}: $barcode',
                   ),
                 ),
               ),

@@ -4,7 +4,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/models/supadart_header.dart';
 import '../../../core/models/tickets.dart';
-import '../../../core/models/user.dart';
 import '../domain/entities/ticket_entity.dart';
 import 'models/ticket_change_model.dart';
 import 'models/ticket_lookup_model.dart';
@@ -37,7 +36,6 @@ abstract interface class TicketDataSource {
   Future<void> deleteTicket(BigInt ticketId);
   Future<List<TicketLookupModel>> getBranches();
   Future<List<TicketLookupModel>> getEngineers();
-  Future<List<Users>> getUsersByIds(List<BigInt> ids);
   Stream<TicketChangeModel> watchTicketChanges();
 }
 
@@ -54,6 +52,10 @@ class TicketDataSourceImpl implements TicketDataSource {
       id,branch_id,name,area:area!branch_area_fkey(id,name)
     ),
     engineer_user:users!tickets_engineer_fkey(
+      id,userid,name,email,address,phone,role,status,Company,company_email,image,
+      positions(*)
+    ),
+    closed_by_user:users!tickets_closed_by_fkey(
       id,userid,name,email,address,phone,role,status,Company,company_email,image,
       positions(*)
     )
@@ -119,10 +121,7 @@ class TicketDataSourceImpl implements TicketDataSource {
   }) async {
     return _client.tickets
         .update(
-          Tickets.update(
-            status: status.databaseValue,
-            repairDate: repairDate,
-          ),
+          Tickets.update(status: status.databaseValue, repairDate: repairDate),
         )
         .eq('id', ticketId.toString())
         .select(_ticketSelection)
@@ -174,17 +173,6 @@ class TicketDataSourceImpl implements TicketDataSource {
         .eq('positions', 3)
         .order('name');
     return rows.map((row) => TicketLookupModel.fromJson(row)).toList();
-  }
-
-  @override
-  Future<List<Users>> getUsersByIds(List<BigInt> ids) async {
-    if (ids.isEmpty) return const [];
-    return _client.users
-        .select(
-          'id,userid,name,email,phone,address,role,status,created_at,company_email,Company,image,positions(*)',
-        )
-        .inFilter('id', ids.map((id) => id.toString()).toList())
-        .withConverter(Users.converter);
   }
 
   @override

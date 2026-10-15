@@ -3,13 +3,8 @@ part of 'auth_cubit.dart';
 sealed class AuthCubitState {}
 
 final class AuthInitial extends AuthCubitState {}
+
 final class AuthLoading extends AuthCubitState {}
-
-final class LoginSuccess extends AuthCubitState {
-  final Users user;
-
-  LoginSuccess({required this.user});
-}
 
 final class LoginFailure extends AuthCubitState {
   final String errorMsg;
@@ -18,22 +13,15 @@ final class LoginFailure extends AuthCubitState {
 }
 
 final class SessionExist extends AuthCubitState {
- final Users user;
+  final UserEntity user;
+
   SessionExist({required this.user});
 }
+
 final class SessionNotExist extends AuthCubitState {}
+
 final class SessionLoadFailed extends AuthCubitState {
   final String errMsg;
+
   SessionLoadFailed(this.errMsg);
 }
-
-
-final class RegisterSuccess extends AuthCubitState {}
-
-final class RegisterFailure extends AuthCubitState {
-  final String errorMsg;
-
-  RegisterFailure({required this.errorMsg});
-}
-
-final class RegisterLoading extends AuthCubitState {}

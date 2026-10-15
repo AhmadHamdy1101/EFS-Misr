@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/Errors/failure.dart';
-import '../../../../core/models/tickets.dart';
 import '../../domain/entities/ticket_change.dart';
 import '../../domain/entities/ticket_entity.dart';
 import '../../domain/entities/ticket_lookup_option.dart';
@@ -18,8 +17,7 @@ class TicketRepoImpl implements TicketsRepo {
   Future<Either<Failure, List<TicketEntity>>> getTickets() async {
     try {
       final tickets = await ticketDataSource.getTickets();
-      final ticketsWithUsers = await _attachClosedByUsers(tickets);
-      return Right(ticketsWithUsers.map((ticket) => ticket.toEntity()).toList());
+      return Right(tickets.map((ticket) => ticket.toEntity()).toList());
     } catch (error) {
       return Left(Failure.fromException(error));
     }
@@ -30,7 +28,7 @@ class TicketRepoImpl implements TicketsRepo {
     try {
       final ticket = await ticketDataSource.getTicketById(ticketId);
       if (ticket == null) return const Right(null);
-      return Right((await _attachClosedByUser(ticket)).toEntity());
+      return Right(ticket.toEntity());
     } catch (error) {
       return Left(Failure.fromException(error));
     }
@@ -42,8 +40,7 @@ class TicketRepoImpl implements TicketsRepo {
   }) async {
     try {
       final tickets = await ticketDataSource.getTicketsWithAssetsId(assetId);
-      final ticketsWithUsers = await _attachClosedByUsers(tickets);
-      return Right(ticketsWithUsers.map((ticket) => ticket.toEntity()).toList());
+      return Right(tickets.map((ticket) => ticket.toEntity()).toList());
     } catch (error) {
       return Left(Failure.fromException(error));
     }
@@ -84,7 +81,7 @@ class TicketRepoImpl implements TicketsRepo {
         requestDate: requestDate,
         engineerId: engineerId,
       );
-      return Right((await _attachClosedByUser(ticket)).toEntity());
+      return Right(ticket.toEntity());
     } catch (error) {
       return Left(Failure.fromException(error));
     }
@@ -102,7 +99,7 @@ class TicketRepoImpl implements TicketsRepo {
         status: status,
         repairDate: repairDate,
       );
-      return Right((await _attachClosedByUser(ticket)).toEntity());
+      return Right(ticket.toEntity());
     } catch (error) {
       return Left(Failure.fromException(error));
     }
@@ -118,7 +115,7 @@ class TicketRepoImpl implements TicketsRepo {
         ticketId: ticketId,
         damageDescription: damageDescription,
       );
-      return Right((await _attachClosedByUser(ticket)).toEntity());
+      return Right(ticket.toEntity());
     } catch (error) {
       return Left(Failure.fromException(error));
     }
@@ -134,7 +131,7 @@ class TicketRepoImpl implements TicketsRepo {
         ticketId: ticketId,
         responseDate: responseDate,
       );
-      return Right((await _attachClosedByUser(ticket)).toEntity());
+      return Right(ticket.toEntity());
     } catch (error) {
       return Left(Failure.fromException(error));
     }
@@ -163,37 +160,7 @@ class TicketRepoImpl implements TicketsRepo {
         yield TicketChange(id: change.id.toInt());
         continue;
       }
-      final ticketWithUser = await _attachClosedByUser(ticket);
-      yield TicketChange(
-        id: change.id.toInt(),
-        ticket: ticketWithUser.toEntity(),
-      );
+      yield TicketChange(id: change.id.toInt(), ticket: ticket.toEntity());
     }
-  }
-
-  Future<List<Tickets>> _attachClosedByUsers(List<Tickets> tickets) async {
-    final ids = tickets
-        .map((ticket) => ticket.closedBy)
-        .whereType<BigInt>()
-        .toSet()
-        .toList();
-    if (ids.isEmpty) return tickets;
-
-    final users = await ticketDataSource.getUsersByIds(ids);
-    final usersById = {for (final user in users) user.id: user};
-    return tickets
-        .map((ticket) => ticket.copyWith(closedByUser: usersById[ticket.closedBy]))
-        .toList();
-  }
-
-  Future<Tickets> _attachClosedByUser(Tickets ticket) async {
-    final id = ticket.closedBy;
-    if (id == null) return ticket;
-
-    final users = await ticketDataSource.getUsersByIds([id]);
-    for (final user in users) {
-      if (user.id == id) return ticket.copyWith(closedByUser: user);
-    }
-    return ticket;
   }
 }

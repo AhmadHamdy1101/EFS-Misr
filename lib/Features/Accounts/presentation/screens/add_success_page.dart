@@ -8,14 +8,12 @@ class AddSuccessPage extends StatelessWidget {
     required this.buttonTitle,
     required this.onPress,
     required this.secondPress,
-    this.refreshAccounts = false,
   });
 
   final String message;
   final String buttonTitle;
   final VoidCallback onPress;
   final VoidCallback secondPress;
-  final bool refreshAccounts;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +22,6 @@ class AddSuccessPage extends StatelessWidget {
       buttonTitle: buttonTitle,
       onPress: onPress,
       secondPress: secondPress,
-      refreshAccounts: refreshAccounts,
     );
   }
 }

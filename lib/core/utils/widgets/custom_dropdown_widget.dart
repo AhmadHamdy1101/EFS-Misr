@@ -60,6 +60,7 @@ class _CustomDropdownWidgetState extends State<CustomDropdownWidget> {
         borderRadius: BorderRadius.circular(10),
         isExpanded: true,
         initialValue: _currentValue,
+        validator: widget.validator,
         hint: Text(
           widget.inbutHintText,
           textAlign: TextAlign.center,

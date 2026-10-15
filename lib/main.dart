@@ -3,13 +3,13 @@ import 'package:efs_misr/Features/Assets_data/domain/repo/assets_repair_reposito
 import 'package:efs_misr/Features/Assets_data/domain/usecases/add_asset_repair_use_case.dart';
 import 'package:efs_misr/Features/Auth/domain/auth_repo.dart';
 import 'package:efs_misr/Features/Auth/presentation/viewmodel/auth_cubit.dart';
-import 'package:efs_misr/Features/Home/domain/repo/home_repo.dart';
+import 'package:efs_misr/Features/Accounts/domain/accounts_repo.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/check_internet_cubit.dart';
 import 'package:efs_misr/Features/Home/presentation/viewmodel/image_cubit.dart';
 import 'package:efs_misr/Features/Splash/presentation/splash_screen.dart';
 import 'package:efs_misr/Features/Accounts/presentation/controller/accounts_cubit.dart';
 import 'package:efs_misr/Features/Assets_data/presentation/controller/assets_tickets_cubit.dart';
-import 'package:efs_misr/Features/Home/presentation/viewmodel/qrcode_cubit.dart';
+import 'package:efs_misr/Features/Assets_data/presentation/controller/qrcode_cubit.dart';
 import 'package:efs_misr/Features/Tickets/domain/repo/tickets_repo.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:efs_misr/core/utils/app_translations.dart';
@@ -23,42 +23,40 @@ import 'Features/Assets_data/presentation/controller/assets_repair_cubit.dart';
 import 'Features/Tickets/presentation/controller/tickets_cubit.dart';
 import 'constants/constants.dart';
 import 'core/utils/singelton.dart';
+import 'core/utils/theme_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(url: supbaseUrl, anonKey: supbaseKey);
-  setup();
-  runApp(const MyApp(themeMode: ThemeMode.system));
+  final prefs = await SharedPreferences.getInstance();
+  setup(prefs: prefs);
+  runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key, required this.themeMode});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-  final ThemeMode themeMode;
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    final themeService = getIt.get<ThemeService>();
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => CheckInternetCubit(Connectivity())),
         BlocProvider(create: (context) => AuthCubit(getIt.get<AuthRepo>())),
         BlocProvider(
           create: (context) =>
-              TicketsCubit(ticketsRepo: getIt.get<TicketsRepo>())..getTickets(),
+              TicketsCubit(ticketsRepo: getIt.get<TicketsRepo>()),
         ),
         BlocProvider(
-          create: (context) =>
-              AssetsCubit(getIt.get<AssetsDataRepo>())..getAssets(),
+          create: (context) => AssetsCubit(getIt.get<AssetsDataRepo>()),
         ),
         BlocProvider(
           create: (context) => QrcodeCubit(getIt.get<AssetsDataRepo>()),
         ),
-        BlocProvider(create: (context) => AccountsCubit(getIt.get<HomeRepo>())),
+        BlocProvider(
+          create: (context) => AccountsCubit(getIt.get<AccountsRepo>()),
+        ),
         BlocProvider(
           create: (context) => AssetsTicketsCubit(
             getIt.get<AssetsDataRepo>(),
@@ -71,13 +69,12 @@ class _MyAppState extends State<MyApp> {
             addAssetRepair: getIt.get<AddAssetRepairUseCase>(),
           ),
         ),
-        BlocProvider(
-          create: (context) => ImageCubit(getIt.get<HomeRepo>()),
-        ),
+        BlocProvider(create: (context) => ImageCubit(getIt.get<AuthRepo>())),
       ],
       child: GetMaterialApp(
         translations: AppTranslations(),
-        locale: const Locale('en'),
+        locale: themeService.locale,
+        fallbackLocale: const Locale('en'),
         debugShowCheckedModeBanner: false,
         title: 'EFS',
         theme: ThemeData(
@@ -167,7 +164,7 @@ class _MyAppState extends State<MyApp> {
             shadowColor: AppColors.white.withValues(alpha: 0.25),
           ),
         ),
-        themeMode: widget.themeMode,
+        themeMode: themeService.themeMode,
         home: const SplashScreen(),
       ),
     );

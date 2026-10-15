@@ -22,4 +22,5 @@ abstract class AssetsDataRepo {
     required String? type,
     required BigInt? branch,
   });
+  Future<Either<Failure, List<Map<String, dynamic>>>> getExportRows();
 }

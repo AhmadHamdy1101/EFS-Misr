@@ -1,57 +1,46 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
+import { corsHeaders } from '../_shared/cors.ts'
+import { errorResponse, HttpError, jsonResponse, requireAdmin } from '../_shared/admin.ts'
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { corsHeaders } from '../_shared/cors.ts';
-
-console.log(`Function "select-from-table-with-auth-rls" up and running!`);
+// Columns an admin may set on a new profile row. Anything else in the body is ignored.
+const PROFILE_FIELDS = [
+  'name', 'phone', 'address', 'positions', 'role', 'status', 'company_email', 'Company',
+] as const
 
 Deno.serve(async (req: Request) => {
-  // This is needed if you're planning to invoke your function from a browser.
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    // Create a Supabase client with the Auth context of the logged in user.
-    const supabaseClient = createClient(
-      // Supabase API URL - env var exported by default.
-      Deno.env.get('SUPABASE_URL') ?? '',
-      // Supabase API ANON KEY - env var exported by default.
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    )
+    const { adminClient } = await requireAdmin(req)
 
-    // First get the token from the Authorization header
+    const { email, password, profile } = await req.json()
+    if (!email || !password) throw new HttpError(400, 'email and password are required')
 
-
-    // Now we can get the session or user object
-
-
-const { email, password } = await req.json();
-
-    // And we can run queries in the context of our authenticated user
-    const { data, error } = await supabaseClient.auth.admin.createUser({
-                                                      email,
-                                                      password,
-                                                      email_confirm: true,
-                                                    });
+    const { data, error } = await adminClient.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+    })
     if (error) throw error
+    const userId = data.user!.id
 
-    return new Response(JSON.stringify({ userId: data.user?.id }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
-    })
+    // Create the auth user and its profile row together. If the row fails,
+    // remove the auth user so no half-created account is left behind.
+    if (profile) {
+      const row: Record<string, unknown> = { userid: userId, email }
+      for (const field of PROFILE_FIELDS) {
+        if (profile[field] !== undefined) row[field] = profile[field]
+      }
+      const { error: insertError } = await adminClient.from('users').insert(row)
+      if (insertError) {
+        await adminClient.auth.admin.deleteUser(userId)
+        throw insertError
+      }
+    }
+
+    return jsonResponse({ userId })
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
-    })
+    return errorResponse(error)
   }
 })
-
-// To invoke:
-// curl -i --location --request POST 'http://localhost:54321/functions/v1/select-from-table-with-auth-rls' \
-//   --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24ifQ.625_WdcF3KHqz5amU0x2X5WWHP-OEs_4qj0ssLNHzTs' \
-//   --header 'Content-Type: application/json' \
-//   --data '{"name":"Functions"}'

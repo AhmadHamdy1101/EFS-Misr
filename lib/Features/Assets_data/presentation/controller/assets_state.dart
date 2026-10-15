@@ -1,8 +1,4 @@
-
 part of 'assets_cubit.dart';
-
-
-
 
 sealed class AssetsState {}
 
@@ -19,11 +15,3 @@ final class GetAssetsSuccess extends AssetsState {
 }
 
 final class GetAssetsLoading extends AssetsState {}
-
-final class AddAssetsLoading extends AssetsState {}
-
-class GetAssetsFiltered extends AssetsState {
-  final List<AssetsEntity> assets;
-  final bool resetDropdown;
-  GetAssetsFiltered({required this.assets, this.resetDropdown = false});
-}

@@ -1,8 +1,6 @@
-import 'package:efs_misr/Features/Accounts/presentation/controller/accounts_cubit.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:efs_misr/core/utils/widgets/custom_outline_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/utils/app_text_styles.dart';
@@ -14,13 +12,11 @@ class AddSuccessPageBody extends StatefulWidget {
     required this.buttonTitle,
     required this.onPress,
     required this.secondPress,
-    this.refreshAccounts = false,
   });
 
   final String message;
   final String buttonTitle;
   final VoidCallback onPress;
-  final bool refreshAccounts;
   final VoidCallback secondPress;
 
   @override
@@ -28,14 +24,6 @@ class AddSuccessPageBody extends StatefulWidget {
 }
 
 class _AddSuccessPageBodyState extends State<AddSuccessPageBody> {
-  @override
-  void initState() {
-    super.initState();
-    if (widget.refreshAccounts) {
-      context.read<AccountsCubit>().getAccounts();
-    }
-  }
-
   // design here
   @override
   Widget build(BuildContext context) {

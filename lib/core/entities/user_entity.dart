@@ -1,6 +1,7 @@
 import 'package:efs_misr/core/entities/positions_entity.dart';
 
 class UserEntity {
+  final BigInt id;
   final String userid;
   final String name;
   final String email;
@@ -25,5 +26,6 @@ class UserEntity {
     required this.companyEmail,
     required this.company,
     required this.image,
+    required this.id,
   });
 }

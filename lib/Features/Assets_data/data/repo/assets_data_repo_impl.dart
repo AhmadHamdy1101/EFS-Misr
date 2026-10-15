@@ -8,11 +8,7 @@ import 'package:efs_misr/Features/Assets_data/domain/repo/assets_data_repo.dart'
 import 'package:efs_misr/Features/Assets_data/domain/repo/assets_repair_repository.dart';
 import 'package:efs_misr/core/models/assets_repair.dart';
 import '../mappers/asset_repair_mapper.dart';
-import '../../../../constants/constants.dart';
 import '../../../../core/Errors/failure.dart';
-import '../../../../core/models/assets.dart';
-import '../../../../core/models/assets_and_tickets.dart';
-import '../../../../core/models/supadart_header.dart';
 
 class AssetsDataRepoImpl implements AssetsDataRepo, AssetsRepairRepository {
   final AssetsDataSource assetsDataSource;
@@ -141,8 +137,9 @@ class AssetsDataRepoImpl implements AssetsDataRepo, AssetsRepairRepository {
     required BigInt ticketId,
   }) async {
     try {
-      await supabaseClient.assetsAndTickets.insert(
-        AssetsAndTickets.insert(assetsId: assetsId, TicketsId: ticketId),
+      await assetsDataSource.linkAssetToTicket(
+        assetsId: assetsId,
+        ticketId: ticketId,
       );
       return Right('Success');
     } catch (e) {
@@ -160,20 +157,24 @@ class AssetsDataRepoImpl implements AssetsDataRepo, AssetsRepairRepository {
     required BigInt? branch,
   }) async {
     try {
-      final assets = await supabaseClient.assets
-          .insert(
-            Assets.insert(
-              barcode: barcode,
-              name: name,
-              floor: floor,
-              place: place,
-              type: type,
-              Branch: branch,
-            ),
-          )
-          .select('*, branch(*)')
-          .withConverter(Assets.converter);
+      final assets = await assetsDataSource.addAsset(
+        barcode: barcode,
+        name: name,
+        floor: floor,
+        place: place,
+        type: type,
+        branch: branch,
+      );
       return Right(assets.map((asset) => asset.toAssetsEntity()).toList());
+    } catch (e) {
+      return Left(Failure.fromException(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Map<String, dynamic>>>> getExportRows() async {
+    try {
+      return Right(await assetsDataSource.getExportRows());
     } catch (e) {
       return Left(Failure.fromException(e));
     }

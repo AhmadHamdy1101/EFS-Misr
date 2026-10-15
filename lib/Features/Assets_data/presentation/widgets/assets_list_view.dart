@@ -16,18 +16,17 @@ class AssetsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return SliverList.builder(
       itemCount: assets.length,
       itemBuilder: (context, index) {
         return GestureDetector(
-          onTap: () async {
-            final assetsRepairCubit = context.read<AssetsRepairCubit>();
-            await assetsRepairCubit.getAssetsRepairDetailsWithAssetId(
+          onTap: () {
+            // Navigate right away; the details page shows a spinner while the
+            // repairs load instead of the tap feeling stuck.
+            context.read<AssetsRepairCubit>().getAssetsRepairDetailsWithAssetId(
               assetID: BigInt.from(assets[index].id),
             );
-            if (context.mounted) {
-              Get.to(AssetsDetailsPage(assets: assets[index]));
-            }
+            Get.to(() => AssetsDetailsPage(assets: assets[index]));
           },
           child: Card(
             shape: RoundedRectangleBorder(
