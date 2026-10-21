@@ -17,6 +17,7 @@ const _companies = [
 const _roles = [
   {'name': 'Admin', 'value': 'Admin'},
   {'name': 'User', 'value': 'User'},
+  {'name': 'Worker', 'value': 'Worker'},
 ];
 const _statuses = [
   {'name': 'Active', 'value': '1'},

@@ -1,4 +1,5 @@
 import 'package:efs_misr/Features/Home/presentation/widgets/qr_view.dart';
+import 'package:efs_misr/Features/Tracking/presentation/screens/tracking_page.dart';
 import 'package:efs_misr/core/entities/user_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -33,6 +34,7 @@ class _HomePageState extends State<HomePage> {
       ("assets/images/home.svg", HomePageBody(user: widget.user)),
       ("assets/images/assets.svg", const AssetsPage()),
       ("assets/images/ticket.svg", const TicketPage()),
+      ("assets/images/address.svg", TrackingPage(user: widget.user)),
       if (_isAdmin) ("assets/images/profile.svg", const AccountsPage()),
       ("assets/images/menu.svg", MenuPage(user: widget.user)),
     ];
