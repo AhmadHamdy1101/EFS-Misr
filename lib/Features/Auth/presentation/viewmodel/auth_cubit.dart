@@ -72,9 +72,19 @@ class AuthCubit extends Cubit<AuthCubitState> {
     required AuthCubitState Function(String message) onFailure,
   }) async {
     final res = await authRepo.getUserData(userId: userId);
-    res.fold(
-      (failure) => emit(onFailure(failure.message)),
-      (user) => emit(SessionExist(user: user)),
+    await res.fold<Future<void>>(
+      (failure) async => emit(onFailure(failure.message)),
+      (user) async {
+        if (user.isDisabled) {
+          // Terminated or suspended: end the session instead of entering.
+          await authRepo.logout();
+          emit(
+            onFailure('This account is disabled. Contact your administrator.'),
+          );
+          return;
+        }
+        emit(SessionExist(user: user));
+      },
     );
   }
 

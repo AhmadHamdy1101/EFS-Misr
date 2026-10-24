@@ -158,19 +158,36 @@ class AssetsDataSourceImpl extends AssetsDataSource {
     required String comment,
     required num amount,
   }) async {
-    // One round trip: the database checks the link, inserts the repair and
-    // updates the running total inside a single transaction.
-    final result = await _client.rpc(
-      'add_asset_repair',
-      params: {
-        'p_asset_id': assetId.toString(),
-        'p_ticket_id': ticketId.toString(),
-        'p_variation': variation,
-        'p_comment': comment,
-        'p_amount': amount,
-      },
-    );
-    return Map<String, dynamic>.from(result as Map);
+    if (amount < 0) throw GeneralFailure('Amount must be zero or more.');
+    if (!await _isLinked(assetId, ticketId)) {
+      throw GeneralFailure('This asset is not linked to the selected ticket.');
+    }
+
+    // The database triggers on assets_repair (`trg_update_assets_tickets_total`,
+    // `on_assets_repair_change`) update the asset/ticket totals in the same
+    // transaction as this insert, so the totals are read back afterwards
+    // rather than computed here.
+    final repair = await _client.AssetsRepair.insert(
+      AssetsRepair.insert(
+        assetsId: assetId,
+        TicketsId: ticketId,
+        variation: variation,
+        comment: comment,
+        amount: amount,
+      ),
+    ).select().single();
+
+    final link = await _client.assetsAndTickets
+        .select('Ammount')
+        .eq('assets_id', assetId.toString())
+        .eq('Tickets_id', ticketId.toString())
+        .limit(1);
+    final total = link.isEmpty ? null : link.first['Ammount'];
+
+    return {
+      'repair': Map<String, dynamic>.from(repair),
+      'totals': {'asset_ticket_total': total ?? amount},
+    };
   }
 
   @override
@@ -178,9 +195,23 @@ class AssetsDataSourceImpl extends AssetsDataSource {
     required BigInt assetsId,
     required BigInt ticketId,
   }) async {
+    // The table has no unique constraint yet, so check first; otherwise a
+    // re-scan adds the asset to the ticket twice.
+    if (await _isLinked(assetsId, ticketId)) {
+      throw GeneralFailure('This asset is already added to this ticket.');
+    }
     await _client.assetsAndTickets.insert(
       AssetsAndTickets.insert(assetsId: assetsId, TicketsId: ticketId),
     );
+  }
+
+  Future<bool> _isLinked(BigInt assetId, BigInt ticketId) async {
+    final rows = await _client.assetsAndTickets
+        .select('id')
+        .eq('assets_id', assetId.toString())
+        .eq('Tickets_id', ticketId.toString())
+        .limit(1);
+    return rows.isNotEmpty;
   }
 
   @override

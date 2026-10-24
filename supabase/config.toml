@@ -366,3 +366,12 @@ entrypoint = "./functions/update-user/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/update-user/*.html" ]
+
+# Push sender for notifications. Called by a Database Webhook and a cron job,
+# not by app users, so it checks its own `x-push-secret` header instead of a
+# user JWT (see docs/notifications.md).
+[functions.send-push]
+enabled = true
+verify_jwt = false
+import_map = "./functions/send-push/deno.json"
+entrypoint = "./functions/send-push/index.ts"

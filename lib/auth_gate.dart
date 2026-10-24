@@ -6,7 +6,11 @@ import 'Features/Accounts/presentation/controller/accounts_cubit.dart';
 import 'Features/Assets_data/presentation/controller/assets_cubit.dart';
 import 'Features/Auth/presentation/pages/auth_page.dart';
 import 'Features/Auth/presentation/viewmodel/auth_cubit.dart';
+import 'Features/Notifications/presentation/controller/notifications_cubit.dart';
 import 'Features/Tickets/presentation/controller/tickets_cubit.dart';
+import 'Features/Tracking/presentation/controller/my_tracking_cubit.dart';
+import 'Features/Tracking/presentation/controller/tracking_control_cubit.dart';
+import 'core/entities/user_entity.dart';
 import 'core/layout/adaptive_layout.dart';
 import 'core/layout/desktop_layout.dart';
 import 'core/layout/mobile_layout.dart';
@@ -33,9 +37,16 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   /// Starts per-user data when a session begins.
-  void _onSignedIn() {
+  void _onSignedIn(UserEntity user) {
     context.read<TicketsCubit>().start();
     context.read<AssetsCubit>().getAssets();
+    context.read<NotificationsCubit>().start(user);
+    // Admins watch everyone; other staff get requests and can share.
+    if (user.isAdmin) {
+      context.read<TrackingControlCubit>().start();
+    } else {
+      context.read<MyTrackingCubit>().start(user);
+    }
   }
 
   /// The data cubits live above the navigator, so they must be cleared
@@ -44,6 +55,10 @@ class _AuthGateState extends State<AuthGate> {
     context.read<TicketsCubit>().reset();
     context.read<AssetsCubit>().reset();
     context.read<AccountsCubit>().reset();
+    // Stops location publishing and realtime channels for the old user.
+    context.read<TrackingControlCubit>().reset();
+    context.read<MyTrackingCubit>().reset();
+    context.read<NotificationsCubit>().reset();
     getIt.get<LookupRepo>().clearCache();
     Get.until((route) => route.isFirst);
   }
@@ -57,8 +72,8 @@ class _AuthGateState extends State<AuthGate> {
           current is SessionLoadFailed,
       listener: (context, state) {
         switch (state) {
-          case SessionExist():
-            _onSignedIn();
+          case SessionExist(:final user):
+            _onSignedIn(user);
           case LoginFailure(:final errorMsg):
             _onSignedOut();
             showAppSnackBar(

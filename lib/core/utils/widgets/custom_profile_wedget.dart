@@ -12,7 +12,11 @@ class CustomProfileWidget extends StatelessWidget {
     required this.name,
     required this.position,
     this.onPress,
+    this.trailing,
   });
+
+  /// Replaces the default bell button (e.g. with one showing a badge).
+  final Widget? trailing;
 
   final double screenWidth;
   final Widget image;
@@ -49,10 +53,11 @@ class CustomProfileWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(width: 10),
-            IconButton(
-              onPressed: onPress,
-              icon: SvgPicture.asset("assets/images/Notifecation.svg"),
-            ),
+            trailing ??
+                IconButton(
+                  onPressed: onPress,
+                  icon: SvgPicture.asset("assets/images/Notifecation.svg"),
+                ),
           ],
         ),
       ),

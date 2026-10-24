@@ -4,6 +4,8 @@
 
 import 'package:efs_misr/Features/Assets_data/domain/entities/assets_entity.dart';
 
+import 'package:efs_misr/core/entities/branch_entity.dart';
+
 import 'branch.dart';
 import 'supadart_header.dart';
 
@@ -248,7 +250,14 @@ class Assets implements SupadartClass<Assets> {
       id: id.toInt(),
       type: type ?? '',
       branchName: branchObject?.name ?? '',
-      barCode: barcode ?? '', place: place??'', totalAmount: amount??0, area: area??'', branchObject:branchObject!.toBranchEntity() ,
+      barCode: barcode ?? '',
+      place: place ?? '',
+      totalAmount: amount ?? 0,
+      area: area ?? '',
+      // An asset without a branch must not break the whole list.
+      branchObject:
+          branchObject?.toBranchEntity() ??
+          BranchEntity(name: '', id: 0, areaId: 0),
     );
   }
 }

@@ -14,9 +14,13 @@ const _companies = [
   {'name': 'EFS', 'value': 'EFS'},
   {'name': 'Bank Misr', 'value': 'Bank Misr'},
 ];
+// Must match the `users.role` values in the database (Admin, User, Worker
+// on 2026-10-24); a value missing here shows as empty when editing and
+// forces the admin to change it.
 const _roles = [
   {'name': 'Admin', 'value': 'Admin'},
   {'name': 'User', 'value': 'User'},
+  {'name': 'Worker', 'value': 'Worker'},
 ];
 const _statuses = [
   {'name': 'Active', 'value': '1'},

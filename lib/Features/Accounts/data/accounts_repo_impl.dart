@@ -40,10 +40,12 @@ class AccountsRepoImpl implements AccountsRepo {
     required AccountForm form,
   }) async {
     try {
+      final disabled = UserEntity.isDisabledStatus(form.status);
       final updated = await _dataSource.updateAccount(
         userId: user.userid,
         emailChanged: form.email.trim() != user.email.trim(),
         form: form,
+        banned: disabled != user.isDisabled ? disabled : null,
       );
       return Right(updated.toUserEntity());
     } catch (e) {

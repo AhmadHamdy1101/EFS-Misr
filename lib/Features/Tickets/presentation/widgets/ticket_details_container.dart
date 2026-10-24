@@ -4,6 +4,7 @@ import 'package:efs_misr/Features/Tickets/presentation/widgets/ticket_dates.dart
 import 'package:efs_misr/Features/Tickets/presentation/widgets/ticket_header.dart';
 import 'package:efs_misr/Features/Tickets/presentation/widgets/ticket_priority.dart';
 import 'package:efs_misr/Features/Tickets/domain/entities/ticket_entity.dart';
+import 'package:efs_misr/Features/Tracking/presentation/widgets/ticket_tracking_action.dart';
 import 'package:efs_misr/constants/screens_size.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,6 +31,7 @@ class TicketDetailsContainer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TicketHeader(ticket: ticket),
+          TicketTrackingAction(ticket: ticket),
           Text(
             "Tickets Details".tr,
             style: TextStyle(

@@ -1,5 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../Features/Accounts/domain/accounts_repo.dart';
@@ -16,7 +17,14 @@ import '../Features/Auth/presentation/viewmodel/auth_cubit.dart';
 import '../Features/Home/presentation/viewmodel/check_internet_cubit.dart';
 import '../Features/Home/presentation/viewmodel/image_cubit.dart';
 import '../Features/Tickets/domain/repo/tickets_repo.dart';
+import '../Features/Notifications/data/push_service.dart';
+import '../Features/Notifications/domain/repo/notifications_repo.dart';
+import '../Features/Notifications/presentation/controller/notifications_cubit.dart';
 import '../Features/Tickets/presentation/controller/tickets_cubit.dart';
+import '../Features/Tracking/data/location_source.dart';
+import '../Features/Tracking/domain/repo/tracking_repo.dart';
+import '../Features/Tracking/presentation/controller/my_tracking_cubit.dart';
+import '../Features/Tracking/presentation/controller/tracking_control_cubit.dart';
 import '../core/utils/singelton.dart';
 
 /// App-wide cubits. They sit above the navigator so every pushed page can
@@ -51,6 +59,23 @@ class AppProviders extends StatelessWidget {
           ),
         ),
         BlocProvider(create: (_) => ImageCubit(getIt.get<AuthRepo>())),
+        BlocProvider(
+          create: (_) => TrackingControlCubit(getIt.get<TrackingRepo>()),
+        ),
+        BlocProvider(
+          create: (_) => NotificationsCubit(
+            repo: getIt.get<NotificationsRepo>(),
+            push: getIt.get<PushService>(),
+            locale: () => Get.locale?.languageCode ?? 'en',
+          ),
+        ),
+        BlocProvider(
+          create: (_) => MyTrackingCubit(
+            repo: getIt.get<TrackingRepo>(),
+            location: getIt.get<LocationSource>(),
+            deviceId: getIt.get<DeviceIdStore>().deviceId,
+          ),
+        ),
       ],
       child: child,
     );

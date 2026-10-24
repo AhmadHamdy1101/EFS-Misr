@@ -21,19 +21,25 @@ class _QRScanPageState extends State<QRScanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.appBackground,
-      appBar: AppBar(title: Text('Scan barcode/QR')),
+      appBar: AppBar(title: Text('Scan barcode/QR'.tr)),
       body: BlocConsumer<QrcodeCubit, QrcodeState>(
-        listener: (context, state) {
+        // Only results for a scan started on this page; the cubit is shared.
+        listenWhen: (_, _) => isProcessing,
+        listener: (context, state) async {
           if (state is QrcodeSuccess) {
-            Get.to(AssetsDetailsPage(assets: state.assets));
+            // Stay locked while the details page is open, so the camera
+            // behind it can't push the same page again.
+            await Get.to(() => AssetsDetailsPage(assets: state.assets));
+            if (mounted) setState(() => isProcessing = false);
           }
           if (state is QrcodeFailed) {
             Get.snackbar(
-              'Error',
+              'Error'.tr,
               state.errMsg,
               backgroundColor: Colors.red,
               colorText: Colors.white,
             );
+            if (mounted) setState(() => isProcessing = false);
           }
         },
         builder: (context, state) {
@@ -44,20 +50,20 @@ class _QRScanPageState extends State<QRScanPage> {
                 child: MobileScanner(
                   fit: BoxFit.contain,
                   // allowDuplicates: true,
-                  onDetect: (BarcodeCapture capture) async {
+                  // One lookup per scan: a capture can hold several codes,
+                  // and the camera reports the same code many times a second.
+                  onDetect: (BarcodeCapture capture) {
                     if (isProcessing) return;
-                    isProcessing = true;
-                    final List<Barcode> barcodes = capture.barcodes;
-                    for (final barcode in barcodes) {
-                      if (barcode.rawValue != null) {
-                        context.read<QrcodeCubit>().getAssetsByQrCode(
-                          barcode.rawValue!,
-                        );
-                      }
-                    }
-                    Future.delayed(const Duration(seconds: 2), () {
-                      isProcessing = false;
+                    final value = capture.barcodes
+                        .map((item) => item.rawValue)
+                        .whereType<String>()
+                        .firstWhere((v) => v.isNotEmpty, orElse: () => '');
+                    if (value.isEmpty) return;
+                    setState(() {
+                      isProcessing = true;
+                      barcode = value;
                     });
+                    context.read<QrcodeCubit>().getAssetsByQrCode(value);
                   },
                 ),
               ),
@@ -65,7 +71,9 @@ class _QRScanPageState extends State<QRScanPage> {
                 flex: 1,
                 child: Center(
                   child: Text(
-                    barcode != null ? 'Result: $barcode' : 'Scan a code',
+                    barcode != null
+                        ? '${'Result'.tr}: $barcode'
+                        : 'Scan a code'.tr,
                   ),
                 ),
               ),
