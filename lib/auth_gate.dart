@@ -10,6 +10,7 @@ import 'Features/Notifications/presentation/controller/notifications_cubit.dart'
 import 'Features/Tickets/presentation/controller/tickets_cubit.dart';
 import 'Features/Tracking/presentation/controller/my_tracking_cubit.dart';
 import 'Features/Tracking/presentation/controller/tracking_control_cubit.dart';
+import 'core/auth/app_permissions.dart';
 import 'core/entities/user_entity.dart';
 import 'core/layout/adaptive_layout.dart';
 import 'core/layout/desktop_layout.dart';
@@ -27,13 +28,29 @@ class AuthGate extends StatefulWidget {
   State<AuthGate> createState() => _AuthGateState();
 }
 
-class _AuthGateState extends State<AuthGate> {
+class _AuthGateState extends State<AuthGate> with WidgetsBindingObserver {
   final _homeKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     context.read<AuthCubit>().checkSession();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// Another device may have taken the account over while this one was in
+  /// the background (realtime is paused then).
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      context.read<AuthCubit>().verifySession();
+    }
   }
 
   /// Starts per-user data when a session begins.
@@ -41,10 +58,11 @@ class _AuthGateState extends State<AuthGate> {
     context.read<TicketsCubit>().start();
     context.read<AssetsCubit>().getAssets();
     context.read<NotificationsCubit>().start(user);
-    // Admins watch everyone; other staff get requests and can share.
-    if (user.isAdmin) {
+    // Admins and users watch tracking; technicians share their location.
+    final permissions = AppPermissions(user);
+    if (permissions.canViewTracking) {
       context.read<TrackingControlCubit>().start();
-    } else {
+    } else if (permissions.canShareLocation) {
       context.read<MyTrackingCubit>().start(user);
     }
   }
@@ -78,14 +96,14 @@ class _AuthGateState extends State<AuthGate> {
             _onSignedOut();
             showAppSnackBar(
               ScaffoldMessenger.of(context),
-              errorMsg,
+              errorMsg.tr,
               isError: true,
             );
           case SessionLoadFailed(:final errMsg):
             _onSignedOut();
             showAppSnackBar(
               ScaffoldMessenger.of(context),
-              errMsg,
+              errMsg.tr,
               isError: true,
             );
           default:

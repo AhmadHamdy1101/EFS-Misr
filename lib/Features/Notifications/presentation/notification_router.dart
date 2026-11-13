@@ -1,8 +1,10 @@
 import 'package:efs_misr/Features/Assets_data/presentation/controller/assets_tickets_cubit.dart';
 import 'package:efs_misr/Features/Tickets/domain/repo/tickets_repo.dart';
 import 'package:efs_misr/Features/Tickets/presentation/screens/ticket_details_page.dart';
+import 'package:efs_misr/Features/Tracking/presentation/controller/my_tracking_cubit.dart';
 import 'package:efs_misr/Features/Tracking/presentation/screens/my_location_page.dart';
 import 'package:efs_misr/Features/Tracking/presentation/screens/worker_tracking_page.dart';
+import 'package:efs_misr/core/auth/app_permissions.dart';
 import 'package:efs_misr/core/entities/user_entity.dart';
 import 'package:efs_misr/core/utils/singelton.dart';
 import 'package:efs_misr/core/utils/widgets/app_snack_bar.dart';
@@ -24,6 +26,7 @@ class NotificationRouter {
     UserEntity user,
   ) async {
     final messenger = ScaffoldMessenger.of(context);
+    final permissions = AppPermissions(user);
     void unavailable() =>
         showAppSnackBar(messenger, 'This item is no longer available.'.tr);
 
@@ -39,13 +42,33 @@ class NotificationRouter {
           ticketId: BigInt.from(ticket.id),
         );
         Get.to(() => TicketDetailsPage(tickets: ticket));
-      case MyLocationTarget():
-        if (user.isAdmin) return unavailable();
+      case MyLocationTarget(:final requestId):
+        // Only technicians share; the request itself is re-read under RLS.
+        if (!permissions.canShareLocation) return unavailable();
+        if (requestId != null) {
+          final cubit = context.read<MyTrackingCubit>();
+          await cubit.refresh();
+          if (!context.mounted) return;
+          if (cubit.state.session?.requestId != requestId) {
+            showAppSnackBar(
+              messenger,
+              'This location request has expired or was withdrawn.'.tr,
+            );
+          }
+        }
+        // Repeated taps don't stack the same screen.
+        if (Get.currentRoute == '/MyLocationPage') return;
         Get.to(() => MyLocationPage(user: user, showBackButton: true));
       case WorkerTrackingTarget(:final technicianId):
-        // Live positions are visible to admins only (also enforced by RLS).
-        if (!user.isAdmin) return unavailable();
-        Get.to(() => WorkerTrackingPage(technicianId: technicianId));
+        // Admins and engineers view (read-only for engineers); also
+        // enforced by RLS.
+        if (!permissions.canViewTracking) return unavailable();
+        Get.to(
+          () => WorkerTrackingPage(
+            technicianId: technicianId,
+            readOnly: !permissions.canControlTracking,
+          ),
+        );
       case NoTarget():
         break;
     }

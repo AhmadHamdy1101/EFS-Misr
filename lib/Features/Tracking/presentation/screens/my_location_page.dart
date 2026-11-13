@@ -38,6 +38,9 @@ class _MyLocationPageState extends State<MyLocationPage>
   final _mapController = MapController();
   bool _mapReady = false;
 
+  /// Follows the own position until the user pans; recenter turns it back on.
+  bool _following = true;
+
   @override
   void initState() {
     super.initState();
@@ -113,7 +116,7 @@ class _MyLocationPageState extends State<MyLocationPage>
       listenWhen: (previous, current) => previous.lastFix != current.lastFix,
       listener: (context, state) {
         final fix = state.lastFix;
-        if (_mapReady && fix != null) {
+        if (_mapReady && _following && fix != null) {
           _mapController.move(
             LatLng(fix.latitude, fix.longitude),
             _mapController.camera.zoom < 14 ? 15 : _mapController.camera.zoom,
@@ -122,77 +125,99 @@ class _MyLocationPageState extends State<MyLocationPage>
       },
       builder: (context, state) {
         final user = widget.user;
+        final sizes = TrackingSizes.of(context);
+        final landscape =
+            MediaQuery.orientationOf(context) == Orientation.landscape;
+        final content = state.loading
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColors.green),
+              )
+            : ListView(
+                padding: EdgeInsets.all(sizes.gutter + 4),
+                children: [
+                  Row(
+                    children: [
+                      WorkerAvatar(user: user, radius: sizes.avatar + 2),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: sizes.title + 1,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              (user.position?.name ?? user.role).tr,
+                              style: TextStyle(
+                                color: AppColors.gray,
+                                fontSize: sizes.body,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TrackingStatusChip(state: _chipState(state)),
+                    ],
+                  ),
+                  SizedBox(height: sizes.compact ? 16 : 22),
+                  if (state.pendingRequest != null) ...[
+                    IncomingRequestCard(request: state.pendingRequest!),
+                    const SizedBox(height: 18),
+                  ],
+                  ..._status(state),
+                ],
+              );
+        final map = _map(state);
         return Scaffold(
           backgroundColor: AppColors.appBackground,
           appBar: AppBar(
             backgroundColor: AppColors.green,
-            foregroundColor: Colors.black87,
+            foregroundColor: Colors.white,
             automaticallyImplyLeading: widget.showBackButton,
             title: Text(
               'My Live Location & Requests'.tr,
-              style: const TextStyle(fontSize: 24),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           body: Column(
             children: [
-              SizedBox(
-                height: MediaQuery.sizeOf(context).height * 0.27,
-                child: _map(state),
-              ),
               Expanded(
-                child: state.loading
-                    ? const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.green,
-                        ),
-                      )
-                    : ListView(
-                        padding: const EdgeInsets.fromLTRB(28, 28, 28, 16),
+                child: landscape
+                    ? Row(
                         children: [
-                          Row(
-                            children: [
-                              WorkerAvatar(user: user, radius: 38),
-                              const SizedBox(width: 24),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      user.name,
-                                      style: const TextStyle(
-                                        fontSize: 19,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      (user.position?.name ?? user.role).tr,
-                                      style: const TextStyle(
-                                        color: AppColors.gray,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              TrackingStatusChip(
-                                state: _chipState(state),
-                                large: true,
-                              ),
-                            ],
+                          Expanded(child: map),
+                          SizedBox(width: 380, child: content),
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          SizedBox(
+                            height: (MediaQuery.sizeOf(context).height * 0.27)
+                                .clamp(160.0, 300.0),
+                            child: map,
                           ),
-                          const SizedBox(height: 30),
-                          if (state.pendingRequest != null) ...[
-                            IncomingRequestCard(request: state.pendingRequest!),
-                            const SizedBox(height: 24),
-                          ],
-                          ..._status(state),
+                          Expanded(child: content),
                         ],
                       ),
               ),
               SafeArea(
                 top: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(28, 8, 28, 16),
+                  padding: EdgeInsets.fromLTRB(
+                    sizes.gutter + 4,
+                    8,
+                    sizes.gutter + 4,
+                    12,
+                  ),
                   child: _mainButton(state),
                 ),
               ),
@@ -216,6 +241,14 @@ class _MyLocationPageState extends State<MyLocationPage>
       initialZoom: position != null ? 15 : 10,
       showZoomButtons: false,
       onMapReady: () => _mapReady = true,
+      onUserMoved: () => _following = false,
+      onRecenter: state.lastFix == null
+          ? null
+          : () {
+              _following = true;
+              final fix = state.lastFix!;
+              _mapController.move(LatLng(fix.latitude, fix.longitude), 16);
+            },
       markers: [
         if (branchPoint != null)
           Marker(
@@ -226,8 +259,8 @@ class _MyLocationPageState extends State<MyLocationPage>
           ),
         Marker(
           point: position ?? defaultMapCenter,
-          width: 64,
-          height: 64,
+          width: 52,
+          height: 52,
           child: state.sharing
               ? const WorkerMarker(live: true)
               : const IdleMarker(),
@@ -339,7 +372,7 @@ class _MyLocationPageState extends State<MyLocationPage>
             subtitle: DateFormat('hh:mm a').format(session.arrivedAt!),
           ),
         );
-      } else if (session.ticketId != null) {
+      } else if (session.requestedBy != null) {
         add(
           OutlinedButton.icon(
             style: OutlinedButton.styleFrom(

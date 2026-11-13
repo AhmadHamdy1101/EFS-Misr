@@ -21,8 +21,18 @@ enum TrackingMapStyle {
       TrackingMapStyle.values[(index + 1) % TrackingMapStyle.values.length];
 }
 
-/// The OpenStreetMap view used by every tracking screen, with the rounded
-/// zoom buttons from the design and the required attribution.
+/// Valid WGS84 coordinates (rejects nulls, NaN and out-of-range values).
+bool isValidCoordinate(double? latitude, double? longitude) =>
+    latitude != null &&
+    longitude != null &&
+    latitude >= -90 &&
+    latitude <= 90 &&
+    longitude >= -180 &&
+    longitude <= 180 &&
+    !(latitude == 0 && longitude == 0);
+
+/// The OpenStreetMap view used by every tracking screen: zoom buttons, an
+/// optional "fit / recenter" button, and the required attribution.
 class TrackingMap extends StatefulWidget {
   const TrackingMap({
     super.key,
@@ -32,11 +42,10 @@ class TrackingMap extends StatefulWidget {
     this.initialZoom = 11,
     this.style = TrackingMapStyle.standard,
     this.showZoomButtons = true,
-    this.zoomButtonsTop = 16,
     this.onMapReady,
+    this.onUserMoved,
+    this.onRecenter,
   });
-
-  final VoidCallback? onMapReady;
 
   final List<Marker> markers;
   final MapController? controller;
@@ -44,7 +53,14 @@ class TrackingMap extends StatefulWidget {
   final double initialZoom;
   final TrackingMapStyle style;
   final bool showZoomButtons;
-  final double zoomButtonsTop;
+  final VoidCallback? onMapReady;
+
+  /// Called when the user pans or zooms by hand (so callers can stop
+  /// auto-following).
+  final VoidCallback? onUserMoved;
+
+  /// Shows a recenter button when set.
+  final VoidCallback? onRecenter;
 
   @override
   State<TrackingMap> createState() => _TrackingMapState();
@@ -58,6 +74,7 @@ class _TrackingMapState extends State<TrackingMap> {
   void _zoom(double delta) {
     final camera = _controller.camera;
     _controller.move(camera.center, (camera.zoom + delta).clamp(3, 18));
+    widget.onUserMoved?.call();
   }
 
   @override
@@ -70,6 +87,9 @@ class _TrackingMapState extends State<TrackingMap> {
             initialCenter: widget.initialCenter,
             initialZoom: widget.initialZoom,
             onMapReady: widget.onMapReady,
+            onPositionChanged: (_, hasGesture) {
+              if (hasGesture) widget.onUserMoved?.call();
+            },
             interactionOptions: const InteractionOptions(
               flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
             ),
@@ -86,43 +106,70 @@ class _TrackingMapState extends State<TrackingMap> {
             ),
           ],
         ),
-        if (widget.showZoomButtons)
-          Positioned(
-            right: 16,
-            top: widget.zoomButtonsTop,
+        PositionedDirectional(
+          end: 12,
+          top: 12,
+          child: SafeArea(
             child: Column(
               children: [
-                _MapButton(icon: Icons.add, onTap: () => _zoom(1)),
-                const SizedBox(height: 12),
-                _MapButton(icon: Icons.remove, onTap: () => _zoom(-1)),
+                if (widget.showZoomButtons) ...[
+                  _MapButton(
+                    icon: Icons.add,
+                    tooltip: 'Zoom in',
+                    onTap: () => _zoom(1),
+                  ),
+                  const SizedBox(height: 8),
+                  _MapButton(
+                    icon: Icons.remove,
+                    tooltip: 'Zoom out',
+                    onTap: () => _zoom(-1),
+                  ),
+                ],
+                if (widget.onRecenter != null) ...[
+                  const SizedBox(height: 8),
+                  _MapButton(
+                    icon: Icons.center_focus_strong,
+                    tooltip: 'Recenter',
+                    onTap: widget.onRecenter!,
+                  ),
+                ],
               ],
             ),
           ),
+        ),
       ],
     );
   }
 }
 
 class _MapButton extends StatelessWidget {
-  const _MapButton({required this.icon, required this.onTap});
+  const _MapButton({
+    required this.icon,
+    required this.onTap,
+    required this.tooltip,
+  });
 
   final IconData icon;
   final VoidCallback onTap;
+  final String tooltip;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      elevation: 4,
-      shadowColor: Colors.black26,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: onTap,
-        child: SizedBox(
-          width: 52,
-          height: 52,
-          child: Icon(icon, color: Colors.black87, size: 28),
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: Colors.white,
+        elevation: 3,
+        shadowColor: Colors.black26,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: SizedBox(
+            width: 42,
+            height: 42,
+            child: Icon(icon, color: Colors.black87, size: 22),
+          ),
         ),
       ),
     );
@@ -132,7 +179,7 @@ class _MapButton extends StatelessWidget {
 /// The round technician pin: green with a check badge when live, grey when
 /// the position is stale.
 class WorkerMarker extends StatelessWidget {
-  const WorkerMarker({super.key, required this.live, this.size = 64});
+  const WorkerMarker({super.key, required this.live, this.size = 52});
 
   final bool live;
   final double size;
@@ -186,7 +233,7 @@ class WorkerMarker extends StatelessWidget {
 
 /// Destination branch pin.
 class BranchMarker extends StatelessWidget {
-  const BranchMarker({super.key, this.size = 44});
+  const BranchMarker({super.key, this.size = 40});
 
   final double size;
 
@@ -210,10 +257,9 @@ class BranchMarker extends StatelessWidget {
   }
 }
 
-/// The technician's own position before sharing starts (screenshot's grey
-/// paused pin).
+/// The technician's own position before sharing starts.
 class IdleMarker extends StatelessWidget {
-  const IdleMarker({super.key, this.size = 64});
+  const IdleMarker({super.key, this.size = 52});
 
   final double size;
 

@@ -240,7 +240,7 @@ class Assets implements SupadartClass<Assets> {
     return Assets(
       id: BigInt.from(assetsEntity.id),
       barcode: assetsEntity.barCode,
-      name: assetsEntity.type,
+      name: assetsEntity.name,
       createdAt: DateTime.now(),
     );
   }
@@ -254,6 +254,8 @@ class Assets implements SupadartClass<Assets> {
       place: place ?? '',
       totalAmount: amount ?? 0,
       area: area ?? '',
+      name: name ?? '',
+      floor: floor ?? '',
       // An asset without a branch must not break the whole list.
       branchObject:
           branchObject?.toBranchEntity() ??

@@ -24,4 +24,18 @@ abstract class AssetsDataRepo {
     required BigInt? branch,
   });
   Future<Either<Failure, List<Map<String, dynamic>>>> getExportRows();
+
+  /// Admins only (RLS). Fails on a barcode used by another asset.
+  Future<Either<Failure, AssetsEntity>> updateAsset({
+    required int id,
+    required String barcode,
+    required String name,
+    required String floor,
+    required String place,
+    required String? type,
+    required BigInt branch,
+  });
+
+  /// Admins only. Refused for an asset with ticket links or repairs.
+  Future<Either<Failure, Unit>> deleteAsset(int id);
 }

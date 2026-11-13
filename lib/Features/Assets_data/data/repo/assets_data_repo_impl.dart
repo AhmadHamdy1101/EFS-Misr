@@ -173,6 +173,43 @@ class AssetsDataRepoImpl implements AssetsDataRepo, AssetsRepairRepository {
   }
 
   @override
+  Future<Either<Failure, AssetsEntity>> updateAsset({
+    required int id,
+    required String barcode,
+    required String name,
+    required String floor,
+    required String place,
+    required String? type,
+    required BigInt branch,
+  }) async {
+    try {
+      return Right(
+        await assetsDataSource.updateAsset(
+          id: id,
+          barcode: barcode,
+          name: name,
+          floor: floor,
+          place: place,
+          type: type,
+          branch: branch,
+        ),
+      );
+    } catch (e) {
+      return Left(Failure.fromException(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> deleteAsset(int id) async {
+    try {
+      await assetsDataSource.deleteAsset(id);
+      return const Right(unit);
+    } catch (e) {
+      return Left(Failure.fromException(e));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<Map<String, dynamic>>>> getExportRows() async {
     try {
       return Right(await assetsDataSource.getExportRows());

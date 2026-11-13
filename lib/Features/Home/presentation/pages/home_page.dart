@@ -6,6 +6,7 @@ import 'package:efs_misr/Features/Tracking/presentation/controller/my_tracking_c
 import 'package:efs_misr/Features/Tracking/presentation/screens/my_location_page.dart';
 import 'package:efs_misr/Features/Tracking/presentation/screens/tracking_control_page.dart';
 import 'package:efs_misr/Features/Tracking/presentation/widgets/incoming_request_card.dart';
+import 'package:efs_misr/core/auth/app_permissions.dart';
 import 'package:efs_misr/core/utils/widgets/app_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,22 +39,24 @@ class _HomePageState extends State<HomePage> {
 
   static const _locationIcon = 'assets/images/location.svg';
 
-  bool get _isAdmin => widget.user.isAdmin;
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
+    final permissions = AppPermissions(widget.user);
+    // Location tab by role: admins control tracking, users watch it
+    // (read-only), technicians share their own location.
+    final Widget? locationPage = permissions.canViewTracking
+        ? TrackingControlPage(readOnly: !permissions.canControlTracking)
+        : permissions.canShareLocation
+        ? MyLocationPage(user: widget.user)
+        : null;
     final tabs = <(String, Widget)>[
       ("assets/images/home.svg", HomePageBody(user: widget.user)),
       ("assets/images/assets.svg", const AssetsPage()),
       ("assets/images/ticket.svg", const TicketPage()),
-      (
-        _locationIcon,
-        _isAdmin
-            ? const TrackingControlPage()
-            : MyLocationPage(user: widget.user),
-      ),
-      if (_isAdmin) ("assets/images/profile.svg", const AccountsPage()),
+      if (locationPage != null) (_locationIcon, locationPage),
+      if (permissions.canManageAccounts)
+        ("assets/images/profile.svg", const AccountsPage()),
       ("assets/images/menu.svg", MenuPage(user: widget.user)),
     ];
     final index = selectedIndex.clamp(0, tabs.length - 1);

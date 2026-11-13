@@ -16,6 +16,8 @@ class AccountForm {
     required this.positionId,
     required this.role,
     required this.status,
+    this.engineerId,
+    this.engineerChanged = false,
   });
 
   final String name;
@@ -27,6 +29,11 @@ class AccountForm {
   final BigInt? positionId;
   final String role;
   final int status;
+
+  /// Engineer of a technician (`users.supervisor_id`); written only when
+  /// [engineerChanged], so the form works before that column exists.
+  final BigInt? engineerId;
+  final bool engineerChanged;
 }
 
 abstract interface class AccountsRepo {

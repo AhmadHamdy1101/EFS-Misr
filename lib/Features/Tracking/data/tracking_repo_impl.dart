@@ -22,12 +22,11 @@ class TrackingRepoImpl implements TrackingRepo {
   @override
   Future<Either<Failure, List<UserEntity>>> getWorkers() {
     return _guard(() async {
-      final members = await _client
-          .from('tracking_members')
-          .select('user_id')
-          .eq('role', 'worker')
-          .eq('enabled', true);
-      final ids = [for (final row in members) row['user_id'].toString()];
+      // The view applies the database's rule (all active non-admin staff,
+      // unless tracking_members says otherwise), so the list matches who
+      // the tracking functions accept.
+      final eligible = await _client.from('tracking_workers').select('user_id');
+      final ids = [for (final row in eligible) row['user_id'].toString()];
       if (ids.isEmpty) return <UserEntity>[];
       final users = await _client.users
           .select(Users.selectColumns)
@@ -194,18 +193,17 @@ class TrackingRepoImpl implements TrackingRepo {
   }
 
   // The RPCs below are the tracking functions that already exist in the live
-  // database (extended by 20261024161406_live_location_tracking.sql with the
-  // ticket link, device binding, heading/speed and admin stop).
+  // database (extended by 20261024161406_live_location_tracking.sql with
+  // device binding, heading/speed and admin stop).
 
   @override
   Future<Either<Failure, TrackingSession>> request({
     required String workerUid,
-    int? ticketId,
   }) {
     return _guard(() async {
       await _client.rpc(
         'tracking_request_location',
-        params: {'p_worker': workerUid, 'p_ticket_id': ticketId},
+        params: {'p_worker': workerUid},
       );
       final open = await _open(workerUid);
       if (open.isEmpty) {
@@ -334,7 +332,6 @@ class TrackingRepoImpl implements TrackingRepo {
   static const trackingNoActiveSession = 'TR001';
   static const trackingOtherDevice = 'TR002';
   static const trackingStaleFix = 'TR003';
-
 
   static DateTime? _date(Object? value) =>
       value == null ? null : DateTime.tryParse(value.toString())?.toLocal();

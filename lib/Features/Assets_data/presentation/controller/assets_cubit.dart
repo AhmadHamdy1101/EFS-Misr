@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:efs_misr/Features/Assets_data/domain/entities/assets_entity.dart';
 import 'package:efs_misr/Features/Assets_data/domain/repo/assets_data_repo.dart';
 import 'package:efs_misr/core/Errors/failure.dart';
+import 'package:efs_misr/core/auth/app_permissions.dart';
 import 'package:efs_misr/core/Functions/convert_to_excel_function.dart';
 import 'package:efs_misr/core/paging/page_loader.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,13 +16,19 @@ part 'assets_state.dart';
 class AssetsCubit extends Cubit<AssetsState> {
   AssetsCubit(
     this.assetsRepo, {
+    AppPermissions Function()? permissions,
     Duration searchDebounce = const Duration(milliseconds: 300),
-  }) : _searchDebouncer = Debouncer(searchDebounce),
+  }) : _permissions = permissions,
+       _searchDebouncer = Debouncer(searchDebounce),
        super(AssetsInitial()) {
     _pages = PageLoader(assetsRepo.getAssets, idOf: (asset) => asset.id);
   }
 
   final AssetsDataRepo assetsRepo;
+
+  /// Checked before creating assets (admins only); the database enforces
+  /// the same.
+  final AppPermissions Function()? _permissions;
   final Debouncer _searchDebouncer;
   late final PageLoader<AssetsEntity> _pages;
   bool _hasLoaded = false;
@@ -99,6 +106,9 @@ class AssetsCubit extends Cubit<AssetsState> {
     required String? type,
     required BigInt? branch,
   }) async {
+    if (!(_permissions?.call().canCreateAsset ?? true)) {
+      return Left(GeneralFailure("You don't have permission to do this."));
+    }
     final res = await assetsRepo.addAssets(
       barcode: barcode,
       name: name,
@@ -111,6 +121,40 @@ class AssetsCubit extends Cubit<AssetsState> {
     // matches the current search and filters.
     if (res.isRight()) await getAssets();
     return res.map((_) => unit);
+  }
+
+  Future<Either<Failure, AssetsEntity>> updateAsset({
+    required int id,
+    required String barcode,
+    required String name,
+    required String floor,
+    required String place,
+    required String? type,
+    required BigInt branch,
+  }) async {
+    if (!(_permissions?.call().canEditAsset ?? true)) {
+      return Left(GeneralFailure("You don't have permission to do this."));
+    }
+    final res = await assetsRepo.updateAsset(
+      id: id,
+      barcode: barcode,
+      name: name,
+      floor: floor,
+      place: place,
+      type: type,
+      branch: branch,
+    );
+    if (res.isRight()) await getAssets();
+    return res;
+  }
+
+  Future<Either<Failure, Unit>> deleteAsset(int id) async {
+    if (!(_permissions?.call().canDeleteAsset ?? true)) {
+      return Left(GeneralFailure("You don't have permission to do this."));
+    }
+    final res = await assetsRepo.deleteAsset(id);
+    if (res.isRight()) await getAssets();
+    return res;
   }
 
   /// Drops the previous user's data. Called on sign-out.

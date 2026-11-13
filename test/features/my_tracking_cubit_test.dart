@@ -145,6 +145,22 @@ void main() {
       );
     });
 
+    test('invalid fixes (0,0, out of range) are never published', () async {
+      await cubit.start(me);
+      await cubit.startSharing();
+      location.push(LocationFix(latitude: 0, longitude: 0, recordedAt: epoch));
+      location.push(
+        LocationFix(latitude: 95, longitude: 31, recordedAt: epoch),
+      );
+      await settle();
+      expect(repo.published, isEmpty);
+      expect(cubit.state.lastFix, isNull);
+
+      location.push(fix(30.1, epoch.add(const Duration(seconds: 5))));
+      await settle();
+      expect(repo.published.single.latitude, 30.1);
+    });
+
     test('a failed publish marks the connection lost, then recovers', () async {
       await cubit.start(me);
       await cubit.startSharing();
@@ -183,8 +199,8 @@ void main() {
   });
 
   group('lifecycle', () {
-    test('ticket reassigned on the server stops publishing', () async {
-      repo.openAfterAction = [session(5, technician: 7, ticketId: 3)];
+    test('session ended on the server stops publishing', () async {
+      repo.openAfterAction = [session(5, technician: 7)];
       await cubit.start(me);
       await cubit.startSharing();
       expect(location.isWatching, isTrue);

@@ -1,6 +1,7 @@
 import 'package:efs_misr/Features/Tickets/presentation/screens/add_tickets_page.dart';
 import 'package:efs_misr/Features/Tickets/presentation/widgets/ticket_filter_sheet.dart';
 import 'package:efs_misr/core/Functions/convert_to_excel_function.dart';
+import 'package:efs_misr/core/auth/permissions_context.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:efs_misr/generated/app_images.dart';
 import 'package:flutter/material.dart';
@@ -42,12 +43,14 @@ class FilterSectionWidget extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(width: 8),
-            _ActionButton(
-              label: 'Add Ticket',
-              icon: const Icon(Icons.add, color: AppColors.green),
-              onPressed: () => Get.to(() => const AddTicketsPage()),
-            ),
+            if (context.permissions.canCreateTicket) ...[
+              const SizedBox(width: 8),
+              _ActionButton(
+                label: 'Add Ticket',
+                icon: const Icon(Icons.add, color: AppColors.green),
+                onPressed: () => Get.to(() => const AddTicketsPage()),
+              ),
+            ],
             const Spacer(),
             IconButton(
               tooltip: 'Filter'.tr,

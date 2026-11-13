@@ -35,7 +35,6 @@ TrackingSession session(
   TrackingStatus status = TrackingStatus.active,
   String? deviceId = 'device-1',
   DateTime? lastLocationAt,
-  int? ticketId,
   DateTime? expiresAt,
   bool withLocation = true,
 }) {
@@ -48,7 +47,6 @@ TrackingSession session(
     technicianId: BigInt.from(technician),
     status: status,
     openedAt: epoch,
-    ticketId: ticketId,
     deviceId: active ? deviceId : null,
     startedAt: active ? epoch : null,
     expiresAt: expiresAt ?? epoch.add(const Duration(minutes: 15)),
@@ -121,7 +119,6 @@ class FakeTrackingRepo implements TrackingRepo {
   @override
   Future<Either<Failure, TrackingSession>> request({
     required String workerUid,
-    int? ticketId,
   }) async {
     return _act('request').fold(Left.new, (_) {
       final open = openSessions.where((s) => s.workerUid == workerUid);

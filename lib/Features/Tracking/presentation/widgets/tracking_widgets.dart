@@ -9,6 +9,30 @@ import '../../domain/entities/tracking_worker.dart';
 const trackingTint = Color(0xffDDF3E6);
 const trackingCardColor = Color(0xffF0F0F0);
 
+/// Sizes for the tracking screens. Phones narrower than 380 dp (or very
+/// short screens) get a compact scale so nothing overflows; everything else
+/// uses the regular Material sizes.
+class TrackingSizes {
+  const TrackingSizes._(this.compact);
+
+  factory TrackingSizes.of(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    return TrackingSizes._(size.width < 380 || size.height < 600);
+  }
+
+  final bool compact;
+
+  double get gutter => compact ? 12 : 16;
+  double get avatar => compact ? 22 : 26;
+  double get title => compact ? 15 : 16;
+  double get body => compact ? 13 : 14;
+  double get caption => compact ? 11.5 : 12.5;
+  double get buttonHeight => compact ? 44 : 48;
+  double get chipHeight => compact ? 34 : 38;
+  double get statIcon => compact ? 32 : 38;
+  double get marker => compact ? 46 : 52;
+}
+
 /// "Just now", "5 mins ago", ... for last-update labels.
 String timeAgo(DateTime? time, DateTime now) {
   if (time == null) return 'No update yet'.tr;
@@ -31,7 +55,7 @@ String formatCoordinates(double latitude, double longitude) {
 }
 
 class WorkerAvatar extends StatelessWidget {
-  const WorkerAvatar({super.key, required this.user, this.radius = 40});
+  const WorkerAvatar({super.key, required this.user, this.radius = 26});
 
   final UserEntity user;
   final double radius;
@@ -42,48 +66,38 @@ class WorkerAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: radius,
       backgroundColor: const Color(0xffE6E6E6),
-      backgroundImage: hasImage ? NetworkImage(user.image) : null,
-      child: hasImage
-          ? null
-          : Icon(Icons.person, size: radius * 1.1, color: AppColors.gray),
+      foregroundImage: hasImage ? NetworkImage(user.image) : null,
+      child: Icon(Icons.person, size: radius * 1.1, color: AppColors.gray),
     );
   }
 }
 
 /// Status pill: "● Live", "● Offline", "● Pending", "● Not sharing".
 class TrackingStatusChip extends StatelessWidget {
-  const TrackingStatusChip({
-    super.key,
-    required this.state,
-    this.large = false,
-  });
+  const TrackingStatusChip({super.key, required this.state});
 
   final WorkerTrackingState state;
-  final bool large;
 
   @override
   Widget build(BuildContext context) {
     final (label, color, background) = trackingStateStyle(state);
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: large ? 16 : 12,
-        vertical: large ? 9 : 6,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.circle, size: large ? 11 : 9, color: color),
-          const SizedBox(width: 8),
+          Icon(Icons.circle, size: 8, color: color),
+          const SizedBox(width: 6),
           Text(
             label.tr,
             style: TextStyle(
               color: color,
               fontWeight: FontWeight.bold,
-              fontSize: large ? 18 : 15,
+              fontSize: 12.5,
             ),
           ),
         ],
@@ -97,7 +111,7 @@ class TrackingStatusChip extends StatelessWidget {
       WorkerTrackingState.live => ('Live', AppColors.green, trackingTint),
       WorkerTrackingState.offline => (
         'Offline',
-        const Color(0xffD97706),
+        const Color(0xffB45309),
         const Color(0xffFFF1DC),
       ),
       WorkerTrackingState.pending => (
@@ -107,7 +121,7 @@ class TrackingStatusChip extends StatelessWidget {
       ),
       WorkerTrackingState.notSharing => (
         'Not sharing',
-        AppColors.gray,
+        const Color(0xff6B7280),
         const Color(0xffE6E6E6),
       ),
     };
@@ -131,11 +145,12 @@ class TrackingStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sizes = TrackingSizes.of(context);
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
+      padding: EdgeInsets.all(sizes.compact ? 10 : 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
         ],
@@ -146,30 +161,44 @@ class TrackingStatCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 46,
-                height: 46,
+                width: sizes.statIcon,
+                height: sizes.statIcon,
                 decoration: BoxDecoration(
                   color: iconBackground,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: iconColor, size: 24),
+                child: Icon(
+                  icon,
+                  color: iconColor,
+                  size: sizes.statIcon * 0.55,
+                ),
               ),
-              const Spacer(),
-              Text(
-                '$value',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+              const SizedBox(width: 6),
+              // Scales down instead of overflowing on narrow phones, large
+              // counts or large accessibility font sizes.
+              Expanded(
+                child: Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      '$value',
+                      style: TextStyle(
+                        fontSize: sizes.compact ? 18 : 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Text(
             label.tr,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: AppColors.gray, fontSize: 14),
+            style: TextStyle(color: AppColors.gray, fontSize: sizes.caption),
           ),
         ],
       ),
@@ -177,7 +206,7 @@ class TrackingStatCard extends StatelessWidget {
   }
 }
 
-/// The green full-width rounded action button used across the screens.
+/// Full-width action button with loading and disabled states.
 class TrackingPrimaryButton extends StatelessWidget {
   const TrackingPrimaryButton({
     super.key,
@@ -196,23 +225,25 @@ class TrackingPrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sizes = TrackingSizes.of(context);
     return SizedBox(
       width: double.infinity,
-      height: 58,
+      height: sizes.buttonHeight,
       child: FilledButton(
         style: FilledButton.styleFrom(
           backgroundColor: color,
           foregroundColor: Colors.white,
+          disabledBackgroundColor: color.withValues(alpha: 0.5),
+          disabledForegroundColor: Colors.white70,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(12),
           ),
-          elevation: 3,
         ),
         onPressed: loading ? null : onPressed,
         child: loading
             ? const SizedBox(
-                width: 22,
-                height: 22,
+                width: 20,
+                height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
                   color: Colors.white,
@@ -221,12 +252,18 @@ class TrackingPrimaryButton extends StatelessWidget {
             : Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (icon != null) ...[Icon(icon), const SizedBox(width: 14)],
+                  if (icon != null) ...[
+                    Icon(icon, size: 20),
+                    const SizedBox(width: 10),
+                  ],
                   Flexible(
                     child: Text(
                       label.tr,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 20),
+                      style: TextStyle(
+                        fontSize: sizes.compact ? 15 : 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
@@ -244,6 +281,7 @@ class TrackingInfoRow extends StatelessWidget {
     required this.title,
     required this.subtitle,
     this.iconColor = AppColors.green,
+    this.action,
   });
 
   final IconData icon;
@@ -251,36 +289,76 @@ class TrackingInfoRow extends StatelessWidget {
   final String subtitle;
   final Color iconColor;
 
+  /// Optional button under the text (e.g. Retry, Open settings).
+  final Widget? action;
+
   @override
   Widget build(BuildContext context) {
+    final sizes = TrackingSizes.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 2),
-          child: Icon(icon, color: iconColor, size: 30),
+          child: Icon(icon, color: iconColor, size: 24),
         ),
-        const SizedBox(width: 20),
+        const SizedBox(width: 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 19,
+                style: TextStyle(
+                  fontSize: sizes.title,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: const TextStyle(color: AppColors.gray, fontSize: 14),
+                style: TextStyle(color: AppColors.gray, fontSize: sizes.body),
               ),
+              if (action != null) ...[const SizedBox(height: 4), action!],
             ],
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Centered message with an optional retry, for empty and error states.
+class TrackingMessage extends StatelessWidget {
+  const TrackingMessage({
+    super.key,
+    required this.icon,
+    required this.text,
+    this.onRetry,
+  });
+
+  final IconData icon;
+  final String text;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 40, color: AppColors.gray),
+          const SizedBox(height: 8),
+          Text(text, textAlign: TextAlign.center),
+          if (onRetry != null)
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: AppColors.green),
+              onPressed: onRetry,
+              child: Text('Retry'.tr),
+            ),
+        ],
+      ),
     );
   }
 }

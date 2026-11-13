@@ -22,6 +22,7 @@ class TrackingControlState {
     this.notice,
     this.noticeId = 0,
     this.notices = const [],
+    this.team = TeamDirectory.unavailable,
   });
 
   /// Reference time for freshness, refreshed by the cubit's tick.
@@ -40,6 +41,9 @@ class TrackingControlState {
   final String? notice;
   final int noticeId;
   final List<TrackingNotice> notices;
+
+  /// Engineer of each technician, for grouping the list.
+  final TeamDirectory team;
 
   List<TrackingWorker> get allWorkers => [
     for (final worker in workers)
@@ -65,6 +69,15 @@ class TrackingControlState {
     }).toList();
     result.sort((a, b) => a.stateAt(now).index.compareTo(b.stateAt(now).index));
     return result;
+  }
+
+  /// [visibleWorkers] under their engineer, or null when there is no
+  /// hierarchy to show (column missing or nobody assigned yet).
+  List<TeamGroup<TrackingWorker>>? visibleGroups({BigInt? viewerId}) {
+    if (!team.available || !team.supervisorOf.values.any((e) => e != null)) {
+      return null;
+    }
+    return team.group(visibleWorkers, (w) => w.user.id, viewerId: viewerId);
   }
 
   /// Workers with a position to draw on the map.
@@ -100,6 +113,7 @@ class TrackingControlState {
     String? notice,
     int? noticeId,
     List<TrackingNotice>? notices,
+    TeamDirectory? team,
   }) {
     return TrackingControlState(
       now: now ?? this.now,
@@ -113,6 +127,7 @@ class TrackingControlState {
       notice: notice ?? this.notice,
       noticeId: noticeId ?? this.noticeId,
       notices: notices ?? this.notices,
+      team: team ?? this.team,
     );
   }
 }

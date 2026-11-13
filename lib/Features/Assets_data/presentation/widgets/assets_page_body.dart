@@ -3,6 +3,7 @@ import 'package:efs_misr/Features/Assets_data/presentation/widgets/assets_filter
 import 'package:efs_misr/Features/Assets_data/presentation/widgets/assets_list_view.dart';
 import 'package:efs_misr/Features/Assets_data/presentation/widgets/assets_search_widget.dart';
 import 'package:efs_misr/core/Functions/convert_to_excel_function.dart';
+import 'package:efs_misr/core/auth/permissions_context.dart';
 import 'package:efs_misr/core/utils/widgets/app_snack_bar.dart';
 import 'package:efs_misr/generated/app_images.dart';
 import 'package:flutter/material.dart';
@@ -77,22 +78,23 @@ class _AssetsPageBodyState extends State<AssetsPageBody> {
                       ],
                     ),
                   ),
-                  ElevatedButton(
-                    style: buttonStyle,
-                    onPressed: () => Get.to(() => const AddAssetsPage()),
-                    child: Row(
-                      spacing: 10,
-                      children: [
-                        const Icon(Icons.add, color: AppColors.green),
-                        Text(
-                          'Add Assets'.tr,
-                          style: AppTextStyle.latoBold20(
-                            context,
-                          ).copyWith(color: AppColors.green),
-                        ),
-                      ],
+                  if (context.permissions.canCreateAsset)
+                    ElevatedButton(
+                      style: buttonStyle,
+                      onPressed: () => Get.to(() => const AddAssetsPage()),
+                      child: Row(
+                        spacing: 10,
+                        children: [
+                          const Icon(Icons.add, color: AppColors.green),
+                          Text(
+                            'Add Assets'.tr,
+                            style: AppTextStyle.latoBold20(
+                              context,
+                            ).copyWith(color: AppColors.green),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
                   Expanded(
                     child: IconButton(
                       onPressed: () => AssetsFilterSheet.show(context),

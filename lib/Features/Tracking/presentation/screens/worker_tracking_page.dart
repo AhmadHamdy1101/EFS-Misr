@@ -15,22 +15,20 @@ import '../widgets/request_location_dialog.dart';
 import '../widgets/tracking_map.dart';
 import '../widgets/tracking_widgets.dart';
 
-/// Admin view of one worker: live map, destination branch, freshness and
-/// accuracy, with call and stop actions. Updates come from the shared
-/// [TrackingControlCubit], so this page opens no extra realtime channel.
+/// One worker: live map, destination branch, freshness and accuracy. Admins
+/// can call, request and stop; with [readOnly] (role User) only call.
+/// Updates come from the shared [TrackingControlCubit], so this page opens no
+/// extra realtime channel.
 class WorkerTrackingPage extends StatefulWidget {
   const WorkerTrackingPage({
     super.key,
     required this.technicianId,
-    this.ticketId,
-    this.ticketLabel,
+    this.readOnly = false,
   });
 
   final BigInt technicianId;
 
-  /// Set when opened from a ticket, so a new request is tied to it.
-  final int? ticketId;
-  final String? ticketLabel;
+  final bool readOnly;
 
   @override
   State<WorkerTrackingPage> createState() => _WorkerTrackingPageState();
@@ -42,6 +40,10 @@ class _WorkerTrackingPageState extends State<WorkerTrackingPage> {
   int? _branchId;
   bool _mapReady = false;
   bool _stopping = false;
+
+  /// The camera follows the worker until the user moves the map; the
+  /// recenter button turns following back on.
+  bool _following = true;
 
   @override
   void initState() {
@@ -61,11 +63,12 @@ class _WorkerTrackingPageState extends State<WorkerTrackingPage> {
     });
   }
 
-  void _follow(TrackingSession? session) {
+  void _follow(TrackingSession? session, {bool force = false}) {
     if (!_mapReady || session == null || !session.hasLocation) return;
+    if (!_following && !force) return;
     _mapController.move(
       LatLng(session.latitude!, session.longitude!),
-      _mapController.camera.zoom,
+      force ? 16 : _mapController.camera.zoom,
     );
   }
 
@@ -130,43 +133,76 @@ class _WorkerTrackingPageState extends State<WorkerTrackingPage> {
         _follow(session);
       },
       builder: (context, state) {
+        final sizes = TrackingSizes.of(context);
         final worker = state.workerById(widget.technicianId);
         if (worker == null) {
           return Scaffold(
-            appBar: AppBar(backgroundColor: AppColors.green),
-            body: Center(child: Text('Worker not found'.tr)),
+            appBar: AppBar(
+              backgroundColor: AppColors.green,
+              foregroundColor: Colors.white,
+            ),
+            body: TrackingMessage(
+              icon: Icons.person_off_outlined,
+              text: 'Worker not found'.tr,
+            ),
           );
         }
         final session = worker.session;
         final trackingState = worker.stateAt(state.now);
+        final landscape =
+            MediaQuery.orientationOf(context) == Orientation.landscape;
+        final screenHeight = MediaQuery.sizeOf(context).height;
+        final details = ListView(
+          padding: EdgeInsets.all(sizes.gutter + 4),
+          children: [
+            _profile(worker, trackingState, sizes),
+            SizedBox(height: sizes.compact ? 16 : 20),
+            ..._details(session, trackingState, state.now, sizes),
+          ],
+        );
+        final map = _map(session, trackingState, sizes);
+
         return Scaffold(
           backgroundColor: AppColors.appBackground,
           appBar: AppBar(
             backgroundColor: AppColors.green,
-            foregroundColor: Colors.black87,
-            title: Text(worker.user.name, style: const TextStyle(fontSize: 26)),
+            foregroundColor: Colors.white,
+            title: Text(
+              worker.user.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
           body: Column(
             children: [
-              SizedBox(
-                height: MediaQuery.sizeOf(context).height * 0.36,
-                child: _map(session, trackingState),
-              ),
               Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(28, 28, 28, 16),
-                  children: [
-                    _profile(worker, trackingState),
-                    const SizedBox(height: 30),
-                    ..._details(session, trackingState, state.now),
-                  ],
-                ),
+                child: landscape
+                    ? Row(
+                        children: [
+                          Expanded(child: map),
+                          SizedBox(width: 380, child: details),
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          SizedBox(
+                            height: (screenHeight * 0.36).clamp(200.0, 380.0),
+                            child: map,
+                          ),
+                          Expanded(child: details),
+                        ],
+                      ),
               ),
               SafeArea(
                 top: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(28, 8, 28, 16),
-                  child: _actions(worker, trackingState),
+                  padding: EdgeInsets.fromLTRB(
+                    sizes.gutter + 4,
+                    8,
+                    sizes.gutter + 4,
+                    12,
+                  ),
+                  child: _actions(worker, trackingState, sizes),
                 ),
               ),
             ],
@@ -176,7 +212,11 @@ class _WorkerTrackingPageState extends State<WorkerTrackingPage> {
     );
   }
 
-  Widget _map(TrackingSession? session, WorkerTrackingState trackingState) {
+  Widget _map(
+    TrackingSession? session,
+    WorkerTrackingState trackingState,
+    TrackingSizes sizes,
+  ) {
     final branch = _branch;
     final position = session != null && session.hasLocation
         ? LatLng(session.latitude!, session.longitude!)
@@ -188,53 +228,66 @@ class _WorkerTrackingPageState extends State<WorkerTrackingPage> {
       controller: _mapController,
       initialCenter: position ?? branchPoint ?? defaultMapCenter,
       initialZoom: position != null ? 16 : 11,
-      showZoomButtons: false,
+      onMapReady: () => _mapReady = true,
+      onUserMoved: () => _following = false,
+      onRecenter: position == null
+          ? null
+          : () {
+              _following = true;
+              _follow(session, force: true);
+            },
       markers: [
         if (branchPoint != null)
           Marker(
             point: branchPoint,
-            width: 44,
-            height: 44,
+            width: 40,
+            height: 40,
             child: const BranchMarker(),
           ),
         if (position != null)
           Marker(
+            key: ValueKey(widget.technicianId),
             point: position,
-            width: 72,
-            height: 72,
+            width: sizes.marker + 8,
+            height: sizes.marker + 8,
             child: WorkerMarker(
-              size: 72,
+              size: sizes.marker + 8,
               live: trackingState == WorkerTrackingState.live,
             ),
           ),
       ],
-      onMapReady: () => _mapReady = true,
     );
   }
 
-  Widget _profile(TrackingWorker worker, WorkerTrackingState trackingState) {
+  Widget _profile(
+    TrackingWorker worker,
+    WorkerTrackingState trackingState,
+    TrackingSizes sizes,
+  ) {
     final user = worker.user;
     return Row(
       children: [
-        WorkerAvatar(user: user, radius: 42),
-        const SizedBox(width: 24),
+        WorkerAvatar(user: user, radius: sizes.avatar + 4),
+        const SizedBox(width: 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 user.name,
-                style: const TextStyle(
-                  fontSize: 22,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: sizes.title + 2,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
                 (user.position?.name ?? user.role).tr,
-                style: const TextStyle(color: AppColors.gray, fontSize: 16),
+                style: TextStyle(color: AppColors.gray, fontSize: sizes.body),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               TrackingStatusChip(state: trackingState),
             ],
           ),
@@ -247,6 +300,7 @@ class _WorkerTrackingPageState extends State<WorkerTrackingPage> {
     TrackingSession? session,
     WorkerTrackingState trackingState,
     DateTime now,
+    TrackingSizes sizes,
   ) {
     if (session == null) {
       return [
@@ -254,7 +308,9 @@ class _WorkerTrackingPageState extends State<WorkerTrackingPage> {
           icon: Icons.location_off_outlined,
           iconColor: AppColors.gray,
           title: 'Not sharing location'.tr,
-          subtitle: 'Send a request to see where this worker is.'.tr,
+          subtitle: widget.readOnly
+              ? 'This worker is not sharing their location right now.'.tr
+              : 'Send a request to see where this worker is.'.tr,
         ),
       ];
     }
@@ -306,17 +362,25 @@ class _WorkerTrackingPageState extends State<WorkerTrackingPage> {
     }
 
     return [
-      if (trackingState == WorkerTrackingState.offline) ...[
+      if (!session.hasLocation) ...[
+        TrackingInfoRow(
+          icon: Icons.gps_not_fixed,
+          iconColor: const Color(0xffB45309),
+          title: 'Waiting for the first location'.tr,
+          subtitle: 'Sharing is on, but no valid position has arrived yet.'.tr,
+        ),
+        const SizedBox(height: 16),
+      ] else if (trackingState == WorkerTrackingState.offline) ...[
         TrackingInfoRow(
           icon: Icons.warning_amber_rounded,
-          iconColor: const Color(0xffD97706),
+          iconColor: const Color(0xffB45309),
           title: 'Location is out of date'.tr,
           subtitle:
               'No update recently. The worker may be offline, out of GPS '
                       'range, or the app was closed.'
                   .tr,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
       ],
       if (branch != null && !branch.hasCoordinates) ...[
         TrackingInfoRow(
@@ -325,18 +389,18 @@ class _WorkerTrackingPageState extends State<WorkerTrackingPage> {
           title: 'Branch location not set'.tr,
           subtitle: 'Add the branch coordinates to show distance.'.tr,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
       ],
       for (final (label, value) in rows)
         Padding(
-          padding: const EdgeInsets.only(bottom: 26),
+          padding: EdgeInsets.only(bottom: sizes.compact ? 12 : 16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Text(
                   label.tr,
-                  style: const TextStyle(color: AppColors.gray, fontSize: 18),
+                  style: TextStyle(color: AppColors.gray, fontSize: sizes.body),
                 ),
               ),
               const SizedBox(width: 12),
@@ -344,8 +408,8 @@ class _WorkerTrackingPageState extends State<WorkerTrackingPage> {
                 child: Text(
                   value,
                   textAlign: TextAlign.end,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontSize: sizes.body,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -356,54 +420,57 @@ class _WorkerTrackingPageState extends State<WorkerTrackingPage> {
     ];
   }
 
-  Widget _actions(TrackingWorker worker, WorkerTrackingState trackingState) {
+  Widget _actions(
+    TrackingWorker worker,
+    WorkerTrackingState trackingState,
+    TrackingSizes sizes,
+  ) {
     final phone = worker.user.phone.trim();
+    final buttonSize = Size.fromHeight(sizes.buttonHeight);
+    final textStyle = TextStyle(
+      fontSize: sizes.compact ? 14 : 15,
+      fontWeight: FontWeight.w600,
+    );
     final callButton = OutlinedButton.icon(
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.green,
-        side: const BorderSide(color: AppColors.green, width: 2),
+        side: const BorderSide(color: AppColors.green, width: 1.5),
         shape: const StadiumBorder(),
-        minimumSize: const Size.fromHeight(60),
-        textStyle: const TextStyle(fontSize: 19),
+        minimumSize: buttonSize,
+        textStyle: textStyle,
       ),
       onPressed: phone.isEmpty ? null : () => _call(phone),
-      icon: const Icon(Icons.phone),
+      icon: const Icon(Icons.phone, size: 20),
       label: Text('Call worker'.tr),
     );
-    final Widget mainButton;
-    if (trackingState == WorkerTrackingState.notSharing) {
-      mainButton = FilledButton(
-        style: FilledButton.styleFrom(
-          backgroundColor: AppColors.green,
-          shape: const StadiumBorder(),
-          minimumSize: const Size.fromHeight(60),
-          textStyle: const TextStyle(fontSize: 19),
-        ),
-        onPressed: () => RequestLocationDialog.show(
-          context,
-          worker: worker,
-          ticketId: widget.ticketId,
-          ticketLabel: widget.ticketLabel,
-        ),
-        child: Text('Request location'.tr),
-      );
-    } else {
-      final pending = trackingState == WorkerTrackingState.pending;
-      mainButton = FilledButton(
-        style: FilledButton.styleFrom(
-          backgroundColor: AppColors.green,
-          shape: const StadiumBorder(),
-          minimumSize: const Size.fromHeight(60),
-          textStyle: const TextStyle(fontSize: 19),
-        ),
-        onPressed: _stopping ? null : () => _stop(worker),
-        child: Text(pending ? 'Cancel request'.tr : 'Stop tracking'.tr),
-      );
-    }
+    if (widget.readOnly) return callButton;
+
+    final mainStyle = FilledButton.styleFrom(
+      backgroundColor: AppColors.green,
+      shape: const StadiumBorder(),
+      minimumSize: buttonSize,
+      textStyle: textStyle,
+    );
+    final Widget mainButton = trackingState == WorkerTrackingState.notSharing
+        ? FilledButton(
+            style: mainStyle,
+            onPressed: () =>
+                RequestLocationDialog.show(context, worker: worker),
+            child: Text('Request location'.tr),
+          )
+        : FilledButton(
+            style: mainStyle,
+            onPressed: _stopping ? null : () => _stop(worker),
+            child: Text(
+              trackingState == WorkerTrackingState.pending
+                  ? 'Cancel request'.tr
+                  : 'Stop tracking'.tr,
+            ),
+          );
     return Row(
       children: [
         Expanded(child: callButton),
-        const SizedBox(width: 22),
+        const SizedBox(width: 12),
         Expanded(child: mainButton),
       ],
     );

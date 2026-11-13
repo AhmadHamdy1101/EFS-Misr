@@ -23,18 +23,23 @@ import '../../Features/Auth/data/repos/auth_repo_impl.dart';
 import '../../Features/Auth/data/source/remote_data_source.dart';
 import '../../Features/Auth/domain/auth_repo.dart';
 import '../lookups/lookup_repo.dart';
+import '../auth/session_guard.dart';
+import '../team/team.dart';
 import 'theme_service.dart';
 
 final getIt = GetIt.instance;
 
-void setup({required SharedPreferences prefs}) {
+void setup({required SharedPreferences prefs, PushService? push}) {
   final client = Supabase.instance.client;
 
   getIt.registerSingleton<ThemeService>(ThemeService(prefs));
   getIt.registerSingleton<LookupRepo>(LookupRepoImpl(client));
   getIt.registerSingleton<AuthRepo>(AuthRepoImpl(AuthRemoteDataImpl(client)));
+  getIt.registerSingleton<SessionGuard>(SupabaseSessionGuard(client));
+  final team = TeamRepoImpl(client);
+  getIt.registerSingleton<TeamRepo>(team);
   getIt.registerSingleton<AccountsRepo>(
-    AccountsRepoImpl(AccountsRemoteDataSourceImpl(client)),
+    AccountsRepoImpl(AccountsRemoteDataSourceImpl(client), team: team),
   );
   getIt.registerSingleton<TicketsRepo>(
     TicketRepoImpl(TicketDataSourceImpl(client)),
@@ -49,7 +54,6 @@ void setup({required SharedPreferences prefs}) {
   getIt.registerSingleton<LocationSource>(GeolocatorLocationSource());
   getIt.registerSingleton<DeviceIdStore>(DeviceIdStore(prefs));
   getIt.registerSingleton<NotificationsRepo>(NotificationsRepoImpl(client));
-  // Replace with an FCM implementation once Firebase is configured
-  // (docs/notifications.md).
-  getIt.registerSingleton<PushService>(const DisabledPushService());
+  // FirebasePushService when Firebase started (main.dart), else disabled.
+  getIt.registerSingleton<PushService>(push ?? const DisabledPushService());
 }

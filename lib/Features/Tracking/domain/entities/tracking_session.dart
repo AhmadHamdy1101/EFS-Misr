@@ -38,7 +38,6 @@ class TrackingSession {
     this.sessionId,
     this.openedAt,
     this.requestedBy,
-    this.ticketId,
     this.branchId,
     this.endReason,
     this.requestedAt,
@@ -74,7 +73,6 @@ class TrackingSession {
   /// When the request was made or the session started; newer wins.
   final DateTime? openedAt;
   final BigInt? requestedBy;
-  final int? ticketId;
   final int? branchId;
   final TrackingStatus status;
   final String? endReason;
@@ -95,7 +93,16 @@ class TrackingSession {
   /// Server time the latest position arrived.
   final DateTime? lastLocationAt;
 
-  bool get hasLocation => latitude != null && longitude != null;
+  /// A usable position: present, within WGS84 range, and not the 0,0
+  /// placeholder some devices report before they have a fix.
+  bool get hasLocation {
+    final lat = latitude;
+    final lng = longitude;
+    if (lat == null || lng == null) return false;
+    if (lat.isNaN || lng.isNaN) return false;
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return false;
+    return !(lat == 0 && lng == 0);
+  }
 
   /// Active, but no position arrived recently (GPS off, no network, app
   /// killed). The session stays open; viewers are warned instead.
@@ -134,7 +141,6 @@ class TrackingSession {
       sessionId: sessionId,
       openedAt: openedAt,
       requestedBy: requestedBy,
-      ticketId: ticketId,
       branchId: branchId,
       endReason: endReason,
       requestedAt: requestedAt,
@@ -165,7 +171,6 @@ class TrackingSession {
       requestedBy: json['requested_by'] == null
           ? null
           : BigInt.parse(json['requested_by'].toString()),
-      ticketId: _int(json['ticket_id']),
       branchId: _int(json['branch_id']),
       status: TrackingStatus.fromDatabase(json['status']?.toString()),
       endReason: json['end_reason']?.toString(),

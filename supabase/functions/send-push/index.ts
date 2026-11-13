@@ -7,6 +7,7 @@
 // Secrets (supabase secrets set ...):
 //   PUSH_WEBHOOK_SECRET   random string shared with the webhook / cron job
 //   FCM_SERVICE_ACCOUNT   the Firebase service-account JSON (one line)
+//   APP_WEB_URL           optional, https URL of the web app (push click link)
 // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
 //
 // Delivery is at-least-once: rows are claimed with SKIP LOCKED and marked
@@ -126,6 +127,7 @@ async function sendOne(
             headers: { 'apns-collapse-id': tag, 'apns-priority': '10' },
             payload: { aps: { sound: 'default' } },
           },
+          webpush: webpushConfig(n, data, tag),
         },
       }),
     },
@@ -138,6 +140,28 @@ async function sendOne(
     response.status === 404 ||
     (response.status === 400 && text.includes('INVALID_ARGUMENT') && text.includes('token'))
   return { ok: false, error: `${response.status} ${text.slice(0, 300)}`, deadToken }
+}
+
+/**
+ * Web: collapse by tag and, when APP_WEB_URL is set (https only, FCM
+ * requires it), open the app on click with the ids in the query string;
+ * FirebasePushService.webLaunchData reads them back.
+ */
+function webpushConfig(n: Claimed, data: Record<string, string>, tag: string) {
+  const base = Deno.env.get('APP_WEB_URL')
+  const config: Record<string, unknown> = {
+    headers: { Urgency: 'high' },
+    notification: { tag },
+  }
+  if (base?.startsWith('https://')) {
+    const link = new URL(base)
+    link.searchParams.set('efs_push', String(n.id))
+    for (const [key, value] of Object.entries(data)) {
+      if (key !== 'notification_id') link.searchParams.set(key, value)
+    }
+    config.fcm_options = { link: link.toString() }
+  }
+  return config
 }
 
 let cachedToken: { value: string; expires: number } | null = null

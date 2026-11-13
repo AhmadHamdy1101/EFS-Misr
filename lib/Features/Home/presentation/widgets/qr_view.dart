@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+
+import 'scanner_error.dart';
 import '../../../Assets_data/presentation/screens/assets_details_page.dart';
 
 class QRScanPage extends StatefulWidget {
@@ -49,6 +51,7 @@ class _QRScanPageState extends State<QRScanPage> {
                 flex: 4,
                 child: MobileScanner(
                   fit: BoxFit.contain,
+                  errorBuilder: scannerError,
                   // allowDuplicates: true,
                   // One lookup per scan: a capture can hold several codes,
                   // and the camera reports the same code many times a second.

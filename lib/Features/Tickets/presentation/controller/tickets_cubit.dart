@@ -8,6 +8,7 @@ import 'package:efs_misr/Features/Tickets/domain/entities/ticket_lookup_option.d
 import 'package:efs_misr/Features/Tickets/domain/entities/ticket_stats.dart';
 import 'package:efs_misr/Features/Tickets/domain/repo/tickets_repo.dart';
 import 'package:efs_misr/core/Errors/failure.dart';
+import 'package:efs_misr/core/auth/app_permissions.dart';
 import 'package:efs_misr/core/Functions/convert_to_excel_function.dart';
 import 'package:efs_misr/core/paging/page_loader.dart';
 import 'package:efs_misr/core/paging/page_query.dart';
@@ -21,9 +22,11 @@ part 'tickets_state.dart';
 class TicketsCubit extends Cubit<TicketsState> {
   TicketsCubit({
     required this.ticketsRepo,
+    AppPermissions Function()? permissions,
     Duration searchDebounce = const Duration(milliseconds: 300),
     Duration overviewRefreshDelay = const Duration(milliseconds: 500),
-  }) : _searchDebouncer = Debouncer(searchDebounce),
+  }) : _permissions = permissions,
+       _searchDebouncer = Debouncer(searchDebounce),
        _overviewDebouncer = Debouncer(overviewRefreshDelay),
        super(HomeInitial()) {
     _pages = PageLoader(ticketsRepo.getTickets, idOf: (ticket) => ticket.id);
@@ -32,6 +35,11 @@ class TicketsCubit extends Cubit<TicketsState> {
   static const recentCount = 5;
 
   final TicketsRepo ticketsRepo;
+
+  /// The signed-in user's permissions. Checked before every change so a
+  /// refused action fails fast with a clear message; the database enforces
+  /// the same rules regardless.
+  final AppPermissions Function()? _permissions;
   final Debouncer _searchDebouncer;
 
   /// Realtime events often come in bursts; the counts are refetched once
@@ -139,6 +147,17 @@ class TicketsCubit extends Cubit<TicketsState> {
     required TicketStatus status,
     DateTime? repairDate,
   }) async {
+    final ticket = _findLoaded(ticketId);
+    final denied = _deny(
+      ticket == null ||
+          (_permissions?.call().canSetStatus(
+                ticket.status,
+                status,
+                ticket.engineer,
+              ) ??
+              true),
+    );
+    if (denied != null) return Left(denied);
     final result = await ticketsRepo.updateTicketStatus(
       ticketId: BigInt.from(ticketId),
       status: status,
@@ -154,6 +173,8 @@ class TicketsCubit extends Cubit<TicketsState> {
     required int ticketId,
     required String damageDescription,
   }) async {
+    final denied = _denyWork(ticketId);
+    if (denied != null) return Left(denied);
     final result = await ticketsRepo.updateDamageDescription(
       ticketId: BigInt.from(ticketId),
       damageDescription: damageDescription,
@@ -166,6 +187,8 @@ class TicketsCubit extends Cubit<TicketsState> {
     required int ticketId,
     required DateTime responseDate,
   }) async {
+    final denied = _denyWork(ticketId);
+    if (denied != null) return Left(denied);
     final result = await ticketsRepo.updateTicketResponseDate(
       ticketId: BigInt.from(ticketId),
       responseDate: responseDate,
@@ -182,6 +205,8 @@ class TicketsCubit extends Cubit<TicketsState> {
     required DateTime requestDate,
     required BigInt engineerId,
   }) async {
+    final denied = _deny(_permissions?.call().canCreateTicket ?? true);
+    if (denied != null) return Left(denied);
     if (oracleId <= BigInt.zero ||
         branchId <= BigInt.zero ||
         engineerId <= BigInt.zero) {
@@ -207,11 +232,36 @@ class TicketsCubit extends Cubit<TicketsState> {
   }
 
   Future<Either<Failure, Unit>> deleteTicket({required int ticketId}) async {
+    final denied = _deny(_permissions?.call().canDeleteTicket ?? true);
+    if (denied != null) return Left(denied);
     final result = await ticketsRepo.deleteTicket(
       ticketId: BigInt.from(ticketId),
     );
     result.fold((_) {}, (_) => _removeTicket(ticketId));
     return result;
+  }
+
+  static Failure? _deny(bool allowed) =>
+      allowed ? null : GeneralFailure("You don't have permission to do this.");
+
+  /// Maintenance edits (damage description, dates): the admin or the
+  /// technician assigned to the ticket.
+  Failure? _denyWork(int ticketId) {
+    final permissions = _permissions?.call();
+    if (permissions == null) return null;
+    final ticket = _findLoaded(ticketId);
+    // Not loaded (e.g. opened from a notification): the database decides.
+    return _deny(ticket == null || permissions.canWorkOn(ticket.engineer));
+  }
+
+  TicketEntity? _findLoaded(int ticketId) {
+    for (final ticket in _pages.items) {
+      if (ticket.id == ticketId) return ticket;
+    }
+    for (final ticket in _recentTickets) {
+      if (ticket.id == ticketId) return ticket;
+    }
+    return null;
   }
 
   Future<void> _reloadList() async {

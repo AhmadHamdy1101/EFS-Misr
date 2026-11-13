@@ -11,7 +11,8 @@ import '../entities/tracking_worker.dart';
 /// that checks the caller's role and the current state; those functions
 /// return the resulting [TrackingStatus].
 abstract interface class TrackingRepo {
-  /// Users enabled as workers in `tracking_members`.
+  /// Staff who can be tracked: active non-admins unless `tracking_members`
+  /// overrides (view `tracking_workers`).
   Future<Either<Failure, List<UserEntity>>> getWorkers();
 
   /// Open (pending or active) items visible to the caller, optionally only
@@ -28,10 +29,7 @@ abstract interface class TrackingRepo {
 
   /// Asks a worker to share; returns their open item afterwards (a new
   /// pending request, or the request/session that already existed).
-  Future<Either<Failure, TrackingSession>> request({
-    required String workerUid,
-    int? ticketId,
-  });
+  Future<Either<Failure, TrackingSession>> request({required String workerUid});
 
   Future<Either<Failure, TrackingStatus>> respond({
     required String requestId,

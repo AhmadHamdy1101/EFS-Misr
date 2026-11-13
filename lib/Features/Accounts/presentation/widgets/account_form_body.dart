@@ -1,5 +1,6 @@
 import 'package:efs_misr/core/entities/user_entity.dart';
 import 'package:efs_misr/core/lookups/lookup_repo.dart';
+import 'package:efs_misr/core/team/team.dart';
 import 'package:efs_misr/core/utils/singelton.dart';
 import 'package:efs_misr/core/utils/widgets/custom_dropdown_widget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_inbut_wedget.dart';
@@ -67,6 +68,13 @@ class _AccountFormBodyState extends State<AccountFormBody> {
   List<Map<String, dynamic>>? _positions;
   bool _saving = false;
 
+  /// Engineer of a technician; '' = none. Edit mode only, and only once the
+  /// hierarchy column exists (TeamDirectory.available).
+  static const _noEngineer = '';
+  TeamDirectory _team = TeamDirectory.unavailable;
+  String _engineer = _noEngineer;
+  String _initialEngineer = _noEngineer;
+
   bool get _isEdit => widget.user != null;
 
   @override
@@ -82,7 +90,25 @@ class _AccountFormBodyState extends State<AccountFormBody> {
     _role = _valueIn(_roles, user?.role);
     _status = _valueIn(_statuses, user?.status.toString());
     _loadPositions();
+    if (user != null) _loadTeam(user.id);
   }
+
+  Future<void> _loadTeam(BigInt userId) async {
+    final team = await getIt.get<TeamRepo>().load();
+    if (!mounted) return;
+    setState(() {
+      _team = team;
+      _initialEngineer = team.engineerOf(userId)?.toString() ?? _noEngineer;
+      _engineer = _initialEngineer;
+    });
+  }
+
+  List<Map<String, dynamic>> get _engineerItems => [
+    {'name': 'No engineer'.tr, 'value': _noEngineer},
+    for (final e in _team.engineers.entries)
+      if (e.key != widget.user?.id)
+        {'name': e.value, 'value': e.key.toString()},
+  ];
 
   Future<void> _loadPositions() async {
     final result = await getIt.get<LookupRepo>().getPositions();
@@ -131,6 +157,8 @@ class _AccountFormBodyState extends State<AccountFormBody> {
         positionId: _position == null ? null : BigInt.parse(_position!),
         role: _role!,
         status: int.parse(_status!),
+        engineerId: _engineer == _noEngineer ? null : BigInt.parse(_engineer),
+        engineerChanged: _team.available && _engineer != _initialEngineer,
       ),
       _password.text,
     );
@@ -242,9 +270,19 @@ class _AccountFormBodyState extends State<AccountFormBody> {
                       selectedValue: _role,
                       data: _roles,
                       iconColor: AppColors.gray,
-                      onChanged: (value) => _role = value,
+                      onChanged: (value) => setState(() => _role = value),
                       validator: (v) => _required(v, 'Please enter role'),
                     ),
+                    if (_isEdit && _team.available && _role == 'Worker')
+                      CustomDropdownWidget(
+                        key: const ValueKey('engineer'),
+                        inbutIcon: 'assets/images/role.svg',
+                        inbutHintText: 'Engineer'.tr,
+                        selectedValue: _engineer,
+                        data: _engineerItems,
+                        iconColor: AppColors.gray,
+                        onChanged: (value) => _engineer = value ?? _noEngineer,
+                      ),
                   ])
                     Padding(
                       padding: const EdgeInsets.only(bottom: 15),

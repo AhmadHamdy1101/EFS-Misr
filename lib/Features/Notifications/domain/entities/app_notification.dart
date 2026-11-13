@@ -84,7 +84,15 @@ sealed class NotificationTarget {
       'tracking.cancelled',
       'tracking.stopped',
     };
-    if (workerSide.contains(type)) return const MyLocationTarget();
+    if (workerSide.contains(type)) {
+      // The request id lets the app tell the technician when a tapped
+      // request has expired or was withdrawn meanwhile.
+      return MyLocationTarget(
+        requestId: type == 'tracking.requested'
+            ? data['request_id']?.toString()
+            : null,
+      );
+    }
     if (type.startsWith('tracking.') && technicianId != null) {
       return WorkerTrackingTarget(BigInt.from(technicianId));
     }
@@ -100,7 +108,10 @@ final class TicketTarget extends NotificationTarget {
 
 /// The technician's own location/requests screen.
 final class MyLocationTarget extends NotificationTarget {
-  const MyLocationTarget();
+  const MyLocationTarget({this.requestId});
+
+  /// Set for `tracking.requested`.
+  final String? requestId;
 }
 
 /// The admin's live view of one technician.

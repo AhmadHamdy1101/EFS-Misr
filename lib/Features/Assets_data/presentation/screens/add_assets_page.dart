@@ -1,3 +1,4 @@
+import 'package:efs_misr/Features/Assets_data/domain/entities/assets_entity.dart';
 import 'package:efs_misr/Features/Assets_data/presentation/controller/assets_cubit.dart';
 import 'package:efs_misr/core/lookups/lookup_repo.dart';
 import 'package:efs_misr/core/utils/singelton.dart';
@@ -19,7 +20,10 @@ const _assetTypes = [
 ];
 
 class AddAssetsPage extends StatefulWidget {
-  const AddAssetsPage({super.key});
+  const AddAssetsPage({super.key, this.asset});
+
+  /// Edit mode when set (admins only).
+  final AssetsEntity? asset;
 
   @override
   State<AddAssetsPage> createState() => _AddAssetsPageState();
@@ -27,10 +31,10 @@ class AddAssetsPage extends StatefulWidget {
 
 class _AddAssetsPageState extends State<AddAssetsPage> {
   final _formKey = GlobalKey<FormState>();
-  final _barcode = TextEditingController();
-  final _name = TextEditingController();
-  final _floor = TextEditingController();
-  final _place = TextEditingController();
+  late final _barcode = TextEditingController(text: widget.asset?.barCode);
+  late final _name = TextEditingController(text: widget.asset?.name);
+  late final _floor = TextEditingController(text: widget.asset?.floor);
+  late final _place = TextEditingController(text: widget.asset?.place);
   List<Map<String, dynamic>>? _branches;
   String? _branch;
   String? _type;
@@ -39,6 +43,7 @@ class _AddAssetsPageState extends State<AddAssetsPage> {
   @override
   void initState() {
     super.initState();
+    _type = _valueIn(_assetTypes, widget.asset?.type);
     _loadBranches();
   }
 
@@ -47,8 +52,13 @@ class _AddAssetsPageState extends State<AddAssetsPage> {
     if (!mounted) return;
     setState(() {
       _branches = result.fold((_) => const [], (b) => b.toDropdownData());
+      _branch = _valueIn(_branches!, widget.asset?.branchObject.id.toString());
     });
   }
+
+  /// Dropdowns assert their initial value is one of the items.
+  static String? _valueIn(List<Map<String, dynamic>> items, String? value) =>
+      items.any((item) => item['value'] == value) ? value : null;
 
   @override
   void dispose() {
@@ -66,6 +76,25 @@ class _AddAssetsPageState extends State<AddAssetsPage> {
     if (_saving || !_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
+    final asset = widget.asset;
+    if (asset != null) {
+      final result = await context.read<AssetsCubit>().updateAsset(
+        id: asset.id,
+        barcode: _barcode.text,
+        name: _name.text.trim(),
+        floor: _floor.text.trim(),
+        place: _place.text.trim(),
+        type: _type,
+        branch: BigInt.parse(_branch!),
+      );
+      if (!mounted) return;
+      setState(() => _saving = false);
+      result.fold(
+        (failure) => showAppSnackBar(messenger, failure.message, isError: true),
+        (updated) => Get.back(result: updated),
+      );
+      return;
+    }
     final result = await context.read<AssetsCubit>().addAssetsData(
       barcode: _barcode.text.trim(),
       name: _name.text.trim(),
@@ -97,7 +126,7 @@ class _AddAssetsPageState extends State<AddAssetsPage> {
               centerTitle: true,
               leading: BackButton(color: Theme.of(context).colorScheme.primary),
               title: Text(
-                'Add Assets'.tr,
+                (widget.asset == null ? 'Add Assets' : 'Edit Asset').tr,
                 style: AppTextStyle.latoBold26(
                   context,
                 ).copyWith(color: AppColors.green),
@@ -182,7 +211,7 @@ class _AddAssetsPageState extends State<AddAssetsPage> {
                             ),
                           )
                         : Text(
-                            'Add'.tr,
+                            (widget.asset == null ? 'Add' : 'Edit').tr,
                             style: AppTextStyle.latoBold26(context),
                           ),
                   ),

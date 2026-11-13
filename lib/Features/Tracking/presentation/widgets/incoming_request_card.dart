@@ -86,11 +86,6 @@ class IncomingRequestCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          if (request.ticketId != null)
-            _line(
-              Icons.confirmation_number_outlined,
-              '${'Ticket'.tr} #${request.ticketId}',
-            ),
           if (branch != null) _line(Icons.account_balance_outlined, branch),
           if (expires != null)
             _line(
@@ -105,9 +100,9 @@ class IncomingRequestCard extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Only administrators can see your location, and only until '
-                          'you stop sharing or the ticket is closed. Nothing is '
-                          'shared unless you accept.'
+                  'Only administrators and engineers can see your location, '
+                          'and only while you share it. Nothing is shared '
+                          'unless you accept.'
                       .tr,
                   style: const TextStyle(color: AppColors.gray, fontSize: 13),
                 ),

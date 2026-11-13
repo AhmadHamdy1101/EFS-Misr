@@ -79,6 +79,9 @@ class MyTrackingCubit extends Cubit<MyTrackingState> {
     }
   }
 
+  /// Re-reads the open request/session (e.g. before opening a tapped push).
+  Future<void> refresh() => _reload(_generation);
+
   /// Stops publishing and drops everything for the previous user (sign-out).
   /// The session stays open on the server; it shows as stale until the
   /// technician signs in again or an admin cancels it.
@@ -162,7 +165,7 @@ class MyTrackingCubit extends Cubit<MyTrackingState> {
 
   /// Runs a state change on the server, then re-reads the open item so the
   /// screen shows exactly what the database decided (e.g. the request had
-  /// expired, or the ticket was reassigned meanwhile).
+  /// expired or was cancelled meanwhile).
   Future<Either<Failure, Unit>> _run(
     Future<Either<Failure, TrackingStatus>> Function() action, {
     bool startSharing = false,
@@ -302,7 +305,7 @@ class MyTrackingCubit extends Cubit<MyTrackingState> {
       TrackingStatus.cancelled =>
         previous == TrackingStatus.pending
             ? 'The location request was cancelled.'
-            : 'Location sharing was ended by an administrator or the ticket changed.',
+            : 'Location sharing was ended by an administrator.',
       _ => 'Location sharing ended.',
     };
   }
@@ -352,9 +355,20 @@ class MyTrackingCubit extends Cubit<MyTrackingState> {
 
   void _onFix(LocationFix fix) {
     if (isClosed) return;
+    // Some devices report 0,0 or out-of-range values before they have a
+    // real fix; never publish those as the technician's position.
+    if (!_isValidFix(fix)) return;
     _latest = fix;
     emit(state.copyWith(lastFix: fix));
     _publishSoon();
+  }
+
+  static bool _isValidFix(LocationFix fix) {
+    final lat = fix.latitude;
+    final lng = fix.longitude;
+    if (lat.isNaN || lng.isNaN) return false;
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return false;
+    return !(lat == 0 && lng == 0);
   }
 
   void _onHeartbeat() {

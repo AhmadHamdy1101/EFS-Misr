@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 import 'package:dartz/dartz.dart';
 import 'package:efs_misr/core/Errors/failure.dart';
 import 'package:efs_misr/core/entities/user_entity.dart';
+import 'package:efs_misr/core/team/team.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/tracking_session.dart';
@@ -18,13 +19,16 @@ part 'tracking_control_state.dart';
 class TrackingControlCubit extends Cubit<TrackingControlState> {
   TrackingControlCubit(
     this._repo, {
+    TeamRepo? team,
     DateTime Function()? clock,
     this.tickInterval = const Duration(seconds: 30),
     this.reconnectDelay = const Duration(seconds: 5),
-  }) : _clock = clock ?? DateTime.now,
+  }) : _team = team,
+       _clock = clock ?? DateTime.now,
        super(TrackingControlState(now: (clock ?? DateTime.now)()));
 
   final TrackingRepo _repo;
+  final TeamRepo? _team;
   final DateTime Function() _clock;
   final Duration tickInterval;
   final Duration reconnectDelay;
@@ -64,13 +68,9 @@ class TrackingControlCubit extends Cubit<TrackingControlState> {
   void setFilter(WorkerFilter filter) => emit(state.copyWith(filter: filter));
 
   Future<Either<Failure, TrackingSession>> requestLocation(
-    UserEntity worker, {
-    int? ticketId,
-  }) async {
-    final result = await _repo.request(
-      workerUid: worker.userid,
-      ticketId: ticketId,
-    );
+    UserEntity worker,
+  ) async {
+    final result = await _repo.request(workerUid: worker.userid);
     result.fold((_) {}, (session) => _applySession(session.workerUid, session));
     return result;
   }
@@ -90,9 +90,11 @@ class TrackingControlCubit extends Cubit<TrackingControlState> {
       _repo.getBranch(branchId);
 
   Future<void> _load(int generation) async {
-    final (workers, sessions) = await (
+    final (workers, sessions, team) = await (
       _repo.getWorkers(),
       _repo.getOpenSessions(),
+      // Optional: grouping only; never fails the screen.
+      _team?.load() ?? Future.value(TeamDirectory.unavailable),
     ).wait;
     if (isClosed || generation != _generation) return;
     final failure =
@@ -114,6 +116,7 @@ class TrackingControlCubit extends Cubit<TrackingControlState> {
         now: _clock(),
         workers: workers.getOrElse(() => const []),
         sessions: open,
+        team: team,
       ),
     );
   }

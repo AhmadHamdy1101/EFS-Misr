@@ -25,6 +25,9 @@ import '../Features/Tracking/data/location_source.dart';
 import '../Features/Tracking/domain/repo/tracking_repo.dart';
 import '../Features/Tracking/presentation/controller/my_tracking_cubit.dart';
 import '../Features/Tracking/presentation/controller/tracking_control_cubit.dart';
+import '../core/auth/app_permissions.dart';
+import '../core/auth/session_guard.dart';
+import '../core/team/team.dart';
 import '../core/utils/singelton.dart';
 
 /// App-wide cubits. They sit above the navigator so every pushed page can
@@ -39,11 +42,27 @@ class AppProviders extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => CheckInternetCubit(Connectivity())),
-        BlocProvider(create: (_) => AuthCubit(getIt.get<AuthRepo>())),
         BlocProvider(
-          create: (_) => TicketsCubit(ticketsRepo: getIt.get<TicketsRepo>()),
+          create: (_) => AuthCubit(
+            getIt.get<AuthRepo>(),
+            sessionGuard: getIt.get<SessionGuard>(),
+            deviceId: () => getIt.get<DeviceIdStore>().deviceId,
+          ),
         ),
-        BlocProvider(create: (_) => AssetsCubit(getIt.get<AssetsDataRepo>())),
+        BlocProvider(
+          create: (context) => TicketsCubit(
+            ticketsRepo: getIt.get<TicketsRepo>(),
+            permissions: () =>
+                AppPermissions(context.read<AuthCubit>().currentUser),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => AssetsCubit(
+            getIt.get<AssetsDataRepo>(),
+            permissions: () =>
+                AppPermissions(context.read<AuthCubit>().currentUser),
+          ),
+        ),
         BlocProvider(create: (_) => QrcodeCubit(getIt.get<AssetsDataRepo>())),
         BlocProvider(create: (_) => AccountsCubit(getIt.get<AccountsRepo>())),
         BlocProvider(
@@ -60,7 +79,10 @@ class AppProviders extends StatelessWidget {
         ),
         BlocProvider(create: (_) => ImageCubit(getIt.get<AuthRepo>())),
         BlocProvider(
-          create: (_) => TrackingControlCubit(getIt.get<TrackingRepo>()),
+          create: (_) => TrackingControlCubit(
+            getIt.get<TrackingRepo>(),
+            team: getIt.get<TeamRepo>(),
+          ),
         ),
         BlocProvider(
           create: (_) => NotificationsCubit(

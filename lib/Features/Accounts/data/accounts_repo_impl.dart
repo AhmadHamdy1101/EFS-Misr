@@ -3,13 +3,15 @@ import 'package:dartz/dartz.dart';
 import '../../../core/Errors/failure.dart';
 import '../../../core/entities/user_entity.dart';
 import '../../../core/paging/page_query.dart';
+import '../../../core/team/team.dart';
 import '../domain/accounts_repo.dart';
 import 'accounts_remote_data_source.dart';
 
 class AccountsRepoImpl implements AccountsRepo {
-  AccountsRepoImpl(this._dataSource);
+  AccountsRepoImpl(this._dataSource, {TeamRepo? team}) : _team = team;
 
   final AccountsRemoteDataSource _dataSource;
+  final TeamRepo? _team;
 
   @override
   Future<Either<Failure, List<UserEntity>>> getUsers(PageQuery query) async {
@@ -47,6 +49,11 @@ class AccountsRepoImpl implements AccountsRepo {
         form: form,
         banned: disabled != user.isDisabled ? disabled : null,
       );
+      // After the profile, so the database checks the link against the new
+      // role (only Worker → active User is accepted).
+      if (form.engineerChanged && form.role == 'Worker') {
+        await _team?.setSupervisor(user.id, form.engineerId);
+      }
       return Right(updated.toUserEntity());
     } catch (e) {
       return Left(Failure.fromException(e));

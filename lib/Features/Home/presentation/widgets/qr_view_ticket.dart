@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import 'scanner_error.dart';
+
 class QRScanTicketPage extends StatefulWidget {
   const QRScanTicketPage({super.key, required this.ticketId});
 
@@ -67,6 +69,9 @@ class _QRScanTicketPageState extends State<QRScanTicketPage> {
       backgroundColor: AppColors.appBackground,
       appBar: AppBar(title: Text('Scan barcode/QR'.tr)),
       body: BlocConsumer<QrcodeCubit, QrcodeState>(
+        // The cubit is shared: only results of a scan started on this page,
+        // once (a second success can't link a second asset).
+        listenWhen: (_, _) => _isProcessing && !_isCompleting,
         listener: (context, state) {
           if (state is QrcodeSuccess) {
             _completeTicketAssetLink(state.assets.id);
@@ -86,6 +91,7 @@ class _QRScanTicketPageState extends State<QRScanTicketPage> {
                   children: [
                     MobileScanner(
                       fit: BoxFit.contain,
+                      errorBuilder: scannerError,
                       onDetect: (capture) {
                         if (_isProcessing || _isCompleting) return;
                         final values = capture.barcodes

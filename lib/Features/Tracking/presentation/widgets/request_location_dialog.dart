@@ -13,32 +13,19 @@ import 'tracking_widgets.dart';
 /// [TrackingControlCubit] and returns the new session, or null if cancelled
 /// or rejected by the server (the reason is shown in a snackbar).
 class RequestLocationDialog extends StatefulWidget {
-  const RequestLocationDialog({
-    super.key,
-    required this.worker,
-    this.ticketId,
-    this.ticketLabel,
-  });
+  const RequestLocationDialog({super.key, required this.worker});
 
   final TrackingWorker worker;
-  final int? ticketId;
-  final String? ticketLabel;
 
   static Future<TrackingSession?> show(
     BuildContext context, {
     required TrackingWorker worker,
-    int? ticketId,
-    String? ticketLabel,
   }) {
     return showDialog<TrackingSession>(
       context: context,
       builder: (_) => BlocProvider.value(
         value: context.read<TrackingControlCubit>(),
-        child: RequestLocationDialog(
-          worker: worker,
-          ticketId: ticketId,
-          ticketLabel: ticketLabel,
-        ),
+        child: RequestLocationDialog(worker: worker),
       ),
     );
   }
@@ -55,7 +42,6 @@ class _RequestLocationDialogState extends State<RequestLocationDialog> {
     final messenger = ScaffoldMessenger.of(context);
     final result = await context.read<TrackingControlCubit>().requestLocation(
       widget.worker.user,
-      ticketId: widget.ticketId,
     );
     if (!mounted) return;
     result.fold(
@@ -112,17 +98,6 @@ class _RequestLocationDialogState extends State<RequestLocationDialog> {
               textAlign: TextAlign.center,
               style: const TextStyle(color: AppColors.gray, fontSize: 16),
             ),
-            if (widget.ticketLabel != null) ...[
-              const SizedBox(height: 6),
-              Text(
-                widget.ticketLabel!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppColors.green,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
             const SizedBox(height: 22),
             Container(
               padding: const EdgeInsets.all(16),

@@ -76,34 +76,53 @@ select cron.schedule('tracking-stale', '*/5 * * * *', 'select public.tracking_no
 select cron.schedule('notifications-expire', '0 3 * * *', 'delete from public.notifications where expires_at < now()');
 ```
 
-## Push delivery (needs Firebase; not active yet)
+## Push delivery (FCM, Firebase project `efs-tickets`)
 
-Server side, `supabase/functions/send-push` (FCM HTTP v1, OAuth2 from a
-service account; no legacy server key):
-1. Create a Firebase project, add the Android app (`com.example.efs_misr`, or
-   your real id) and the iOS app; upload the APNs key in Firebase.
-2. Create a service account key with the *Firebase Cloud Messaging API* role.
-3. `supabase secrets set FCM_SERVICE_ACCOUNT="$(cat sa.json | tr -d '\n')" PUSH_WEBHOOK_SECRET=<random>`
-4. `supabase functions deploy send-push` (config.toml sets `verify_jwt = false`;
-   the function checks `x-push-secret` itself).
-5. Dashboard → Database → Webhooks: on INSERT into `public.notifications`,
-   POST to the function URL with header `x-push-secret: <same value>`.
-6. Retries: call the same URL every minute with the header (pg_cron +
-   `net.http_post`). Rows are retried up to 5 times within 24 h, claimed with
-   `SKIP LOCKED`, and collapsed on the device by `efs-<id>`. Delivery is
-   at-least-once, not exactly-once.
+**App side — implemented 2026-10-28, not yet verified on a device.**
+- `main.dart` starts Firebase (`firebase_options.dart`); if that fails the
+  app runs with in-app notifications only.
+- `FirebasePushService` (`lib/Features/Notifications/data/firebase_push_service.dart`):
+  asks permission (Android 13+ / browser), registers the FCM token through
+  `register_push_token` (platform `android` / `web`), follows token
+  refresh, routes tapped pushes (`onMessageOpenedApp`, `getInitialMessage`;
+  on web the `?efs_push=` link), deletes the token on sign-out after the
+  cubit unlinks it server-side. Foreground pushes are ignored on purpose:
+  the same notification arrives through realtime as an in-app banner.
+- Android: channel `efs_notifications` created in `MainActivity.kt`, also
+  the manifest default; `POST_NOTIFICATIONS` declared.
+- Web: `web/firebase-messaging-sw.js` (Firebase JS 13.1.0, matching
+  firebase_core_web). Needs the VAPID key at build time:
+  `flutter build web --dart-define=FCM_VAPID_KEY=<key>`; without it web push
+  is off. Must be served over HTTPS.
+- Uses the registration-token API (`getToken`), deprecated in
+  firebase_messaging 17 in favour of FID registration; kept because
+  `send-push` sends to `message.token`.
 
-App side (the code ships with `DisabledPushService`):
-1. `flutter pub add firebase_core firebase_messaging` and `flutterfire configure`.
-2. Implement `PushService` (`lib/Features/Notifications/data/push_service.dart`)
-   with `FirebaseMessaging`: request permission, `getToken()` +
-   `onTokenRefresh` → `onToken(token, Platform.isIOS ? 'ios' : 'android')`,
-   `getInitialMessage()` and `onMessageOpenedApp` → `onOpened(message.data)`,
-   `deleteToken()` in `stop()`. Create the Android channel `efs_notifications`.
-3. Register it in `lib/core/utils/singelton.dart` instead of
-   `DisabledPushService`, after `Firebase.initializeApp()` in `main.dart`.
-The cubit already registers the token on sign-in, unregisters it before
-sign-out, and routes tapped pushes.
+**Server side — `supabase/functions/send-push`, NOT deployed.** FCM HTTP v1
+with OAuth2 from a service account (no legacy key). Sends `android`,
+`apns` and `webpush` blocks; web click opens `APP_WEB_URL` with the ids.
+
+To turn it on (each step needs your action/approval):
+1. Firebase Console → Project settings → Cloud Messaging → Web Push
+   certificates → generate a key pair; use the public key as `FCM_VAPID_KEY`.
+2. Google Cloud → IAM → service account with *Firebase Cloud Messaging API
+   Admin*; create a JSON key. Never commit it.
+3. `supabase secrets set FCM_SERVICE_ACCOUNT="$(tr -d '\n' < sa.json)" PUSH_WEBHOOK_SECRET=<random> APP_WEB_URL=https://<web app>`
+4. `supabase functions deploy send-push` (`verify_jwt = false`; the function
+   checks `x-push-secret`).
+5. Dashboard → Database → Webhooks: INSERT on `public.notifications` → POST
+   the function URL with header `x-push-secret`.
+6. Retries: enable `pg_cron` + `pg_net` and call the same URL every minute.
+   Up to 5 attempts within 24 h, `SKIP LOCKED` claims, collapsed on the
+   device by `efs-<id>`: at-least-once, not exactly-once. Dead tokens
+   (404 / invalid) are removed.
+7. Verify: sign in on a phone and in a browser, check a `push_tokens` row
+   per device, create a ticket assigned to that user, confirm the push and
+   that tapping opens the ticket; check `notifications.push_status`.
+
+Delivery states are distinct: a `notifications` row (created by the
+trigger), `push_status = 'sent'` (FCM accepted it for ≥1 device), and
+`read_at` (the user opened it). Push failure never rolls back the ticket.
 
 Cost: FCM is free. Supabase Edge Function invocations and realtime messages
 count against the plan quotas; check current pricing.

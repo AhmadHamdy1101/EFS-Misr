@@ -5,8 +5,9 @@ import 'package:get/get.dart';
 import '../../domain/entities/tracking_worker.dart';
 import 'tracking_widgets.dart';
 
-/// One worker row in the admin sheet: avatar, name, position, sharing state,
-/// and the action that fits the state (View / Request / Pending).
+/// One worker row: avatar, name, position, sharing state and last update.
+/// Admins get the action that fits the state (View / Request / Pending);
+/// in [readOnly] mode (role User) only View is offered.
 class WorkerTile extends StatelessWidget {
   const WorkerTile({
     super.key,
@@ -15,6 +16,7 @@ class WorkerTile extends StatelessWidget {
     required this.onView,
     required this.onRequest,
     required this.onCancelPending,
+    this.readOnly = false,
   });
 
   final TrackingWorker worker;
@@ -22,37 +24,42 @@ class WorkerTile extends StatelessWidget {
   final VoidCallback onView;
   final VoidCallback onRequest;
   final VoidCallback onCancelPending;
+  final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
+    final sizes = TrackingSizes.of(context);
     final user = worker.user;
     final trackingState = worker.stateAt(now);
     final (label, color, _) = trackingStateStyle(trackingState);
+    final canView =
+        trackingState == WorkerTrackingState.live ||
+        trackingState == WorkerTrackingState.offline;
     final updated = switch (trackingState) {
       WorkerTrackingState.live || WorkerTrackingState.offline => timeAgo(
         worker.session?.lastLocationAt,
         now,
       ),
       WorkerTrackingState.pending => 'Waiting for approval'.tr,
-      WorkerTrackingState.notSharing => 'Not sharing'.tr,
+      WorkerTrackingState.notSharing => '',
     };
+    final action = _action(trackingState, sizes);
 
     return Material(
       color: trackingCardColor,
-      borderRadius: BorderRadius.circular(22),
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        borderRadius: BorderRadius.circular(22),
-        onTap:
-            trackingState == WorkerTrackingState.live ||
-                trackingState == WorkerTrackingState.offline
-            ? onView
-            : null,
+        borderRadius: BorderRadius.circular(16),
+        onTap: canView ? onView : null,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          padding: EdgeInsets.symmetric(
+            horizontal: sizes.compact ? 10 : 12,
+            vertical: sizes.compact ? 10 : 12,
+          ),
           child: Row(
             children: [
-              WorkerAvatar(user: user, radius: 40),
-              const SizedBox(width: 22),
+              WorkerAvatar(user: user, radius: sizes.avatar),
+              SizedBox(width: sizes.compact ? 10 : 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,43 +68,37 @@ class WorkerTile extends StatelessWidget {
                       user.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 20,
+                      style: TextStyle(
+                        fontSize: sizes.title,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       (user.position?.name ?? user.role).tr,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.gray,
-                        fontSize: 15,
+                        fontSize: sizes.caption,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.circle, size: 14, color: color),
-                        const SizedBox(width: 10),
-                        Text(
-                          label.tr,
-                          style: TextStyle(
-                            color: color,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                          ),
-                        ),
-                        const SizedBox(width: 14),
+                        Icon(Icons.circle, size: 9, color: color),
+                        const SizedBox(width: 6),
                         Flexible(
                           child: Text(
-                            updated,
+                            updated.isEmpty
+                                ? label.tr
+                                : '${label.tr} · $updated',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: AppColors.gray,
-                              fontSize: 14,
+                            style: TextStyle(
+                              color: color,
+                              fontWeight: FontWeight.w600,
+                              fontSize: sizes.caption,
                             ),
                           ),
                         ),
@@ -106,8 +107,7 @@ class WorkerTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              _action(trackingState),
+              if (action != null) ...[const SizedBox(width: 8), action],
             ],
           ),
         ),
@@ -115,43 +115,40 @@ class WorkerTile extends StatelessWidget {
     );
   }
 
-  Widget _action(WorkerTrackingState trackingState) {
-    const shape = StadiumBorder();
-    const padding = EdgeInsets.symmetric(horizontal: 28, vertical: 14);
-    const textStyle = TextStyle(fontSize: 20, fontWeight: FontWeight.w500);
+  Widget? _action(WorkerTrackingState trackingState, TrackingSizes sizes) {
+    ButtonStyle style(Color fg, Color? bg, Color? border) => ButtonStyle(
+      minimumSize: WidgetStatePropertyAll(Size(0, sizes.compact ? 34 : 38)),
+      padding: const WidgetStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: 14),
+      ),
+      foregroundColor: WidgetStatePropertyAll(fg),
+      backgroundColor: WidgetStatePropertyAll(bg),
+      side: border == null
+          ? null
+          : WidgetStatePropertyAll(BorderSide(color: border, width: 1.5)),
+      shape: const WidgetStatePropertyAll(StadiumBorder()),
+      textStyle: WidgetStatePropertyAll(
+        TextStyle(fontSize: sizes.body, fontWeight: FontWeight.w600),
+      ),
+      visualDensity: VisualDensity.compact,
+    );
     return switch (trackingState) {
       WorkerTrackingState.live || WorkerTrackingState.offline => OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.green,
-          side: const BorderSide(color: AppColors.green, width: 2),
-          shape: shape,
-          padding: padding,
-          textStyle: textStyle,
-        ),
+        style: style(AppColors.green, null, AppColors.green),
         onPressed: onView,
         child: Text('View'.tr),
       ),
-      WorkerTrackingState.pending => OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.gray,
-          side: const BorderSide(color: AppColors.gray, width: 2),
-          shape: shape,
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-          textStyle: textStyle,
-        ),
+      WorkerTrackingState.pending when !readOnly => OutlinedButton(
+        style: style(AppColors.gray, null, AppColors.gray),
         onPressed: onCancelPending,
         child: Text('Pending'.tr),
       ),
-      WorkerTrackingState.notSharing => FilledButton(
-        style: FilledButton.styleFrom(
-          backgroundColor: AppColors.green,
-          shape: shape,
-          padding: padding,
-          textStyle: textStyle,
-        ),
+      WorkerTrackingState.notSharing when !readOnly => FilledButton(
+        style: style(Colors.white, AppColors.green, null),
         onPressed: onRequest,
         child: Text('Request'.tr),
       ),
+      _ => null,
     };
   }
 }

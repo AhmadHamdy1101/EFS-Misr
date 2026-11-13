@@ -10,12 +10,16 @@ class AssetsEntity {
   final String place;
   final String area;
   final num totalAmount;
+  final String name;
+  final String floor;
 
   AssetsEntity({
     required this.id,
     required this.type,
     required this.branchName,
     required this.barCode, required this.place, required this.totalAmount, required this.area, required this.branchObject,
+    this.name = '',
+    this.floor = '',
   });
 
 }
