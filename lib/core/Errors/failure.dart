@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract class Failure {
@@ -13,24 +15,14 @@ abstract class Failure {
       // استعمل الكود من Supabase لو موجود
       return AuthFailure.fromSupabaseError(exception.code ?? 'unknown');
     } else if (exception is PostgrestException) {
-      final details = <String>[];
-      final message = exception.message.trim();
-      if (message.isNotEmpty) details.add(message);
-      if (exception.code?.trim().isNotEmpty ?? false) {
-        details.add('Code: ${exception.code}');
-      }
-      final exceptionDetails = exception.details?.toString().trim() ?? '';
-      if (exceptionDetails.isNotEmpty && exceptionDetails != 'null') {
-        details.add('Details: $exceptionDetails');
-      }
-      final hint = exception.hint?.trim() ?? '';
-      if (hint.isNotEmpty) details.add('Hint: $hint');
-
-      return PostgrestFailure(
-        details.isEmpty
-            ? 'The database rejected the request without an error message.'
-            : details.join('\n'),
+      // Codes, details and hints are database internals: log them for
+      // debugging, show the user only a readable message.
+      developer.log(
+        'PostgREST error ${exception.code}: ${exception.message} '
+        '(details: ${exception.details}, hint: ${exception.hint})',
+        name: 'Failure',
       );
+      return PostgrestFailure(_postgrestMessage(exception));
     } else if (exception is StorageException) {
       final message = exception.message.trim();
       return StorageFailure(
@@ -45,6 +37,25 @@ abstract class Failure {
       );
     }
   }
+}
+
+String _postgrestMessage(PostgrestException exception) {
+  final message = exception.message.trim();
+  switch (exception.code) {
+    // Raised on purpose by our database functions (RAISE EXCEPTION ...):
+    // their message is written for the user.
+    case 'P0001':
+      return message.isEmpty ? 'The request was rejected.' : message;
+    case '42501': // insufficient_privilege / row-level security
+      return "You don't have permission to do this.";
+    case '23505': // unique_violation
+      return 'This record already exists.';
+    case '23503': // foreign_key_violation
+      return 'This item is linked to something that no longer exists.';
+    case 'PGRST116': // .single() found no row
+      return 'The item was not found or you no longer have access to it.';
+  }
+  return message.isEmpty ? 'The request failed. Please try again.' : message;
 }
 
 class AuthFailure extends Failure {

@@ -1,7 +1,9 @@
 import 'package:efs_misr/Features/Home/presentation/widgets/all_tickets_list_view.dart';
 import 'package:efs_misr/Features/Home/presentation/widgets/tickets_over_view_widget.dart';
 import 'package:efs_misr/core/entities/user_entity.dart';
+import 'package:efs_misr/Features/Notifications/presentation/widgets/notification_bell.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/utils/app_colors.dart';
@@ -65,7 +67,9 @@ class _HomePageBodyState extends State<HomePageBody> {
                       ),
                 name: widget.user.name,
                 position: widget.user.position?.name ?? '',
-                onPress: () {},
+                trailing: NotificationBell(
+                  icon: SvgPicture.asset("assets/images/Notifecation.svg"),
+                ),
               ),
               TicketsOverViewWidget(
                 screenHeight: screenHeight,

@@ -1,6 +1,7 @@
 import 'package:efs_misr/Features/Tickets/domain/entities/ticket_entity.dart';
 import 'package:efs_misr/Features/Tickets/presentation/controller/tickets_cubit.dart';
 import 'package:efs_misr/constants/screens_size.dart';
+import 'package:efs_misr/core/auth/permissions_context.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:efs_misr/core/utils/app_text_styles.dart';
 import 'package:efs_misr/core/utils/widgets/custom_inbut_wedget.dart';
@@ -116,15 +117,16 @@ class TicketDamageComment extends StatelessWidget {
                       ).copyWith(color: AppColors.green),
                     ),
                   ),
-                  TextButton(
-                    onPressed: () => _editDamageDescription(context),
-                    child: Text(
-                      'Edit'.tr,
-                      style: AppTextStyle.latoBold20(
-                        context,
-                      ).copyWith(color: AppColors.gray),
+                  if (context.permissions.canWorkOn(ticket.engineer))
+                    TextButton(
+                      onPressed: () => _editDamageDescription(context),
+                      child: Text(
+                        'Edit'.tr,
+                        style: AppTextStyle.latoBold20(
+                          context,
+                        ).copyWith(color: AppColors.gray),
+                      ),
                     ),
-                  ),
                 ],
               ),
               BlocBuilder<TicketsCubit, TicketsState>(

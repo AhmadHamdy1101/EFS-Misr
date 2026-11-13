@@ -1,0 +1,61 @@
+flowchart LR
+  subgraph AUTH["Auth"]
+    S01["01 · Login"]
+    S02["02 · Forgot Password"]
+  end
+  subgraph HOME["Dashboard"]
+    S03["03 · Dashboard / Before check-in"]
+    S04["04 · Dashboard / Active session"]
+  end
+  subgraph CHECKIN["Check-in flow"]
+    S05["05 · Check-in / Prepare"]
+    S06["06 · Check-in / Location"]
+    S07["07 · Check-in / Selfie"]
+    S08["08 · Check-in / Review"]
+    S09["09 · Check-in Success"]
+  end
+  subgraph CHECKOUT["Check-out flow"]
+    S10["10 · Check-out / Selfie and GPS"]
+    S11["11 · Check-out / Review"]
+    S12["12 · Check-out Success"]
+  end
+  subgraph ATT["Attendance"]
+    S13["13 · Attendance History"]
+    S14["14 · Attendance Details"]
+  end
+  subgraph OT["Overtime"]
+    S15["15 · Overtime Requests"]
+    S16["16 · Create Overtime Ticket"]
+    S17["17 · Overtime Request Details"]
+    S18["18 · Request Submitted"]
+  end
+  subgraph ACCT["Account"]
+    S19["19 · Notifications"]
+    S20["20 · Employee Profile"]
+    S21["21 · Settings"]
+    S22["22 · Language"]
+    S23["23 · Privacy and Permissions"]
+  end
+  subgraph STATES["System states"]
+    S24["24 · Loading State"]
+    S25["25 · Empty State"]
+    S26["26 · Error State"]
+    S27["27 · Permission Denied"]
+  end
+
+  S01 --> S03
+  S01 -. forgot .-> S02
+  S02 -. back .-> S01
+  S03 -- Check in --> S05 --> S06 --> S07 --> S08 --> S09 --> S04
+  S04 -- Check out --> S10 --> S11 --> S12 --> S03
+  S03 --> S13 --> S14
+  S03 --> S15
+  S15 --> S16 --> S18 --> S15
+  S15 --> S17
+  S03 --> S19
+  S03 --> S20 --> S21
+  S21 --> S22
+  S21 --> S23
+  S06 -. no location access .-> S27
+  S07 -. no camera access .-> S27
+  S27 -. open settings .-> S23

@@ -6,7 +6,12 @@ import 'Features/Accounts/presentation/controller/accounts_cubit.dart';
 import 'Features/Assets_data/presentation/controller/assets_cubit.dart';
 import 'Features/Auth/presentation/pages/auth_page.dart';
 import 'Features/Auth/presentation/viewmodel/auth_cubit.dart';
+import 'Features/Notifications/presentation/controller/notifications_cubit.dart';
 import 'Features/Tickets/presentation/controller/tickets_cubit.dart';
+import 'Features/Tracking/presentation/controller/my_tracking_cubit.dart';
+import 'Features/Tracking/presentation/controller/tracking_control_cubit.dart';
+import 'core/auth/app_permissions.dart';
+import 'core/entities/user_entity.dart';
 import 'core/layout/adaptive_layout.dart';
 import 'core/layout/desktop_layout.dart';
 import 'core/layout/mobile_layout.dart';
@@ -23,19 +28,43 @@ class AuthGate extends StatefulWidget {
   State<AuthGate> createState() => _AuthGateState();
 }
 
-class _AuthGateState extends State<AuthGate> {
+class _AuthGateState extends State<AuthGate> with WidgetsBindingObserver {
   final _homeKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     context.read<AuthCubit>().checkSession();
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// Another device may have taken the account over while this one was in
+  /// the background (realtime is paused then).
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      context.read<AuthCubit>().verifySession();
+    }
+  }
+
   /// Starts per-user data when a session begins.
-  void _onSignedIn() {
+  void _onSignedIn(UserEntity user) {
     context.read<TicketsCubit>().start();
     context.read<AssetsCubit>().getAssets();
+    context.read<NotificationsCubit>().start(user);
+    // Admins and users watch tracking; technicians share their location.
+    final permissions = AppPermissions(user);
+    if (permissions.canViewTracking) {
+      context.read<TrackingControlCubit>().start();
+    } else if (permissions.canShareLocation) {
+      context.read<MyTrackingCubit>().start(user);
+    }
   }
 
   /// The data cubits live above the navigator, so they must be cleared
@@ -44,6 +73,10 @@ class _AuthGateState extends State<AuthGate> {
     context.read<TicketsCubit>().reset();
     context.read<AssetsCubit>().reset();
     context.read<AccountsCubit>().reset();
+    // Stops location publishing and realtime channels for the old user.
+    context.read<TrackingControlCubit>().reset();
+    context.read<MyTrackingCubit>().reset();
+    context.read<NotificationsCubit>().reset();
     getIt.get<LookupRepo>().clearCache();
     Get.until((route) => route.isFirst);
   }
@@ -57,20 +90,20 @@ class _AuthGateState extends State<AuthGate> {
           current is SessionLoadFailed,
       listener: (context, state) {
         switch (state) {
-          case SessionExist():
-            _onSignedIn();
+          case SessionExist(:final user):
+            _onSignedIn(user);
           case LoginFailure(:final errorMsg):
             _onSignedOut();
             showAppSnackBar(
               ScaffoldMessenger.of(context),
-              errorMsg,
+              errorMsg.tr,
               isError: true,
             );
           case SessionLoadFailed(:final errMsg):
             _onSignedOut();
             showAppSnackBar(
               ScaffoldMessenger.of(context),
-              errMsg,
+              errMsg.tr,
               isError: true,
             );
           default:

@@ -45,5 +45,22 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>EFS shares your location with administrators only after you accept a request or start sharing, so they can follow your trip to the branch.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>EFS keeps sharing your location while you travel to the branch, until you stop sharing.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>EFS uses the camera to scan asset QR codes and to take photos for tickets.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>EFS lets you choose a photo for your profile or a ticket attachment.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>remote-notification</string>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+	</array>
 </dict>
 </plist>

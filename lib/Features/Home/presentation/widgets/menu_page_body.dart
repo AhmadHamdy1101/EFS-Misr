@@ -15,6 +15,7 @@ import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/utils/widgets/custom_menu_button_widget.dart';
 import '../../../../core/utils/widgets/custome_back_shape_wedget.dart';
 import '../viewmodel/image_cubit.dart';
+import '../../../Notifications/presentation/controller/notifications_cubit.dart';
 
 class MenuPageBody extends StatelessWidget {
   const MenuPageBody({super.key, required this.user});
@@ -284,7 +285,13 @@ class MenuPageBody extends StatelessWidget {
                             elevation: WidgetStatePropertyAll(0),
                           ),
                           onPressed: () async {
-                            await context.read<AuthCubit>().logout();
+                            final auth = context.read<AuthCubit>();
+                            // While still signed in: stop this phone getting
+                            // the old account's pushes.
+                            await context
+                                .read<NotificationsCubit>()
+                                .unregisterDevice();
+                            await auth.logout();
                           },
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,

@@ -6,14 +6,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class TicketAssetCard extends StatelessWidget {
-  const TicketAssetCard({
-    super.key,
-    required this.data,
-    required this.onTap,
-  });
+  const TicketAssetCard({super.key, required this.data, this.onTap});
 
   final TicketAssetRepairsEntity data;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

@@ -7,6 +7,7 @@ import '../../../core/models/assets_and_tickets.dart';
 import '../../../core/models/assets_repair.dart';
 import '../../../core/models/supadart_header.dart';
 import '../../../core/paging/page_query.dart';
+import '../domain/asset_code.dart';
 
 abstract class AssetsDataSource {
   Future<List<AssetsEntity>> getAssets(PageQuery query);
@@ -47,6 +48,16 @@ abstract class AssetsDataSource {
   });
 
   Future<List<Map<String, dynamic>>> getExportRows();
+  Future<AssetsEntity> updateAsset({
+    required int id,
+    required String barcode,
+    required String name,
+    required String floor,
+    required String place,
+    required String? type,
+    required BigInt branch,
+  });
+  Future<void> deleteAsset(int id);
 }
 
 class AssetsDataSourceImpl extends AssetsDataSource {
@@ -99,15 +110,27 @@ class AssetsDataSourceImpl extends AssetsDataSource {
 
   @override
   Future<AssetsEntity> getAssetsByQrCode(String qrCode) async {
-    final asset = await _client.assets
-        .select('*,branch(*)')
-        .eq('barcode', qrCode)
-        .limit(1)
-        .withConverter(Assets.converter);
-    if (asset.isEmpty) {
-      throw GeneralFailure('No asset found for code "$qrCode".');
+    final code = normalizeAssetCode(qrCode);
+    if (code == null) {
+      throw GeneralFailure('This code is not a valid asset code.');
     }
-    return asset.first.toAssetsEntity();
+    // Two rows are read so a code shared by several assets is refused
+    // instead of resolving to an arbitrary one (barcode is not unique in
+    // the schema).
+    final assets = await _client.assets
+        .select('*,branch(*)')
+        .eq('barcode', code)
+        .limit(2)
+        .withConverter(Assets.converter);
+    if (assets.isEmpty) {
+      throw GeneralFailure('No asset found for code "$code".');
+    }
+    if (assets.length > 1) {
+      throw GeneralFailure(
+        'Several assets share the code "$code". Ask an admin to fix it.',
+      );
+    }
+    return assets.first.toAssetsEntity();
   }
 
   @override
@@ -158,19 +181,36 @@ class AssetsDataSourceImpl extends AssetsDataSource {
     required String comment,
     required num amount,
   }) async {
-    // One round trip: the database checks the link, inserts the repair and
-    // updates the running total inside a single transaction.
-    final result = await _client.rpc(
-      'add_asset_repair',
-      params: {
-        'p_asset_id': assetId.toString(),
-        'p_ticket_id': ticketId.toString(),
-        'p_variation': variation,
-        'p_comment': comment,
-        'p_amount': amount,
-      },
-    );
-    return Map<String, dynamic>.from(result as Map);
+    if (amount < 0) throw GeneralFailure('Amount must be zero or more.');
+    if (!await _isLinked(assetId, ticketId)) {
+      throw GeneralFailure('This asset is not linked to the selected ticket.');
+    }
+
+    // The database triggers on assets_repair (`trg_update_assets_tickets_total`,
+    // `on_assets_repair_change`) update the asset/ticket totals in the same
+    // transaction as this insert, so the totals are read back afterwards
+    // rather than computed here.
+    final repair = await _client.AssetsRepair.insert(
+      AssetsRepair.insert(
+        assetsId: assetId,
+        TicketsId: ticketId,
+        variation: variation,
+        comment: comment,
+        amount: amount,
+      ),
+    ).select().single();
+
+    final link = await _client.assetsAndTickets
+        .select('Ammount')
+        .eq('assets_id', assetId.toString())
+        .eq('Tickets_id', ticketId.toString())
+        .limit(1);
+    final total = link.isEmpty ? null : link.first['Ammount'];
+
+    return {
+      'repair': Map<String, dynamic>.from(repair),
+      'totals': {'asset_ticket_total': total ?? amount},
+    };
   }
 
   @override
@@ -178,9 +218,23 @@ class AssetsDataSourceImpl extends AssetsDataSource {
     required BigInt assetsId,
     required BigInt ticketId,
   }) async {
+    // The table has no unique constraint yet, so check first; otherwise a
+    // re-scan adds the asset to the ticket twice.
+    if (await _isLinked(assetsId, ticketId)) {
+      throw GeneralFailure('This asset is already added to this ticket.');
+    }
     await _client.assetsAndTickets.insert(
       AssetsAndTickets.insert(assetsId: assetsId, TicketsId: ticketId),
     );
+  }
+
+  Future<bool> _isLinked(BigInt assetId, BigInt ticketId) async {
+    final rows = await _client.assetsAndTickets
+        .select('id')
+        .eq('assets_id', assetId.toString())
+        .eq('Tickets_id', ticketId.toString())
+        .limit(1);
+    return rows.isNotEmpty;
   }
 
   @override
@@ -191,11 +245,25 @@ class AssetsDataSourceImpl extends AssetsDataSource {
     required String? place,
     required String? type,
     required BigInt? branch,
-  }) {
+  }) async {
+    final code = normalizeAssetCode(barcode ?? '');
+    if (code == null) {
+      throw GeneralFailure('Please enter a valid barcode.');
+    }
+    // Each label must resolve to one asset (see getAssetsByQrCode). The
+    // unique index in 20261028130744_unique_asset_barcode.sql closes the
+    // race between this check and the insert once applied.
+    final existing = await _client.assets
+        .select('id')
+        .eq('barcode', code)
+        .limit(1);
+    if (existing.isNotEmpty) {
+      throw GeneralFailure('An asset with the barcode "$code" already exists.');
+    }
     return _client.assets
         .insert(
           Assets.insert(
-            barcode: barcode,
+            barcode: code,
             name: name,
             floor: floor,
             place: place,
@@ -205,6 +273,64 @@ class AssetsDataSourceImpl extends AssetsDataSource {
         )
         .select('*, branch(*)')
         .withConverter(Assets.converter);
+  }
+
+  @override
+  Future<AssetsEntity> updateAsset({
+    required int id,
+    required String barcode,
+    required String name,
+    required String floor,
+    required String place,
+    required String? type,
+    required BigInt branch,
+  }) async {
+    final code = normalizeAssetCode(barcode);
+    if (code == null) {
+      throw GeneralFailure('Please enter a valid barcode.');
+    }
+    final clash = await _client.assets
+        .select('id')
+        .eq('barcode', code)
+        .neq('id', id)
+        .limit(1);
+    if (clash.isNotEmpty) {
+      throw GeneralFailure('An asset with the barcode "$code" already exists.');
+    }
+    final rows = await _client.assets
+        .update(
+          Assets.update(
+            barcode: code,
+            name: name,
+            floor: floor,
+            place: place,
+            type: type,
+            Branch: branch,
+          ),
+        )
+        .eq('id', id)
+        .select('*, branch(*)')
+        .withConverter(Assets.converter);
+    // RLS (admins only) hides the row instead of raising.
+    if (rows.isEmpty) throw GeneralFailure('Not allowed or asset not found.');
+    return rows.first.toAssetsEntity();
+  }
+
+  @override
+  Future<void> deleteAsset(int id) async {
+    // Maintenance history (ticket links, repairs) is never deleted with an
+    // asset; an asset that has any is refused.
+    final (links, repairs) = await (
+      _client.assetsAndTickets.select('id').eq('assets_id', id).limit(1),
+      _client.AssetsRepair.select('id').eq('assets_id', id).limit(1),
+    ).wait;
+    if (links.isNotEmpty || repairs.isNotEmpty) {
+      throw GeneralFailure(
+        'This asset has maintenance history and cannot be deleted.',
+      );
+    }
+    final rows = await _client.assets.delete().eq('id', id).select('id');
+    if (rows.isEmpty) throw GeneralFailure('Not allowed or asset not found.');
   }
 
   @override

@@ -16,6 +16,10 @@ abstract interface class AccountsRemoteDataSource {
     required String userId,
     required bool emailChanged,
     required AccountForm form,
+
+    /// Set when the status moves into or out of Terminated/Suspended, to
+    /// ban or unban the auth user so a disabled account can't sign in.
+    bool? banned,
   });
   Future<void> deleteAccount({required String userId});
   Future<List<Map<String, dynamic>>> getExportRows();
@@ -69,9 +73,14 @@ class AccountsRemoteDataSourceImpl implements AccountsRemoteDataSource {
     required String userId,
     required bool emailChanged,
     required AccountForm form,
+    bool? banned,
   }) async {
-    if (emailChanged) {
-      await _invoke('update-user', {'userId': userId, 'email': form.email});
+    if (emailChanged || banned != null) {
+      await _invoke('update-user', {
+        'userId': userId,
+        if (emailChanged) 'email': form.email,
+        'banned': ?banned,
+      });
     }
     return _client.users
         .update(

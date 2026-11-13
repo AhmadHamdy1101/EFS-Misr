@@ -1,5 +1,6 @@
 import 'package:efs_misr/Features/Tickets/domain/entities/ticket_entity.dart';
 import 'package:efs_misr/Features/Tickets/presentation/controller/tickets_cubit.dart';
+import 'package:efs_misr/core/auth/permissions_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -45,12 +46,10 @@ class TicketsEditPopMenu extends StatelessWidget {
     );
     if (!context.mounted) return;
     result.fold(
-      (failure) => messenger.showSnackBar(
-        SnackBar(content: Text(failure.message)),
-      ),
-      (_) => messenger.showSnackBar(
-        SnackBar(content: Text('Ticket deleted'.tr)),
-      ),
+      (failure) =>
+          messenger.showSnackBar(SnackBar(content: Text(failure.message))),
+      (_) =>
+          messenger.showSnackBar(SnackBar(content: Text('Ticket deleted'.tr))),
     );
   }
 
@@ -64,26 +63,28 @@ class TicketsEditPopMenu extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              PopupMenuButton<String>(
-                icon: Icon(
-                  Icons.more_horiz,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                onSelected: (value) {
-                  if (value == 'delete') _confirmDelete(context);
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Text(
-                      'Delete'.tr,
-                      style: AppTextStyle.latoBold20(context),
-                    ),
+              // The menu only holds Delete, which is admin-only.
+              if (context.permissions.canDeleteTicket)
+                PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.more_horiz,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
-                ],
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(20),
-              ),
+                  onSelected: (value) {
+                    if (value == 'delete') _confirmDelete(context);
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Text(
+                        'Delete'.tr,
+                        style: AppTextStyle.latoBold20(context),
+                      ),
+                    ),
+                  ],
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(20),
+                ),
               TicketOverViewWidget(
                 screenWidth: screenWidth,
                 screenHeight: screenHeight,

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1045113970057",
+    "project_id": "efs-tickets",
+    "storage_bucket": "efs-tickets.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1045113970057:android:8f63c19a6db40c7a9b5558",
+        "android_client_info": {
+          "package_name": "com.example.efs_misr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASLxwogkOd11LnHgUW1WjxizHXb4s2a-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

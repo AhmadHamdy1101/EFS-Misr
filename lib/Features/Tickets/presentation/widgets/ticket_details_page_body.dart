@@ -4,6 +4,7 @@ import 'package:efs_misr/Features/Tickets/domain/entities/ticket_entity.dart';
 import 'package:efs_misr/Features/Tickets/presentation/widgets/add_assets_to_tickets_dailog.dart';
 import 'package:efs_misr/Features/Tickets/presentation/widgets/ticket_asset_card.dart';
 import 'package:efs_misr/Features/Tickets/presentation/widgets/ticket_details_container.dart';
+import 'package:efs_misr/core/auth/permissions_context.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:efs_misr/core/utils/app_text_styles.dart';
 import 'package:flutter/material.dart';
@@ -87,12 +88,18 @@ class _TicketDetailsPageBodyState extends State<TicketDetailsPageBody> {
             if (state is GetAssetsTicketsSuccess) {
               final assets = state.assetsAndTickets;
               if (assets.isEmpty) return _emptyAssetsState(context);
+              // Recording a repair: the admin or the assigned technician.
+              final canWork = context.permissions.canWorkOn(
+                widget.ticket.engineer,
+              );
               return SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
                   final item = assets[index];
                   return TicketAssetCard(
                     data: item,
-                    onTap: () => _openRepairDialog(context, item.asset),
+                    onTap: canWork
+                        ? () => _openRepairDialog(context, item.asset)
+                        : null,
                   );
                 }, childCount: assets.length),
               );

@@ -66,6 +66,7 @@ class $AppImagesImagesGen {
   final SvgGenImage home = const SvgGenImage('assets/images/home.svg');
   final SvgGenImage iconlogo = const SvgGenImage('assets/images/iconlogo.svg');
   final SvgGenImage id = const SvgGenImage('assets/images/id.svg');
+  final SvgGenImage location = const SvgGenImage('assets/images/location.svg');
   final SvgGenImage logo = const SvgGenImage('assets/images/logo.svg');
   final SvgGenImage logoIcon = const SvgGenImage('assets/images/logoIcon.svg');
   final SvgGenImage menu = const SvgGenImage('assets/images/menu.svg');
@@ -213,10 +214,10 @@ class SvgGenImage {
       semanticsLabel: semanticsLabel,
       excludeFromSemantics: excludeFromSemantics,
       theme: theme,
-      colorFilter: color == null
-          ? null
-          : ColorFilter.mode(color, colorBlendMode),
+      color: color,
+      colorBlendMode: colorBlendMode,
       clipBehavior: clipBehavior,
+      cacheColorFilter: cacheColorFilter,
     );
   }
 

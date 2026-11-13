@@ -1,6 +1,7 @@
 import 'package:efs_misr/Features/Tickets/presentation/widgets/ticket_details_page_body.dart';
 import 'package:efs_misr/Features/Tickets/domain/entities/ticket_entity.dart';
 import 'package:efs_misr/constants/screens_size.dart';
+import 'package:efs_misr/core/auth/permissions_context.dart';
 import 'package:efs_misr/generated/app_images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -18,20 +19,25 @@ class TicketDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Scanning links an asset to this ticket: the admin or the assigned
+    // technician only.
+    final canWork = context.permissions.canWorkOn(tickets.engineer);
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        elevation: 5,
-        backgroundColor: AppColors.green,
-        foregroundColor: Colors.white,
-        shape: const CircleBorder(),
-        onPressed: () {
-          Get.to(QRScanTicketPage(ticketId: BigInt.from(tickets.id)));
-        },
-        child: SvgPicture.asset(
-          AppImages.images.qrCodeScanner.path,
-          width: ScreensSize(context).screenWidth * 0.07,
-        ),
-      ),
+      floatingActionButton: !canWork
+          ? null
+          : FloatingActionButton(
+              elevation: 5,
+              backgroundColor: AppColors.green,
+              foregroundColor: Colors.white,
+              shape: const CircleBorder(),
+              onPressed: () {
+                Get.to(QRScanTicketPage(ticketId: BigInt.from(tickets.id)));
+              },
+              child: SvgPicture.asset(
+                AppImages.images.qrCodeScanner.path,
+                width: ScreensSize(context).screenWidth * 0.07,
+              ),
+            ),
       appBar: AppBar(
         centerTitle: true,
         leading: BackButton(color: Theme.of(context).colorScheme.primary),

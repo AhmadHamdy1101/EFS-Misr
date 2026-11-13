@@ -1,5 +1,6 @@
 import 'package:efs_misr/Features/Tickets/domain/entities/ticket_entity.dart';
 import 'package:efs_misr/Features/Tickets/presentation/controller/tickets_cubit.dart';
+import 'package:efs_misr/core/auth/permissions_context.dart';
 import 'package:efs_misr/core/utils/app_colors.dart';
 import 'package:efs_misr/core/utils/widgets/custom_button_widget.dart';
 import 'package:efs_misr/core/utils/widgets/custom_outline_button_widget.dart';
@@ -31,20 +32,28 @@ class _TicketStatusActionsState extends State<TicketStatusActions> {
     if (!mounted) return;
     setState(() => _isUpdating = false);
     result.fold(
-      (failure) => ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(failure.message)),
-      ),
-      (_) => ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ticket status updated'.tr)),
-      ),
+      (failure) => ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(failure.message))),
+      (_) => ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Ticket status updated'.tr))),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.ticket.status != TicketStatus.awaiting) {
-      return const SizedBox.shrink();
-    }
+    // Admins: Cancel / Complete. The assigned technician: Reject / Complete.
+    // Everyone else sees no actions (the database enforces the same).
+    final allowed = context.permissions.statusChangesFor(
+      widget.ticket.status,
+      widget.ticket.engineer,
+    );
+    if (allowed.isEmpty) return const SizedBox.shrink();
+    final negative = allowed.firstWhere(
+      (status) => status != TicketStatus.completed,
+      orElse: () => TicketStatus.canceled,
+    );
 
     final width = MediaQuery.sizeOf(context).width;
     return Row(
@@ -54,10 +63,8 @@ class _TicketStatusActionsState extends State<TicketStatusActions> {
             screenWidth: width,
             color: Colors.transparent,
             foregroundColor: AppColors.green,
-            onPressed: _isUpdating
-                ? null
-                : () => _updateStatus(TicketStatus.canceled),
-            text: 'Cancel'.tr,
+            onPressed: _isUpdating ? null : () => _updateStatus(negative),
+            text: negative == TicketStatus.rejected ? 'Reject'.tr : 'Cancel'.tr,
             borderColor: AppColors.green,
             topPadding: 15,
             textStyle: AppTextStyle.latoBold20(context),
