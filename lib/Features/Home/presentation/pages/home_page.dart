@@ -1,6 +1,7 @@
 import 'package:efs_misr/Features/Notifications/presentation/controller/notifications_cubit.dart';
 import 'package:efs_misr/Features/Notifications/presentation/notification_router.dart';
 import 'package:efs_misr/Features/Home/presentation/widgets/qr_view.dart';
+import 'package:efs_misr/Features/Tracking/presentation/screens/tracking_page.dart';
 import 'package:efs_misr/core/entities/user_entity.dart';
 import 'package:efs_misr/Features/Tracking/presentation/controller/my_tracking_cubit.dart';
 import 'package:efs_misr/Features/Tracking/presentation/screens/my_location_page.dart';
@@ -57,6 +58,8 @@ class _HomePageState extends State<HomePage> {
       if (locationPage != null) (_locationIcon, locationPage),
       if (permissions.canManageAccounts)
         ("assets/images/profile.svg", const AccountsPage()),
+      ("assets/images/address.svg", TrackingPage(user: widget.user)),
+      if (_isAdmin) ("assets/images/profile.svg", const AccountsPage()),
       ("assets/images/menu.svg", MenuPage(user: widget.user)),
     ];
     final index = selectedIndex.clamp(0, tabs.length - 1);
